@@ -1,4 +1,3 @@
-
 test_that("normalize_logicals converts columns correctly", {
   df <- data.frame(
     logical_char = c("T", "F", "T"),
@@ -61,5 +60,19 @@ test_that("normalize_logicals informs about converted columns", {
   expect_message(
     normalize_logicals(df, quiet = FALSE),
     "Converted.*logical"
+  )
+})
+
+test_that("normalize_logicals messages when no hidden logicals found", {
+  df <- data.frame(
+    non_logical_char = c("a", "b", "c"),
+    non_logical_factor = factor(c("x", "y", "z")),
+    numeric_col = c(1.1, 2.2, 3.3),
+    stringsAsFactors = FALSE
+  )
+
+  expect_message(
+    normalize_logicals(df, quiet = FALSE),
+    "No character or factor columns detected containing logical data"
   )
 })

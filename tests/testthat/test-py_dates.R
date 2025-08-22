@@ -26,8 +26,7 @@ test_that("we can calculate prior year for a vector of dates with leap day", {
   )
 })
 
-test_that("we can calculate prior year for a datetime",
-  {
+test_that("we can calculate prior year for a datetime", {
   expect_equal(
     py_dates(lubridate::ymd_hms("2024-05-04 12:34:56")),
     lubridate::ymd_hms("2023-05-04 12:34:56")

@@ -12,18 +12,24 @@
 #' @export
 detect_hidden_logicals <- function(data) {
   # detect columns that are factors with levels (TRUE and FALSE)
-  logical_levels <- c("T", "TRUE", "True", "true",
-                      "F", "FALSE", "False", "false", NA)
+  logical_levels <- c(
+    "T", "TRUE", "True", "true",
+    "F", "FALSE", "False", "false", NA
+  )
 
   bool_as_char_cols <-
-    sapply(data,
-           function(x) is.character(x) && all(unique(x) %in% logical_levels)) |>
+    sapply(
+      data,
+      function(x) is.character(x) && all(unique(x) %in% logical_levels)
+    ) |>
     which() |>
     names()
 
   bool_as_factor_cols <-
-    sapply(data,
-           function(x) is.factor(x) && all(levels(x) %in% logical_levels)) |>
+    sapply(
+      data,
+      function(x) is.factor(x) && all(levels(x) %in% logical_levels)
+    ) |>
     which() |>
     names()
 
@@ -43,11 +49,13 @@ detect_hidden_logicals <- function(data) {
 #' factor but contain logical values. Converts these columns to logical
 #' type using [base::as.logical()].
 #' @export
-normalize_logicals <- function(data, quiet = FALSE){
+normalize_logicals <- function(data, quiet = FALSE) {
   hidden_logicals <- detect_hidden_logicals(data)
 
   if (length(hidden_logicals) == 0) {
-    if (!quiet) {cli_inform("No character or factor columns detected containing logical data")}
+    if (!quiet) {
+      cli_inform("No character or factor columns detected containing logical data")
+    }
     return(data)
   }
 
@@ -55,9 +63,10 @@ normalize_logicals <- function(data, quiet = FALSE){
     mutate(across(
       all_of(hidden_logicals), as.logical
     ))
-  if (!quiet) {cli_inform(
-    "Converted {.val {hidden_logicals}} column{?s} to logical."
-  )
+  if (!quiet) {
+    cli_inform(
+      "Converted {.val {hidden_logicals}} column{?s} to logical."
+    )
   }
   return(data)
 }
