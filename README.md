@@ -78,8 +78,8 @@ c(
 dates in a vector are within a year-to-date period relative to a given
 `end_date`.
 
-This is useful as a filter criteria to create summaries of comparable
-periods in prior years.
+Below we have 2.5 years of historical sales data ending on June 1, 2025.
+How were the sales in the comparable period of 2024 and 2023?
 
 ``` r
 library(dplyr)
@@ -92,14 +92,18 @@ library(dplyr)
 #> 
 #>     intersect, setdiff, setequal, union
 
+set.seed(123)
 sales <- data.frame(
-  date = seq(to= as.Date("2025-06-01"), 
-            by = "month",
-            length.out=30),
+  date = seq(
+    to = as.Date("2025-06-01"),
+    by = "month",
+    length.out = 30
+  ),
   amount = rpois(30, lambda = 100)
 )
 
-bounds <- ytd_bounds(sales$date)
+(bounds <- ytd_bounds(sales$date))
+#> [1] "2025-01-01" "2025-06-01"
 
 sales |>
   filter(is_ytd_comparable(date, max(bounds))) |>
@@ -108,9 +112,9 @@ sales |>
 #> # A tibble: 3 × 2
 #>    year ytd_sales
 #>   <dbl>     <int>
-#> 1  2023       567
-#> 2  2024       639
-#> 3  2025       585
+#> 1  2023       610
+#> 2  2024       594
+#> 3  2025       600
 ```
 
 With `py_dates()` you can rollback a vector of dates to the same period
