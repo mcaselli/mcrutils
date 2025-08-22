@@ -9,6 +9,7 @@
 #' Columns are deemed to hold logical data if they contain only the values
 #' c("T", "TRUE", "True", "true", "F", "FALSE", "False", "false", NA).
 #' (matching [base::as.logical()])
+#' @export
 detect_hidden_logicals <- function(data) {
   # detect columns that are factors with levels (TRUE and FALSE)
   logical_levels <- c("T", "TRUE", "True", "true",
@@ -41,6 +42,7 @@ detect_hidden_logicals <- function(data) {
 #' uses [detect_hidden_logicals()] to find columns that are character or
 #' factor but contain logical values. Converts these columns to logical
 #' type using [base::as.logical()].
+#' @export
 normalize_logicals <- function(data, quiet = FALSE){
   hidden_logicals <- detect_hidden_logicals(data)
 

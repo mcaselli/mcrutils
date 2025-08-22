@@ -2,7 +2,7 @@
 % Please edit documentation in R/cleaning.R
 \name{detect_hidden_logicals}
 \alias{detect_hidden_logicals}
-\title{Find columns that are character or factor but contain logical values}
+\title{Find columns containing logical values stored as character or factor}
 \usage{
 detect_hidden_logicals(data)
 }
@@ -10,12 +10,14 @@ detect_hidden_logicals(data)
 \item{data}{A data frame or tibble}
 }
 \value{
-A character vector of column names that are holding logical data but are typed as character or factor
+A character vector of column names found to hold exclusively
+logical data (or NA) that are typed as character or factor.
 }
 \description{
-Find columns that are character or factor but contain logical values
+Find columns containing logical values stored as character or factor
 }
 \details{
 Columns are deemed to hold logical data if they contain only the values
-c("T", "TRUE", "True", "true", "F", "FALSE", "False", "false", NA). (matching \code{\link[base:logical]{base::as.logical()}})
+c("T", "TRUE", "True", "true", "F", "FALSE", "False", "false", NA).
+(matching \code{\link[base:logical]{base::as.logical()}})
 }

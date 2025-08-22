@@ -6,10 +6,18 @@
 \alias{mcrutils-package}
 \title{mcrutils: Miscellaneous Utilities for Data Cleaning, Analysis, and Reporting}
 \description{
-More about what it does (maybe more than one line). Continuation lines should be indented.
+Convenience functions for data cleaning (logicals stored as character or factor), reporting (auto-formatting a DT::datatable).
+}
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/mcaselli/mcrutils}
+  \item Report bugs at \url{https://github.com/mcaselli/mcrutils/issues}
+}
+
 }
 \author{
-\strong{Maintainer}: Michael Caselli \email{jane@example.com}
+\strong{Maintainer}: Michael Caselli \email{mkc.develops@gmail.com}
 
 }
 \keyword{internal}

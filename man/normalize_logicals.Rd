@@ -18,6 +18,7 @@ A data frame or tibble with the specified columns converted to logical type
 Normalize character or factor columns containing logical data to logical type
 }
 \details{
-uses \code{\link[=detect_hidden_logicals]{detect_hidden_logicals()}} to find columns that are character or factor but contain logical values.
-Converts these columns to logical type using \code{\link[base:logical]{base::as.logical()}}.
+uses \code{\link[=detect_hidden_logicals]{detect_hidden_logicals()}} to find columns that are character or
+factor but contain logical values. Converts these columns to logical
+type using \code{\link[base:logical]{base::as.logical()}}.
 }
