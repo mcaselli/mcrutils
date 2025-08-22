@@ -6,6 +6,7 @@
 #' @importFrom dplyr across
 #' @importFrom dplyr mutate
 #' @importFrom dplyr select
+#' @importFrom lubridate ymd
 #' @importFrom tidyselect all_of
 ## usethis namespace: end
 NULL

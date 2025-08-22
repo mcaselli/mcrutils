@@ -22,6 +22,7 @@ Config/testthat/edition: 3
 Imports: 
     cli,
     dplyr,
+    lubridate,
     tidyselect
 URL: https://github.com/mcaselli/mcrutils
 BugReports: https://github.com/mcaselli/mcrutils/issues
