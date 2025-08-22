@@ -8,5 +8,7 @@
 #' @importFrom dplyr select
 #' @importFrom lubridate ymd
 #' @importFrom tidyselect all_of
+#' @importFrom tidyselect contains
+#' @importFrom tidyselect where
 ## usethis namespace: end
 NULL
