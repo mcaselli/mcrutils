@@ -82,6 +82,7 @@ Below we have 2.5 years of historical sales data ending on June 1, 2025.
 How were the sales in the comparable period of 2024 and 2023?
 
 ```{r}
+#| message: false
 library(dplyr)
 
 set.seed(123)
@@ -103,10 +104,49 @@ sales |>
 ```
 
 With `py_dates()` you can rollback a vector of dates to the same period in the
-previous year, moving any ficticious dates to the prior valid day.
+previous year, moving any fictitious dates to the prior valid day.
 
 ```{r}
 c("2024-01-01", "2024-02-29", "2025-07-15") |>
   as.Date() |>
   py_dates()
 ```
+
+
+### one-line datatables
+
+`auto_dt()` is a one-line function that creates a `DT::datatable` object from a
+data frame or tibble, and applies percent, currency, and round formatting to
+numeric columns, guessing the correct format from the data type and column
+names. The datatable has filters at the top and no rownames. 
+
+```{r auto_dt_example, screenshot.opts=list(vwidth= 800, vheight = 600)}
+tribble(
+  ~product, ~weight, ~revenue, ~growth_pct,
+  "Widget A", 13.53, 1023.21, 0.051,
+  "Widget B", 22.61, 150.24, 0.103,
+  "Widget C", 40.54, 502.26, 0.021,
+  "Widget D", 34.21, 2000.95, 0.154
+) |>
+  mutate(product = as.factor(product)) |>
+  auto_dt(numeric_digits = 1, pct_digits = 0)
+```
+
+`auto_dt()` uses `guess_col_fmts()` to determine the format of each column. You
+can provide `pct_flags` and `curr_flags` (character vectors) if you need to
+control the list of "signal" words that indicate a column is a percentage or
+currency.
+
+
+```{r guess_col_fmts_example, screenshot.opts=list(vwidth= 800, vheight = 600)}
+tribble(
+  ~product, ~weight, ~dollaz_earned, ~growth_pct,
+  "Widget A", 13.53, 1023.21, 0.051,
+  "Widget B", 22.61, 150.24, 0.103,
+  "Widget C", 40.54, 502.26, 0.021,
+  "Widget D", 34.21, 2000.95, 0.154
+) |>
+  mutate(product = as.factor(product)) |>
+  auto_dt(numeric_digits = 1, pct_digits = 0, curr_flags = c("revenue", "dollaz"))
+```
+

@@ -83,14 +83,6 @@ How were the sales in the comparable period of 2024 and 2023?
 
 ``` r
 library(dplyr)
-#> 
-#> Attaching package: 'dplyr'
-#> The following objects are masked from 'package:stats':
-#> 
-#>     filter, lag
-#> The following objects are masked from 'package:base':
-#> 
-#>     intersect, setdiff, setequal, union
 
 set.seed(123)
 sales <- data.frame(
@@ -118,7 +110,7 @@ sales |>
 ```
 
 With `py_dates()` you can rollback a vector of dates to the same period
-in the previous year, moving any ficticious dates to the prior valid
+in the previous year, moving any fictitious dates to the prior valid
 day.
 
 ``` r
@@ -127,3 +119,46 @@ c("2024-01-01", "2024-02-29", "2025-07-15") |>
   py_dates()
 #> [1] "2023-01-01" "2023-02-28" "2024-07-15"
 ```
+
+### one-line datatables
+
+`auto_dt()` is a one-line function that creates a `DT::datatable` object
+from a data frame or tibble, and applies percent, currency, and round
+formatting to numeric columns, guessing the correct format from the data
+type and column names. The datatable has filters at the top and no
+rownames.
+
+``` r
+tribble(
+  ~product, ~weight, ~revenue, ~growth_pct,
+  "Widget A", 13.53, 1023.21, 0.051,
+  "Widget B", 22.61, 150.24, 0.103,
+  "Widget C", 40.54, 502.26, 0.021,
+  "Widget D", 34.21, 2000.95, 0.154
+) |>
+  mutate(product = as.factor(product)) |>
+  auto_dt(numeric_digits = 1, pct_digits = 0)
+#> file:///C:/Users/diskb582/AppData/Local/Temp/RtmpC853gu/file3df067af15c/widget3df038b353c5.html screenshot completed
+```
+
+<img src="man/figures/README-auto_dt_example-1.png" width="100%" />
+
+`auto_dt()` uses `guess_col_fmts()` to determine the format of each
+column. You can provide `pct_flags` and `curr_flags` (character vectors)
+if you need to control the list of “signal” words that indicate a column
+is a percentage or currency.
+
+``` r
+tribble(
+  ~product, ~weight, ~dollaz_earned, ~growth_pct,
+  "Widget A", 13.53, 1023.21, 0.051,
+  "Widget B", 22.61, 150.24, 0.103,
+  "Widget C", 40.54, 502.26, 0.021,
+  "Widget D", 34.21, 2000.95, 0.154
+) |>
+  mutate(product = as.factor(product)) |>
+  auto_dt(numeric_digits = 1, pct_digits = 0, curr_flags = c("revenue", "dollaz"))
+#> file:///C:/Users/diskb582/AppData/Local/Temp/RtmpC853gu/file3df033ed58f2/widget3df03a487e48.html screenshot completed
+```
+
+<img src="man/figures/README-guess_col_fmts_example-1.png" width="100%" />
