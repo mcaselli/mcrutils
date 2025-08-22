@@ -22,14 +22,19 @@ You can install the development version of mcrutils from
 pak::pak("mcaselli/mcrutils")
 ```
 
-## Example
+## Examples
 
-This is a basic example which shows you how to solve a common problem:
+### Normalize logical columns
+
+For data frames or tibbles that have character or factor columns storing
+logical data, as may happen when reading from a database, CSV, or Excel
+file, use `normalize_logicals()` to find and convert these columns to
+logical type. This is a nice one-liner in a `dplyr` pipe
 
 ``` r
 library(mcrutils)
 
-df <- data.frame(
+ugly_df <- data.frame(
   logical_char = c("T", "F", "T"),
   logical_factor = factor(c("TRUE", "FALSE", "TRUE")),
   non_logical_char = c("a", "b", "c"),
@@ -40,14 +45,81 @@ df <- data.frame(
   stringsAsFactors = FALSE
 )
 
-normalize_logicals(df)
+df <- ugly_df |> normalize_logicals()
 #> Converted "logical_char" and "logical_factor" columns to logical.
-#>   logical_char logical_factor non_logical_char non_logical_factor mixed_char
-#> 1         TRUE           TRUE                a                  x          T
-#> 2        FALSE          FALSE                b                  y          F
-#> 3         TRUE           TRUE                c                  z          a
-#>   mixed_factor numeric_col
-#> 1         TRUE         1.1
-#> 2        FALSE         2.2
-#> 3            x         3.3
+
+sapply(df, class)
+#>       logical_char     logical_factor   non_logical_char non_logical_factor 
+#>          "logical"          "logical"        "character"           "factor" 
+#>         mixed_char       mixed_factor        numeric_col 
+#>        "character"           "factor"          "numeric"
+```
+
+### Year-to-date helpers
+
+`mcrutils` provides a handful functions that can be helpful in creating
+year-to-date analyses
+
+With `ytd_bounds()`, quickly find the date bounds of the latest
+year-to-date period in vector of dates, possibly spanning multiple
+years:
+
+``` r
+c(
+  "2023-01-01", "2023-06-15", "2023-12-31",
+  "2024-01-01", "2024-03-15", "2024-07-15"
+) |>
+  as.Date() |>
+  ytd_bounds()
+#> [1] "2024-01-01" "2024-07-15"
+```
+
+`is_ytd_comparable()` is a logical vector that indicates whether the
+dates in a vector are within a year-to-date period relative to a given
+`end_date`.
+
+This is useful as a filter criteria to create summaries of comparable
+periods in prior years.
+
+``` r
+library(dplyr)
+#> 
+#> Attaching package: 'dplyr'
+#> The following objects are masked from 'package:stats':
+#> 
+#>     filter, lag
+#> The following objects are masked from 'package:base':
+#> 
+#>     intersect, setdiff, setequal, union
+
+sales <- data.frame(
+  date = seq(to= as.Date("2025-06-01"), 
+            by = "month",
+            length.out=30),
+  amount = rpois(30, lambda = 100)
+)
+
+bounds <- ytd_bounds(sales$date)
+
+sales |>
+  filter(is_ytd_comparable(date, max(bounds))) |>
+  group_by(year = lubridate::year(date)) |>
+  summarise(ytd_sales = sum(amount))
+#> # A tibble: 3 × 2
+#>    year ytd_sales
+#>   <dbl>     <int>
+#> 1  2023       567
+#> 2  2024       639
+#> 3  2025       585
+```
+
+With `py_dates()` you can rollback a vector of dates to the same period
+in the previous year, moving any ficticious dates to the prior valid
+day.
+
+``` r
+c("2024-01-01", "2024-02-29", "2025-07-15") |>
+  as.Date() |>
+  py_dates()
+#> [1] "2023-01-01" "2023-02-28" "2024-07-15"
 ```
