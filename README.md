@@ -138,7 +138,6 @@ tribble(
 ) |>
   mutate(product = as.factor(product)) |>
   auto_dt(numeric_digits = 1, pct_digits = 0)
-#> file:///C:/Users/diskb582/AppData/Local/Temp/RtmpC853gu/file3df067af15c/widget3df038b353c5.html screenshot completed
 ```
 
 <img src="man/figures/README-auto_dt_example-1.png" width="100%" />
@@ -158,7 +157,6 @@ tribble(
 ) |>
   mutate(product = as.factor(product)) |>
   auto_dt(numeric_digits = 1, pct_digits = 0, curr_flags = c("revenue", "dollaz"))
-#> file:///C:/Users/diskb582/AppData/Local/Temp/RtmpC853gu/file3df033ed58f2/widget3df03a487e48.html screenshot completed
 ```
 
 <img src="man/figures/README-guess_col_fmts_example-1.png" width="100%" />

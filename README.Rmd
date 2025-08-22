@@ -120,7 +120,7 @@ data frame or tibble, and applies percent, currency, and round formatting to
 numeric columns, guessing the correct format from the data type and column
 names. The datatable has filters at the top and no rownames. 
 
-```{r auto_dt_example, screenshot.opts=list(vwidth= 800, vheight = 600)}
+```{r auto_dt_example, screenshot.opts=list(vwidth= 800, vheight = 600), message=FALSE}
 tribble(
   ~product, ~weight, ~revenue, ~growth_pct,
   "Widget A", 13.53, 1023.21, 0.051,
@@ -138,7 +138,7 @@ control the list of "signal" words that indicate a column is a percentage or
 currency.
 
 
-```{r guess_col_fmts_example, screenshot.opts=list(vwidth= 800, vheight = 600)}
+```{r guess_col_fmts_example, screenshot.opts=list(vwidth= 800, vheight = 600), message=FALSE}
 tribble(
   ~product, ~weight, ~dollaz_earned, ~growth_pct,
   "Widget A", 13.53, 1023.21, 0.051,
