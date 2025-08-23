@@ -1,6 +1,8 @@
 test_that("calc_year_breaks works", {
-  expect_equal(calc_year_breaks(ymd(c("2000-02-01", "2002-01-14"))),
-               ymd(c("2000-01-01", "2001-01-01", "2002-01-01")))
+  expect_equal(
+    calc_year_breaks(ymd(c("2000-02-01", "2002-01-14"))),
+    ymd(c("2000-01-01", "2001-01-01", "2002-01-01"))
+  )
 })
 
 test_that("calc_year_breaks works with a single date", {

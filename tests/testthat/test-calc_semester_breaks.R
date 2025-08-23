@@ -1,7 +1,11 @@
 test_that("calc_semester_breaks rolls back when needed", {
-  expect_equal(calc_semester_breaks(ymd(c("2000-04-04", "2001-07-03"))),
-               ymd(c("2000-01-01", "2000-07-01",
-                     "2001-01-01", "2001-07-01")))
+  expect_equal(
+    calc_semester_breaks(ymd(c("2000-04-04", "2001-07-03"))),
+    ymd(c(
+      "2000-01-01", "2000-07-01",
+      "2001-01-01", "2001-07-01"
+    ))
+  )
 })
 
 test_that("calc_semester_breaks works with a single date", {

@@ -37,34 +37,35 @@ breaks_quarters <- function(n = 9, width = NULL) {
     end <- rng[2]
 
     if (!is.null(width)) {
-      if (length(width) != 1L)
+      if (length(width) != 1L) {
         stop("width must be length 1")
+      }
       if (!is.character(width)) stop(gettextf("'%s' must be a character string", "by"), domain = NA)
-      parsed_width <- stringr::str_match(width, pattern="^([0-9]+) (month|quarter|year)s?$")
+      parsed_width <- stringr::str_match(width, pattern = "^([0-9]+) (month|quarter|year)s?$")
       mag <- as.numeric(parsed_width[2])
       unit <- parsed_width[3]
 
-      if (unit=="month") {
-        if (mag==3) {
+      if (unit == "month") {
+        if (mag == 3) {
           return(calc_quarter_breaks(x))
-        }else if (mag == 6){
+        } else if (mag == 6) {
           return(calc_semester_breaks(x))
-        }else if (mag == 12){
+        } else if (mag == 12) {
           return(calc_year_breaks(x))
-        }else {
+        } else {
           stop("Invalid width for breaks_quarters. If unit is months, value must be 3, 6 or 12")
         }
       } else if (unit == "quarter") {
-        if (mag==1) {
+        if (mag == 1) {
           return(calc_quarter_breaks(x))
-        }else if (mag == 2){
+        } else if (mag == 2) {
           return(calc_semester_breaks(x))
-        }else if (mag == 4){
+        } else if (mag == 4) {
           return(calc_year_breaks(x))
-        }else {
+        } else {
           stop("Invalid width for breaks_quarters. If unit is quarters, value must be 1, 2, or 4")
         }
-      } else if (unit == "year"){
+      } else if (unit == "year") {
         if (mag == 1) {
           return(calc_year_breaks(x))
         } else {
@@ -81,9 +82,9 @@ breaks_quarters <- function(n = 9, width = NULL) {
     len <- length(all_qs)
 
     len_err <- len - n
-    tol <- n/4
-    if (len_err > tol){
-      year_span <- diff(rng)/lubridate::dyears()
+    tol <- n / 4
+    if (len_err > tol) {
+      year_span <- diff(rng) / lubridate::dyears()
       if (year_span * 2 <= n + tol) {
         return(calc_semester_breaks(x))
       } else {
@@ -109,7 +110,7 @@ breaks_quarters <- function(n = 9, width = NULL) {
 #'
 #' @return A vector of dates representing the start of each quarter
 #' within the range of `dates`.
-calc_quarter_breaks <- function(dates){
+calc_quarter_breaks <- function(dates) {
   dates <- as.Date(dates)
   rng <- range(dates, na.rm = TRUE)
   start <- lubridate::quarter(rng[1], type = "date_first")
@@ -132,13 +133,13 @@ calc_quarter_breaks <- function(dates){
 #'
 #' @return A vector of dates representing the start of each semester
 #' within the range of `dates`.
-calc_semester_breaks <- function(dates){
+calc_semester_breaks <- function(dates) {
   dates <- as.Date(dates)
   rng <- range(dates, na.rm = TRUE)
   start <- lubridate::quarter(rng[1], type = "date_first")
   end <- rng[2]
 
-  if(!lubridate::quarter(start) %in% c(1, 3)){
+  if (!lubridate::quarter(start) %in% c(1, 3)) {
     # roll start back to a semester start date
     start <- start - months(3)
   }
@@ -160,7 +161,7 @@ calc_semester_breaks <- function(dates){
 #'
 #' @return A vector of dates representing the start of each year
 #' within the range of `dates`.
-calc_year_breaks <- function(dates){
+calc_year_breaks <- function(dates) {
   dates <- as.Date(dates)
   rng <- range(dates, na.rm = TRUE)
 
@@ -206,11 +207,11 @@ label_quarters_short <- function() {
 
     # Combine labels, preserving NA
     labels <- ifelse(is.na(dates), NA,
-                     ifelse(
-                       show_year,
-                       paste(quarters, years, sep = "\n"),
-                       quarters
-                     )
+      ifelse(
+        show_year,
+        paste(quarters, years, sep = "\n"),
+        quarters
+      )
     )
 
     labels
