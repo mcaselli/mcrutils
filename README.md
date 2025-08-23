@@ -160,3 +160,91 @@ tribble(
 ```
 
 <img src="man/figures/README-guess_col_fmts_example-1.png" width="100%" />
+
+### Quarterly breaks and labels
+
+`scales::label_date_short()` is a great function for labeling dates in
+`ggplot2`, but unfortunately it can’t support quarterly breaks and
+labels out of the box.
+
+`mcrutils` provides a set of functions to create quarterly breaks and
+labels for date scales in `ggplot2`. The `breaks_quarters()` function
+generates breaks for quarters, and `label_quarters_short()` generates
+minimal labels for these breaks in a two-line format (like
+`scales::label_date_short()`), labeling every quarter, but only
+including the year when it changes from the previous label.
+
+``` r
+library(ggplot2)
+
+economics |>
+  filter(date >= "2005-02-01", date <= "2007-03-01") |>
+  ggplot(aes(date, pce)) +
+  geom_line() +
+  scale_x_date(
+    breaks = breaks_quarters(),
+    labels = label_quarters_short()
+  ) +
+  labs(title="Automatic Quarterly Breaks",
+       subtitle ="with concise labels") +
+  theme(panel.grid.minor.x = element_blank())
+```
+
+<img src="man/figures/README-automatic-quarterly-breaks-1.png" width="100%" />
+
+The automatic version of `breaks_quarters()` tries to return a
+reasonable number of breaks over a wide range of dates, down-sampling to
+semesters and years as needed.
+
+``` r
+economics |>
+  filter(date >= "2005-05-01", date <= "2009-03-01") |>
+  ggplot(aes(date, pce)) +
+  geom_line() +
+  scale_x_date(
+    breaks = breaks_quarters(),
+    labels = label_quarters_short()
+  ) +
+  labs(title="Switching to semesters for longer ranges",
+       subtitle = "always labelling Q1/Q3, never Q2/Q4") +
+  theme(panel.grid.minor.x = element_blank())
+```
+
+<img src="man/figures/README-semester-breaks-1.png" width="100%" />
+
+``` r
+economics |>
+  filter(date >= "2000-05-01", date <= "2010-03-01") |>
+  ggplot(aes(date, pce)) +
+  geom_line() +
+  scale_x_date(
+    breaks = breaks_quarters(),
+    labels = label_quarters_short()
+  ) +
+  labs(title="Switching to yearly for very long ranges",
+       subtitle = "rather silly") +
+  theme(panel.grid.minor.x = element_blank())
+```
+
+<img src="man/figures/README-yearly-breaks-for-long-ranges-1.png" width="100%" />
+
+With very long date ranges like this, you are likely better off
+switching from these quarterly functions to the more standard date
+breaks and labels in `ggplot2`:
+
+You can force a fixed break width:
+
+``` r
+economics |>
+  filter(date >= "2005-02-01", date <= "2008-12-01") |>
+  ggplot(aes(date, pce)) +
+  geom_line() +
+  scale_x_date(
+    breaks = breaks_quarters(width = "3 months"),
+    labels = label_quarters_short()
+  ) +
+  labs(title="Fixed quarterly breaks") +
+  theme(panel.grid.minor.x = element_blank())
+```
+
+<img src="man/figures/README-fixed-quarterly-breaks-1.png" width="100%" />
