@@ -1,0 +1,23 @@
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://mcaselli.github.io/mcrutils/404.html</loc></url>
+<url><loc>https://mcaselli.github.io/mcrutils/LICENSE.html</loc></url>
+<url><loc>https://mcaselli.github.io/mcrutils/articles/index.html</loc></url>
+<url><loc>https://mcaselli.github.io/mcrutils/articles/mcrutils.html</loc></url>
+<url><loc>https://mcaselli.github.io/mcrutils/authors.html</loc></url>
+<url><loc>https://mcaselli.github.io/mcrutils/index.html</loc></url>
+<url><loc>https://mcaselli.github.io/mcrutils/reference/auto_dt.html</loc></url>
+<url><loc>https://mcaselli.github.io/mcrutils/reference/breaks_quarters.html</loc></url>
+<url><loc>https://mcaselli.github.io/mcrutils/reference/calc_quarter_breaks.html</loc></url>
+<url><loc>https://mcaselli.github.io/mcrutils/reference/calc_semester_breaks.html</loc></url>
+<url><loc>https://mcaselli.github.io/mcrutils/reference/calc_year_breaks.html</loc></url>
+<url><loc>https://mcaselli.github.io/mcrutils/reference/detect_hidden_logicals.html</loc></url>
+<url><loc>https://mcaselli.github.io/mcrutils/reference/guess_col_fmts.html</loc></url>
+<url><loc>https://mcaselli.github.io/mcrutils/reference/index.html</loc></url>
+<url><loc>https://mcaselli.github.io/mcrutils/reference/is_ytd_comparable.html</loc></url>
+<url><loc>https://mcaselli.github.io/mcrutils/reference/label_quarters_short.html</loc></url>
+<url><loc>https://mcaselli.github.io/mcrutils/reference/mcrutils-package.html</loc></url>
+<url><loc>https://mcaselli.github.io/mcrutils/reference/normalize_logicals.html</loc></url>
+<url><loc>https://mcaselli.github.io/mcrutils/reference/py_dates.html</loc></url>
+<url><loc>https://mcaselli.github.io/mcrutils/reference/ytd_bounds.html</loc></url>
+</urlset>
+
