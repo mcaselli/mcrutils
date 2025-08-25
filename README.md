@@ -24,7 +24,7 @@ pak::pak("mcaselli/mcrutils")
 
 ## Examples
 
-### Normalize logical columns
+### Data cleaning
 
 For data frames or tibbles that have character or factor columns storing
 logical data, as may happen when reading from a database, CSV, or Excel
@@ -33,8 +33,17 @@ logical type. This is a nice one-liner in a `dplyr` pipe
 
 ``` r
 library(mcrutils)
+library(dplyr)
+#> 
+#> Attaching package: 'dplyr'
+#> The following objects are masked from 'package:stats':
+#> 
+#>     filter, lag
+#> The following objects are masked from 'package:base':
+#> 
+#>     intersect, setdiff, setequal, union
 
-ugly_df <- data.frame(
+ugly_data <- tibble(
   logical_char = c("T", "F", "T"),
   logical_factor = factor(c("TRUE", "FALSE", "TRUE")),
   non_logical_char = c("a", "b", "c"),
@@ -45,14 +54,17 @@ ugly_df <- data.frame(
   stringsAsFactors = FALSE
 )
 
-df <- ugly_df |> normalize_logicals()
-#> Converted "logical_char" and "logical_factor" columns to logical.
 
-sapply(df, class)
-#>       logical_char     logical_factor   non_logical_char non_logical_factor 
-#>          "logical"          "logical"        "character"           "factor" 
-#>         mixed_char       mixed_factor        numeric_col 
-#>        "character"           "factor"          "numeric"
+ugly_data |> normalize_logicals()
+#> Converted "logical_char" and "logical_factor" columns to logical.
+#> # A tibble: 3 × 8
+#>   logical_char logical_factor non_logical_char non_logical_factor mixed_char
+#>   <lgl>        <lgl>          <chr>            <fct>              <chr>     
+#> 1 TRUE         TRUE           a                x                  T         
+#> 2 FALSE        FALSE          b                y                  F         
+#> 3 TRUE         TRUE           c                z                  a         
+#> # ℹ 3 more variables: mixed_factor <fct>, numeric_col <dbl>,
+#> #   stringsAsFactors <lgl>
 ```
 
 ### Year-to-date helpers
@@ -165,25 +177,6 @@ tribble(
 ```
 
 <img src="man/figures/README-auto_dt_example-1.png" width="100%" />
-
-`auto_dt()` uses `guess_col_fmts()` to determine the format of each
-column. You can provide `pct_flags` and `curr_flags` (character vectors)
-if you need to control the list of “signal” words that indicate a column
-is a percentage or currency.
-
-``` r
-tribble(
-  ~product, ~weight, ~dollaz_earned, ~growth_pct,
-  "Widget A", 13.53, 1023.21, 0.051,
-  "Widget B", 22.61, 150.24, 0.103,
-  "Widget C", 40.54, 502.26, 0.021,
-  "Widget D", 34.21, 2000.95, 0.154
-) |>
-  mutate(product = as.factor(product)) |>
-  auto_dt(numeric_digits = 1, pct_digits = 0, curr_flags = c("revenue", "dollaz"))
-```
-
-<img src="man/figures/README-guess_col_fmts_example-1.png" width="100%" />
 
 ### Quarterly breaks and labels
 

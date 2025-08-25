@@ -17,6 +17,8 @@ LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Suggests: 
+    knitr,
+    rmarkdown,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 Imports: 
@@ -28,3 +30,4 @@ Imports:
     tidyselect
 URL: https://github.com/mcaselli/mcrutils
 BugReports: https://github.com/mcaselli/mcrutils/issues
+VignetteBuilder: knitr

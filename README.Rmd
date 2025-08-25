@@ -33,7 +33,7 @@ pak::pak("mcaselli/mcrutils")
 
 ## Examples
 
-### Normalize logical columns
+### Data cleaning
 
 For data frames or tibbles that have character or factor columns storing 
 logical data, as may happen when reading from a database, CSV, or Excel file,
@@ -42,8 +42,9 @@ This is a nice one-liner in a `dplyr` pipe
 
 ```{r example}
 library(mcrutils)
+library(dplyr)
 
-ugly_df <- data.frame(
+ugly_data <- tibble(
   logical_char = c("T", "F", "T"),
   logical_factor = factor(c("TRUE", "FALSE", "TRUE")),
   non_logical_char = c("a", "b", "c"),
@@ -54,9 +55,8 @@ ugly_df <- data.frame(
   stringsAsFactors = FALSE
 )
 
-df <- ugly_df |> normalize_logicals()
 
-sapply(df, class)
+ugly_data |> normalize_logicals()
 ```
 
 ### Year-to-date helpers
@@ -142,23 +142,6 @@ tribble(
   auto_dt(numeric_digits = 1, pct_digits = 0)
 ```
 
-`auto_dt()` uses `guess_col_fmts()` to determine the format of each column. You
-can provide `pct_flags` and `curr_flags` (character vectors) if you need to
-control the list of "signal" words that indicate a column is a percentage or
-currency.
-
-
-```{r guess_col_fmts_example, screenshot.opts=list(vwidth= 800, vheight = 600), message=FALSE}
-tribble(
-  ~product, ~weight, ~dollaz_earned, ~growth_pct,
-  "Widget A", 13.53, 1023.21, 0.051,
-  "Widget B", 22.61, 150.24, 0.103,
-  "Widget C", 40.54, 502.26, 0.021,
-  "Widget D", 34.21, 2000.95, 0.154
-) |>
-  mutate(product = as.factor(product)) |>
-  auto_dt(numeric_digits = 1, pct_digits = 0, curr_flags = c("revenue", "dollaz"))
-```
 
 ### Quarterly breaks and labels
 
