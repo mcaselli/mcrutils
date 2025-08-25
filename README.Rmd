@@ -95,6 +95,16 @@ sales <- data.frame(
   amount = rpois(30, lambda = 100)
 )
 
+head(sales)
+
+sales |>
+  group_by(year = lubridate::year(date)) |>
+  summarise(annual_sales = sum(amount))
+```
+
+How were the year-to-date sales in the comparable period of 2024 and 2023?
+
+```{r}
 (bounds <- ytd_bounds(sales$date))
 
 sales |>
