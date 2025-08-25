@@ -76,9 +76,9 @@ How were the sales in the comparable period of 2024 and 2023?
 set.seed(123)
 sales <- data.frame(
   date = seq(
+    from = as.Date("2023-01-01"),
     to = as.Date("2025-06-01"),
-    by = "month",
-    length.out = 30
+    by = "month"
   ),
   amount = rpois(30, lambda = 100)
 )
