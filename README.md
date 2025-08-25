@@ -36,15 +36,7 @@ logical type. This is a nice one-liner in a `dplyr` pipe
 
 ``` r
 library(mcrutils)
-library(dplyr)
-#> 
-#> Attaching package: 'dplyr'
-#> The following objects are masked from 'package:stats':
-#> 
-#>     filter, lag
-#> The following objects are masked from 'package:base':
-#> 
-#>     intersect, setdiff, setequal, union
+library(dplyr, warn.conflicts = FALSE)
 
 ugly_data <- tibble(
   logical_char = c("T", "F", "T"),
@@ -83,8 +75,6 @@ Below we have 2.5 years of historical sales data ending on June 1, 2025.
 How were the sales in the comparable period of 2024 and 2023?
 
 ``` r
-library(dplyr)
-
 set.seed(123)
 sales <- data.frame(
   date = seq(
