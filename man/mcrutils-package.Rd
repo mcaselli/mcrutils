@@ -12,6 +12,7 @@ Convenience functions for data cleaning (logicals stored as character or factor)
 Useful links:
 \itemize{
   \item \url{https://github.com/mcaselli/mcrutils}
+  \item \url{https://mcaselli.github.io/mcrutils/}
   \item Report bugs at \url{https://github.com/mcaselli/mcrutils/issues}
 }
 

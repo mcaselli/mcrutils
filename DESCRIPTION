@@ -28,6 +28,6 @@ Imports:
     lubridate,
     stringr,
     tidyselect
-URL: https://github.com/mcaselli/mcrutils
+URL: https://github.com/mcaselli/mcrutils, https://mcaselli.github.io/mcrutils/
 BugReports: https://github.com/mcaselli/mcrutils/issues
 VignetteBuilder: knitr
