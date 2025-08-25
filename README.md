@@ -10,7 +10,10 @@ coverage](https://codecov.io/gh/mcaselli/mcrutils/graph/badge.svg)](https://app.
 [![R-CMD-check](https://github.com/mcaselli/mcrutils/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/mcaselli/mcrutils/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-The goal of mcrutils is to …
+The goal of mcrutils is to provide a grab-bag of utility functions that
+I find useful in my own R projects for data cleaning, analysis, and
+reporting, including creating and visualizing year-to-date and quarterly
+analyses.
 
 ## Installation
 
@@ -72,20 +75,6 @@ ugly_data |> normalize_logicals()
 `mcrutils` provides a handful functions that can be helpful in creating
 year-to-date analyses
 
-With `ytd_bounds()`, quickly find the date bounds of the latest
-year-to-date period in vector of dates, possibly spanning multiple
-years:
-
-``` r
-c(
-  "2023-01-01", "2023-06-15", "2023-12-31",
-  "2024-01-01", "2024-03-15", "2024-07-15"
-) |>
-  as.Date() |>
-  ytd_bounds()
-#> [1] "2024-01-01" "2024-07-15"
-```
-
 `is_ytd_comparable()` is a logical vector that indicates whether the
 dates in a vector are within a year-to-date period relative to a given
 `end_date`.
@@ -145,17 +134,6 @@ sales |>
 #> 3  2025       600
 ```
 
-With `py_dates()` you can rollback a vector of dates to the same period
-in the previous year, moving any fictitious dates to the prior valid
-day.
-
-``` r
-c("2024-01-01", "2024-02-29", "2025-07-15") |>
-  as.Date() |>
-  py_dates()
-#> [1] "2023-01-01" "2023-02-28" "2024-07-15"
-```
-
 ### one-line datatables
 
 `auto_dt()` is a one-line function that creates a `DT::datatable` object
@@ -178,18 +156,19 @@ tribble(
 
 <img src="man/figures/README-auto_dt_example-1.png" width="100%" />
 
+`vignette("mcrutils")` has more examples, including how to specify the
+set of strings that flag a column as percentage or currency.
+
 ### Quarterly breaks and labels
 
 `scales::label_date_short()` is a great function for labeling dates in
 `ggplot2`, but unfortunately it can’t support quarterly breaks and
 labels out of the box.
 
-`mcrutils` provides a set of functions to create quarterly breaks and
-labels for date scales in `ggplot2`. The `breaks_quarters()` function
-generates breaks for quarters, and `label_quarters_short()` generates
-minimal labels for these breaks in a two-line format (like
-`scales::label_date_short()`), labeling every quarter, but only
-including the year when it changes from the previous label.
+`label_quarters_short()` generates similar labels for quarterly date
+breaks, labeling every quarter, but only including the year when it
+changes from the previous label. `breaks_quarters()` generates quarterly
+breaks for date scales.
 
 ``` r
 library(ggplot2)
@@ -201,67 +180,11 @@ economics |>
   scale_x_date(
     breaks = breaks_quarters(),
     labels = label_quarters_short()
-  ) +
-  labs(title="Automatic Quarterly Breaks",
-       subtitle ="with concise labels") +
-  theme(panel.grid.minor.x = element_blank())
+  ) 
 ```
 
 <img src="man/figures/README-automatic-quarterly-breaks-1.png" width="100%" />
 
-The automatic version of `breaks_quarters()` tries to return a
-reasonable number of breaks over a wide range of dates, down-sampling to
-semesters and years as needed.
-
-``` r
-economics |>
-  filter(date >= "2005-05-01", date <= "2009-03-01") |>
-  ggplot(aes(date, pce)) +
-  geom_line() +
-  scale_x_date(
-    breaks = breaks_quarters(),
-    labels = label_quarters_short()
-  ) +
-  labs(title="Switching to semesters for longer ranges",
-       subtitle = "always labelling Q1/Q3, never Q2/Q4") +
-  theme(panel.grid.minor.x = element_blank())
-```
-
-<img src="man/figures/README-semester-breaks-1.png" width="100%" />
-
-``` r
-economics |>
-  filter(date >= "2000-05-01", date <= "2010-03-01") |>
-  ggplot(aes(date, pce)) +
-  geom_line() +
-  scale_x_date(
-    breaks = breaks_quarters(),
-    labels = label_quarters_short()
-  ) +
-  labs(title="Switching to yearly for very long ranges",
-       subtitle = "rather silly") +
-  theme(panel.grid.minor.x = element_blank())
-```
-
-<img src="man/figures/README-yearly-breaks-for-long-ranges-1.png" width="100%" />
-
-With very long date ranges like this, you are likely better off
-switching from these quarterly functions to the more standard date
-breaks and labels in `ggplot2`:
-
-You can force a fixed break width:
-
-``` r
-economics |>
-  filter(date >= "2005-02-01", date <= "2008-12-01") |>
-  ggplot(aes(date, pce)) +
-  geom_line() +
-  scale_x_date(
-    breaks = breaks_quarters(width = "3 months"),
-    labels = label_quarters_short()
-  ) +
-  labs(title="Fixed quarterly breaks") +
-  theme(panel.grid.minor.x = element_blank())
-```
-
-<img src="man/figures/README-fixed-quarterly-breaks-1.png" width="100%" />
+By default, `breaks_quarters()` tries to return a reasonable number of
+breaks over a wide range of dates, down-sampling to semesters and years
+as needed. See `vignette("mcrutils")` for more examples.

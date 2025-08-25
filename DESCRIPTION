@@ -9,8 +9,8 @@ Authors@R: c(
       role = c("aut", "cre")
     )
   )
-Description: Convenience functions for data cleaning (logicals stored as 
-    character or factor), reporting (auto-formatting a DT::datatable).
+Description: Convenience functions for data cleaning, analysis and reporting,
+    including creating and visualizing year-to-date and quarterly analyses.
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
