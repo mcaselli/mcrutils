@@ -20,13 +20,15 @@ knitr::opts_chunk$set(
 [![R-CMD-check](https://github.com/mcaselli/mcrutils/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/mcaselli/mcrutils/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-The goal of mcrutils is to provide a grab-bag of utility functions that I find
-useful in my own R projects for data cleaning, analysis, and reporting,
-including creating and visualizing year-to-date and quarterly analyses.
+The goal of mcrutils is to provide a grab-bag of utility functions that
+I find useful in my own R projects for data cleaning, analysis, and
+reporting, including creating and visualizing year-to-date and quarterly
+analyses.
 
 ## Installation
 
-You can install the development version of mcrutils from [GitHub](https://github.com/) with:
+You can install the development version of mcrutils from
+[GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("pak")
@@ -37,10 +39,10 @@ pak::pak("mcaselli/mcrutils")
 
 ### Data cleaning
 
-For data frames or tibbles that have character or factor columns storing 
-logical data, as may happen when reading from a database, CSV, or Excel file,
-use `normalize_logicals()` to find and convert these columns to logical type.
-This is a nice one-liner in a `dplyr` pipe
+For data frames or tibbles that have character or factor columns storing
+logical data, as may happen when reading from a database, CSV, or Excel
+file, use `normalize_logicals()` to find and convert these columns to
+logical type. This is a nice one-liner in a `dplyr` pipe
 
 ```{r example}
 library(mcrutils)
@@ -62,14 +64,11 @@ ugly_data |> normalize_logicals()
 
 ### Year-to-date helpers
 
-`mcrutils` provides a handful functions that can be helpful in creating 
+`mcrutils` provides a handful functions that can be helpful in creating
 year-to-date analyses
 
-`is_ytd_comparable()` is a logical vector that indicates whether the dates
-in a vector are within a year-to-date period relative to a given `end_date`. 
-
 Below we have 2.5 years of historical sales data ending on June 1, 2025.
-How were the sales in the comparable period of 2024 and 2023?
+It's trivial to calculate the total sales grouped by year:
 
 ```{r}
 set.seed(123)
@@ -89,7 +88,12 @@ sales |>
   summarise(annual_sales = sum(amount))
 ```
 
-How were the year-to-date sales in the comparable period of 2024 and 2023?
+`is_ytd_comparable()` is a logical vector that indicates whether the
+dates in a vector are within a year-to-date period relative to a given
+`end_date`.
+
+So we can quickly filter the historical data to see how we're doing in
+2025 compared to the same period (i.e. January - June) in 2023 and 2024:
 
 ```{r}
 (bounds <- ytd_bounds(sales$date))
@@ -102,10 +106,11 @@ sales |>
 
 ### one-line datatables
 
-`auto_dt()` is a one-line function that creates a `DT::datatable` object from a
-data frame or tibble, and applies percent, currency, and round formatting to
-numeric columns, guessing the correct format from the data type and column
-names. The datatable has filters at the top and no rownames. 
+`auto_dt()` is a one-line function that creates a `DT::datatable` object
+from a data frame or tibble, and applies percent, currency, and round
+formatting to numeric columns, guessing the correct format from the data
+type and column names. The datatable has filters at the top and no
+rownames.
 
 ```{r auto_dt_example, screenshot.opts=list(vwidth= 800, vheight = 600), message=FALSE}
 tribble(
@@ -119,19 +124,19 @@ tribble(
   auto_dt(numeric_digits = 1, pct_digits = 0)
 ```
 
-`vignette("mcrutils")` has more examples, including how to specify the set of
-strings that flag a column as percentage or currency.
-
+`vignette("mcrutils")` has more examples, including how to specify the
+set of strings that flag a column as percentage or currency.
 
 ### Quarterly breaks and labels
 
-`scales::label_date_short()` is a great function for labeling dates in `ggplot2`,
-but unfortunately it can't support quarterly breaks and labels out of the box.
+`scales::label_date_short()` is a great function for labeling dates in
+`ggplot2`, but unfortunately it can't support quarterly breaks and
+labels out of the box.
 
-`label_quarters_short()` generates similar labels for quarterly date breaks,
-labeling every quarter, but only including the year when it changes from the
-previous label. `breaks_quarters()` generates quarterly breaks for date scales.
-
+`label_quarters_short()` generates similar labels for quarterly date
+breaks, labeling every quarter, but only including the year when it
+changes from the previous label. `breaks_quarters()` generates quarterly
+breaks for date scales.
 
 ```{r automatic-quarterly-breaks}
 library(ggplot2)
@@ -146,6 +151,6 @@ economics |>
   ) 
 ```
 
-By default, `breaks_quarters()` tries to return a reasonable number of breaks
-over a wide range of dates, down-sampling to semesters and years as needed. 
-See `vignette("mcrutils")` for more examples.
+By default, `breaks_quarters()` tries to return a reasonable number of
+breaks over a wide range of dates, down-sampling to semesters and years
+as needed. See `vignette("mcrutils")` for more examples.

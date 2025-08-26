@@ -65,12 +65,8 @@ ugly_data |> normalize_logicals()
 `mcrutils` provides a handful functions that can be helpful in creating
 year-to-date analyses
 
-`is_ytd_comparable()` is a logical vector that indicates whether the
-dates in a vector are within a year-to-date period relative to a given
-`end_date`.
-
 Below we have 2.5 years of historical sales data ending on June 1, 2025.
-How were the sales in the comparable period of 2024 and 2023?
+It’s trivial to calculate the total sales grouped by year:
 
 ``` r
 set.seed(123)
@@ -105,8 +101,12 @@ sales |>
 #> 3  2025          600
 ```
 
-How were the year-to-date sales in the comparable period of 2024 and
-2023?
+`is_ytd_comparable()` is a logical vector that indicates whether the
+dates in a vector are within a year-to-date period relative to a given
+`end_date`.
+
+So we can quickly filter the historical data to see how we’re doing in
+2025 compared to the same period (i.e. January - June) in 2023 and 2024:
 
 ``` r
 (bounds <- ytd_bounds(sales$date))
