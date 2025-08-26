@@ -27,6 +27,50 @@
 breaks_quarters <- function(n = 9, width = NULL) {
   function(x) {
     x <- as.Date(x)
+
+    # fixed-width mode
+    if (!is.null(width)) {
+      if (length(width) != 1L) {
+        stop("width must be length 1")
+      }
+
+      if (!is.character(width)) stop("width must be a character string")
+
+      parsed_width <- stringr::str_match(width, pattern = "^([0-9]+) (month|quarter|year)s?$")
+      mag <- as.numeric(parsed_width[2])
+      unit <- parsed_width[3]
+
+      if (is.na(mag) || is.na(unit)) {
+        stop("width must be of the form 'n unit', where n is a number and unit is one of 'month', 'quarter', or 'year' (optionally plural)")
+      }
+
+      if (unit == "month") {
+        result <- switch(as.character(mag),
+               "3" = calc_quarter_breaks(x),
+               "6" = calc_semester_breaks(x),
+               "12" = calc_year_breaks(x),
+               stop("Invalid width for breaks_quarters. If unit is months, value must be 3, 6 or 12")
+        )
+        return(result)
+      } else if (unit == "quarter") {
+        result <- switch(as.character(mag),
+               "1" = calc_quarter_breaks(x),
+               "2" = calc_semester_breaks(x),
+               "4" = calc_year_breaks(x),
+               stop("Invalid width for breaks_quarters. If unit is quarters, value must be 1, 2, or 4")
+        )
+        return(result)
+      } else if (unit == "year") {
+        result <- switch(as.character(mag),
+               "1" = calc_year_breaks(x),
+               stop("Invalid width for breaks_quarters. If unit is years, value must be 1")
+        )
+        return(result)
+      }
+    }
+
+    # Automatic mode: choose between quarter, semester, or year breaks to
+    # achieve approximately `n` breaks
     rng <- range(x, na.rm = TRUE)
 
     q_start <- function(date) {
@@ -36,49 +80,6 @@ breaks_quarters <- function(n = 9, width = NULL) {
     start <- q_start(rng[1])
     end <- rng[2]
 
-    if (!is.null(width)) {
-      if (length(width) != 1L) {
-        stop("width must be length 1")
-      }
-      if (!is.character(width)) stop("width must be a character string")
-      parsed_width <- stringr::str_match(width, pattern = "^([0-9]+) (month|quarter|year)s?$")
-      mag <- as.numeric(parsed_width[2])
-      unit <- parsed_width[3]
-      if (is.na(mag) || is.na(unit)) {
-        stop("width must be of the form 'n unit', where n is a number and unit is one of 'month', 'quarter', or 'year' (optionally plural)")
-      }
-
-      if (unit == "month") {
-        if (mag == 3) {
-          return(calc_quarter_breaks(x))
-        } else if (mag == 6) {
-          return(calc_semester_breaks(x))
-        } else if (mag == 12) {
-          return(calc_year_breaks(x))
-        } else {
-          stop("Invalid width for breaks_quarters. If unit is months, value must be 3, 6 or 12")
-        }
-      } else if (unit == "quarter") {
-        if (mag == 1) {
-          return(calc_quarter_breaks(x))
-        } else if (mag == 2) {
-          return(calc_semester_breaks(x))
-        } else if (mag == 4) {
-          return(calc_year_breaks(x))
-        } else {
-          stop("Invalid width for breaks_quarters. If unit is quarters, value must be 1, 2, or 4")
-        }
-      } else if (unit == "year") {
-        if (mag == 1) {
-          return(calc_year_breaks(x))
-        } else {
-          stop("Invalid width for breaks_quarters. If unit is years, value must be 1")
-        }
-      }
-    }
-
-    # Automatic mode: choose between quarter, semester, or year breaks to
-    # achieve approximately `n` breaks
     all_qs <- seq(from = start, to = q_start(end), by = "3 months")
     len <- length(all_qs)
 
