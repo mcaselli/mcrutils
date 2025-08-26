@@ -72,13 +72,66 @@ test_that("breaks_quarters works with valid monthly fixed widths", {
   )
 })
 
-test_that("breaks_quarters errors with invalid monthly width", {
+test_that("breaks_quarters() works with valid quarterly fixed widths", {
+  expect_equal(
+    breaks_quarters(width = "1 quarter")(
+      ymd(c("2005-02-14", "2006-01-01"))
+    ),
+    ymd(c(
+      "2005-01-01", "2005-04-01", "2005-07-01", "2005-10-01",
+      "2006-01-01"
+    ))
+  )
+  expect_equal(
+    breaks_quarters(width = "2 quarters")(
+      ymd(c("2005-02-14", "2006-01-01"))
+    ),
+    ymd(c(
+      "2005-01-01", "2005-07-01",
+      "2006-01-01"
+    ))
+  )
+  expect_equal(
+    breaks_quarters(width = "4 quarters")(
+      ymd(c("2005-02-14", "2006-01-01"))
+    ),
+    ymd(c(
+      "2005-01-01",
+      "2006-01-01"
+    ))
+  )
+})
+
+test_that("breaks_quarters errors with invalid widths", {
   expect_error(
     breaks_quarters(width = "2 months")(
       ymd(c("2005-02-14", "2006-01-01"))
     ),
     "Invalid width for breaks_quarters. If unit is months, value must be 3, 6 or 12"
   )
+  expect_error(
+    breaks_quarters(width = "5 quarters")(
+      ymd(c("2005-02-14", "2006-01-01"))
+    ),
+    "Invalid width for breaks_quarters. If unit is quarters, value must be 1, 2, or 4"
+  )
+  expect_error(
+    breaks_quarters(width = "2 years")(
+      ymd(c("2005-02-14", "2006-01-01"))
+    ),
+    "Invalid width for breaks_quarters. If unit is years, value must be 1"
+  )
+  expect_error(
+    breaks_quarters(width = c("1 quarter", "3 months"))(
+      ymd(c("2005-02-14", "2006-01-01"))
+    ),
+    "width must be length 1"
+  )
+  expect_error(
+    breaks_quarters(width = TRUE)(
+      ymd(c("2005-02-14", "2006-01-01"))
+    ),
+    "width must be a character string")
 })
 
 test_that("downsampling returns semester start dates (not Q2 and Q4)", {
@@ -93,3 +146,4 @@ test_that("downsampling returns semester start dates (not Q2 and Q4)", {
     ))
   )
 })
+

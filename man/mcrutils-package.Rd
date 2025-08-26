@@ -6,7 +6,7 @@
 \alias{mcrutils-package}
 \title{mcrutils: Miscellaneous Utilities for Data Cleaning, Analysis, and Reporting}
 \description{
-Convenience functions for data cleaning (logicals stored as character or factor), reporting (auto-formatting a DT::datatable).
+Convenience functions for data cleaning, analysis and reporting, including creating and visualizing year-to-date and quarterly analyses.
 }
 \seealso{
 Useful links:

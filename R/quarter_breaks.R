@@ -40,7 +40,7 @@ breaks_quarters <- function(n = 9, width = NULL) {
       if (length(width) != 1L) {
         stop("width must be length 1")
       }
-      if (!is.character(width)) stop(gettextf("'%s' must be a character string", "by"), domain = NA)
+      if (!is.character(width)) stop("width must be a character string")
       parsed_width <- stringr::str_match(width, pattern = "^([0-9]+) (month|quarter|year)s?$")
       mag <- as.numeric(parsed_width[2])
       unit <- parsed_width[3]
