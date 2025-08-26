@@ -44,6 +44,9 @@ breaks_quarters <- function(n = 9, width = NULL) {
       parsed_width <- stringr::str_match(width, pattern = "^([0-9]+) (month|quarter|year)s?$")
       mag <- as.numeric(parsed_width[2])
       unit <- parsed_width[3]
+      if (is.na(mag) || is.na(unit)) {
+        stop("width must be of the form 'n unit', where n is a number and unit is one of 'month', 'quarter', or 'year' (optionally plural)")
+      }
 
       if (unit == "month") {
         if (mag == 3) {
@@ -71,8 +74,6 @@ breaks_quarters <- function(n = 9, width = NULL) {
         } else {
           stop("Invalid width for breaks_quarters. If unit is years, value must be 1")
         }
-      } else {
-        stop("Invalid unit for breaks_quarters. Must be one of 'month', 'quarter', or 'year' (optionally plural)")
       }
     }
 
