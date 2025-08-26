@@ -134,9 +134,10 @@ test_that("breaks_quarters errors with invalid widths", {
     "width must be a character string")
   expect_error(
     breaks_quarters(width = "7 days")(
-      ymd(c("2005-02-14", "2006-01-01")),
-      "width must be of the form 'n unit', where n is a number and unit is one of 'month', 'quarter', or 'year' (optionally plural)"
-    ))
+      ymd(c("2005-02-14", "2006-01-01"))
+      ),
+      "width must be of the form 'n unit', where n is a number and unit is one of 'month', 'quarter', or 'year'"
+    )
 })
 
 test_that("downsampling returns semester start dates (not Q2 and Q4)", {
