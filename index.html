@@ -96,8 +96,7 @@
 <h3 id="year-to-date-helpers">Year-to-date helpers<a class="anchor" aria-label="anchor" href="#year-to-date-helpers"></a>
 </h3>
 <p><code>mcrutils</code> provides a handful functions that can be helpful in creating year-to-date analyses</p>
-<p><code><a href="reference/is_ytd_comparable.html">is_ytd_comparable()</a></code> is a logical vector that indicates whether the dates in a vector are within a year-to-date period relative to a given <code>end_date</code>.</p>
-<p>Below we have 2.5 years of historical sales data ending on June 1, 2025. How were the sales in the comparable period of 2024 and 2023?</p>
+<p>Below we have 2.5 years of historical sales data ending on June 1, 2025. It’s trivial to calculate the total sales grouped by year:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
 <span><span class="va">sales</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
@@ -129,7 +128,8 @@
 <span><span class="co">#&gt; 1  2023         1199</span></span>
 <span><span class="co">#&gt; 2  2024         1166</span></span>
 <span><span class="co">#&gt; 3  2025          600</span></span></code></pre></div>
-<p>How were the year-to-date sales in the comparable period of 2024 and 2023?</p>
+<p><code><a href="reference/is_ytd_comparable.html">is_ytd_comparable()</a></code> is a logical vector that indicates whether the dates in a vector are within a year-to-date period relative to a given <code>end_date</code>.</p>
+<p>So we can quickly filter the historical data to see how we’re doing in 2025 compared to the same period (i.e. January - June) in 2023 and 2024:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="op">(</span><span class="va">bounds</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/ytd_bounds.html">ytd_bounds</a></span><span class="op">(</span><span class="va">sales</span><span class="op">$</span><span class="va">date</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "2025-01-01" "2025-06-01"</span></span>
