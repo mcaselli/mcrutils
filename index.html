@@ -78,21 +78,19 @@
 <span>  non_logical_factor <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span>, <span class="st">"z"</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  mixed_char <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"T"</span>, <span class="st">"F"</span>, <span class="st">"a"</span><span class="op">)</span>,</span>
 <span>  mixed_factor <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"TRUE"</span>, <span class="st">"FALSE"</span>, <span class="st">"x"</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>  numeric_col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1.1</span>, <span class="fl">2.2</span>, <span class="fl">3.3</span><span class="op">)</span>,</span>
-<span>  stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  numeric_col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1.1</span>, <span class="fl">2.2</span>, <span class="fl">3.3</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span></span>
 <span><span class="va">ugly_data</span> <span class="op">|&gt;</span> <span class="fu"><a href="reference/normalize_logicals.html">normalize_logicals</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Converted "logical_char" and "logical_factor" columns to logical.</span></span>
-<span><span class="co">#&gt; # A tibble: 3 × 8</span></span>
+<span><span class="co">#&gt; # A tibble: 3 × 7</span></span>
 <span><span class="co">#&gt;   logical_char logical_factor non_logical_char non_logical_factor mixed_char</span></span>
 <span><span class="co">#&gt;   &lt;lgl&gt;        &lt;lgl&gt;          &lt;chr&gt;            &lt;fct&gt;              &lt;chr&gt;     </span></span>
 <span><span class="co">#&gt; 1 TRUE         TRUE           a                x                  T         </span></span>
 <span><span class="co">#&gt; 2 FALSE        FALSE          b                y                  F         </span></span>
 <span><span class="co">#&gt; 3 TRUE         TRUE           c                z                  a         </span></span>
-<span><span class="co">#&gt; # ℹ 3 more variables: mixed_factor &lt;fct&gt;, numeric_col &lt;dbl&gt;,</span></span>
-<span><span class="co">#&gt; #   stringsAsFactors &lt;lgl&gt;</span></span></code></pre></div>
+<span><span class="co">#&gt; # ℹ 2 more variables: mixed_factor &lt;fct&gt;, numeric_col &lt;dbl&gt;</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="year-to-date-helpers">Year-to-date helpers<a class="anchor" aria-label="anchor" href="#year-to-date-helpers"></a>
@@ -102,7 +100,7 @@
 <p>Below we have 2.5 years of historical sales data ending on June 1, 2025. How were the sales in the comparable period of 2024 and 2023?</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
-<span><span class="va">sales</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span><span class="va">sales</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
 <span>  date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span></span>
 <span>    from <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2023-01-01"</span><span class="op">)</span>,</span>
 <span>    to <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2025-06-01"</span><span class="op">)</span>,</span>
@@ -112,7 +110,9 @@
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">sales</span><span class="op">)</span></span>
-<span><span class="co">#&gt;         date amount</span></span>
+<span><span class="co">#&gt; # A tibble: 6 × 2</span></span>
+<span><span class="co">#&gt;   date       amount</span></span>
+<span><span class="co">#&gt;   &lt;date&gt;      &lt;int&gt;</span></span>
 <span><span class="co">#&gt; 1 2023-01-01     94</span></span>
 <span><span class="co">#&gt; 2 2023-02-01    111</span></span>
 <span><span class="co">#&gt; 3 2023-03-01     83</span></span>
@@ -171,7 +171,7 @@
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">economics</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">date</span> <span class="op">&gt;=</span> <span class="st">"2005-02-01"</span>, <span class="va">date</span> <span class="op">&lt;=</span> <span class="st">"2007-03-01"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">date</span> <span class="op">&gt;=</span> <span class="st">"2005-05-01"</span>, <span class="va">date</span> <span class="op">&lt;=</span> <span class="st">"2007-03-01"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">date</span>, <span class="va">pce</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_date.html" class="external-link">scale_x_date</a></span><span class="op">(</span></span>
