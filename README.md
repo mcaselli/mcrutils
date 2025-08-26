@@ -45,21 +45,19 @@ ugly_data <- tibble(
   non_logical_factor = factor(c("x", "y", "z")),
   mixed_char = c("T", "F", "a"),
   mixed_factor = factor(c("TRUE", "FALSE", "x")),
-  numeric_col = c(1.1, 2.2, 3.3),
-  stringsAsFactors = FALSE
+  numeric_col = c(1.1, 2.2, 3.3)
 )
 
 
 ugly_data |> normalize_logicals()
 #> Converted "logical_char" and "logical_factor" columns to logical.
-#> # A tibble: 3 × 8
+#> # A tibble: 3 × 7
 #>   logical_char logical_factor non_logical_char non_logical_factor mixed_char
 #>   <lgl>        <lgl>          <chr>            <fct>              <chr>     
 #> 1 TRUE         TRUE           a                x                  T         
 #> 2 FALSE        FALSE          b                y                  F         
 #> 3 TRUE         TRUE           c                z                  a         
-#> # ℹ 3 more variables: mixed_factor <fct>, numeric_col <dbl>,
-#> #   stringsAsFactors <lgl>
+#> # ℹ 2 more variables: mixed_factor <fct>, numeric_col <dbl>
 ```
 
 ### Year-to-date helpers
@@ -76,7 +74,7 @@ How were the sales in the comparable period of 2024 and 2023?
 
 ``` r
 set.seed(123)
-sales <- data.frame(
+sales <- tibble(
   date = seq(
     from = as.Date("2023-01-01"),
     to = as.Date("2025-06-01"),
@@ -86,7 +84,9 @@ sales <- data.frame(
 )
 
 head(sales)
-#>         date amount
+#> # A tibble: 6 × 2
+#>   date       amount
+#>   <date>      <int>
 #> 1 2023-01-01     94
 #> 2 2023-02-01    111
 #> 3 2023-03-01     83
@@ -164,7 +164,7 @@ breaks for date scales.
 library(ggplot2)
 
 economics |>
-  filter(date >= "2005-02-01", date <= "2007-03-01") |>
+  filter(date >= "2005-05-01", date <= "2007-03-01") |>
   ggplot(aes(date, pce)) +
   geom_line() +
   scale_x_date(

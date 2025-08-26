@@ -90,7 +90,7 @@ quarter, but only including the year when it changes from the previous label.
 library(ggplot2)
 
 economics |>
-  filter(date >= "2005-02-01", date <= "2007-03-01") |>
+  filter(date >= "2005-05-01", date <= "2007-03-01") |>
   ggplot(aes(date, pce)) +
   geom_line() +
   scale_x_date(

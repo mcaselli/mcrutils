@@ -53,8 +53,7 @@ ugly_data <- tibble(
   non_logical_factor = factor(c("x", "y", "z")),
   mixed_char = c("T", "F", "a"),
   mixed_factor = factor(c("TRUE", "FALSE", "x")),
-  numeric_col = c(1.1, 2.2, 3.3),
-  stringsAsFactors = FALSE
+  numeric_col = c(1.1, 2.2, 3.3)
 )
 
 
@@ -74,7 +73,7 @@ How were the sales in the comparable period of 2024 and 2023?
 
 ```{r}
 set.seed(123)
-sales <- data.frame(
+sales <- tibble(
   date = seq(
     from = as.Date("2023-01-01"),
     to = as.Date("2025-06-01"),
@@ -138,7 +137,7 @@ previous label. `breaks_quarters()` generates quarterly breaks for date scales.
 library(ggplot2)
 
 economics |>
-  filter(date >= "2005-02-01", date <= "2007-03-01") |>
+  filter(date >= "2005-05-01", date <= "2007-03-01") |>
   ggplot(aes(date, pce)) +
   geom_line() +
   scale_x_date(
