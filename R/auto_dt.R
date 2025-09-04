@@ -16,6 +16,7 @@
 #' @export
 guess_col_fmts <- function(data, pct_flags = c("frac", "pct", "percent"),
                            curr_flags = c("revenue", "asp", "cogs")) {
+  data <- dplyr::ungroup(data)
   numeric_cols <- data |>
     select(where(is.numeric)) |>
     colnames()
@@ -29,9 +30,8 @@ guess_col_fmts <- function(data, pct_flags = c("frac", "pct", "percent"),
     colnames()
 
   # column should be in only one class, priority order: currency, pct, numeric
-  numeric_cols <- setdiff(numeric_cols, c(pct_cols, currency_cols))
   pct_cols <- setdiff(pct_cols, currency_cols)
-  currency_cols <- setdiff(currency_cols, numeric_cols)
+  numeric_cols <- setdiff(numeric_cols, c(pct_cols, currency_cols))
 
   return(list(
     numeric = numeric_cols,
