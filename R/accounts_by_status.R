@@ -6,9 +6,11 @@
 #' @param start_date The start date of the range (inclusive)
 #' @param end_date The end date of the range (inclusive)
 #' @return A vector of unique account IDs that were active in the specified date range
-list_active_accounts_in_range <- function(account_id, order_date, start_date, end_date) {
+active_accounts_in_range <- function(account_id, order_date, start_date, end_date) {
   df <- data.frame(account_id = account_id, order_date = as.Date(order_date))
   active_accounts <- df |>
+    # both date bounds are inclusive--does that make using this function
+    # more difficult than e.g. having the upper bound be exclusive?
     dplyr::filter(order_date >= start_date & order_date <= end_date) |>
     dplyr::distinct(account_id) |>
     dplyr::arrange(account_id) |>
@@ -17,6 +19,9 @@ list_active_accounts_in_range <- function(account_id, order_date, start_date, en
 }
 
 #' Analyze account activity status over time periods
+#'
+#' @description
+#' `r lifecycle::badge('experimental')`
 #'
 #' This function categorizes accounts into various statuses (new, returning,
 #' temporarily lost, terminally lost, and regained) over specified time periods
@@ -93,7 +98,7 @@ accounts_by_status <- function(account_id, order_date, by = c("month", "quarter"
     mutate(
       active_accounts = purrr::map2(
         period_start, period_end,
-        ~ list_active_accounts_in_range(
+        ~ active_accounts_in_range(
           account_id = df$account_id,
           order_date = df$order_date,
           start_date = .x,

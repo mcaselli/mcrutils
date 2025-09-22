@@ -6,6 +6,7 @@
 #' @importFrom dplyr across
 #' @importFrom dplyr mutate
 #' @importFrom dplyr select
+#' @importFrom lifecycle deprecated
 #' @importFrom lubridate ymd
 #' @importFrom tidyselect all_of
 #' @importFrom tidyselect contains
