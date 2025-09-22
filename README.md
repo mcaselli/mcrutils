@@ -13,7 +13,7 @@ coverage](https://codecov.io/gh/mcaselli/mcrutils/graph/badge.svg)](https://app.
 The goal of mcrutils is to provide a grab-bag of utility functions that
 I find useful in my own R projects for data cleaning, analysis, and
 reporting, including creating and visualizing year-to-date and quarterly
-analyses.
+analyses, and customer account status/churn analysis.
 
 ## Installation
 
@@ -62,7 +62,7 @@ ugly_data |> normalize_logicals()
 
 ### Customer account status/churn
 
-`accounts_by_status()` takes order data (account IDs and n order dates)
+`accounts_by_status()` takes order data (account IDs and order dates)
 and categorizes accounts into various statuses (new, returning,
 temporarily lost, terminally lost, and regained) over monthly or
 quarterly time periods. This is useful for understanding customer

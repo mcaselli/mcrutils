@@ -1,7 +1,7 @@
 Package: mcrutils
 Type: Package
 Title: Miscellaneous Utilities for Data Cleaning, Analysis, and Reporting
-Version: 0.0.0.9001
+Version: 0.0.0.9002
 Authors@R: c(
     person(
       "Michael", "Caselli",
@@ -10,7 +10,8 @@ Authors@R: c(
     )
   )
 Description: Convenience functions for data cleaning, analysis and reporting,
-    including creating and visualizing year-to-date and quarterly analyses.
+    including creating and visualizing year-to-date and quarterly analyses, and
+    determining customer account status for customer churn analysis.
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
@@ -20,7 +21,8 @@ Suggests:
     ggplot2,
     knitr,
     rmarkdown,
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    tidyr
 Config/testthat/edition: 3
 Imports: 
     cli,
