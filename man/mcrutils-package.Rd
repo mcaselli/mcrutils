@@ -6,7 +6,7 @@
 \alias{mcrutils-package}
 \title{mcrutils: Miscellaneous Utilities for Data Cleaning, Analysis, and Reporting}
 \description{
-Convenience functions for data cleaning, analysis and reporting, including creating and visualizing year-to-date and quarterly analyses.
+Convenience functions for data cleaning, analysis and reporting, including creating and visualizing year-to-date and quarterly analyses, and determining customer account status for customer churn analysis.
 }
 \seealso{
 Useful links:

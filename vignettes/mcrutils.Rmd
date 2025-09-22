@@ -21,7 +21,15 @@ library(mcrutils)
 
 # Introduction
 
-### Normalize logical columns
+The goal of `mcrutils` is to provide a grab-bag of utility functions that
+I find useful in my own R projects for data cleaning, analysis, and
+reporting, including creating and visualizing year-to-date and quarterly
+analyses, and customer account status/churn analysis.
+
+
+# Cleaning 
+
+## Normalize logical columns
 
 For data frames or tibbles that have character or factor columns storing 
 logical data, as may happen when reading from a database, CSV, or Excel file,
@@ -51,8 +59,144 @@ df
 
 
 
-# Auto-formatted datattables
+# Analysis
 
+
+## Customer account status, churn, and retention
+
+`accounts_by_status()` categorizes accounts into various statuses (active, new,
+returning, temporarily lost, terminally lost, and regained) over specified time
+periods (monthly or quarterly). This is useful for understanding customer
+retention and churn.
+
+`mcrutils` includes an example dataset `example_sales` with 50 orders from 10
+accounts over the year 2022.
+
+```{r}
+head(example_sales)
+```
+
+using this data, we can see how many accounts were new, returning, lost, or
+regained each month
+
+```{r accounts_by_status_example}
+accounts_by_status(example_sales$account_id, example_sales$order_date)
+```
+
+you can get the count of accounts in each status category by setting
+`with_counts = TRUE`
+
+```{r accounts_by_status_with_counts}
+accounts_by_status(example_sales$account_id, example_sales$order_date,
+                   with_counts = TRUE)
+```
+
+quarterly analysis is also supported by setting `by = "quarter"`
+
+```{r accounts_by_status_quarterly}
+accounts_by_status(example_sales$account_id, example_sales$order_date,
+                   by = "quarter")
+```
+
+Here's how you might visualize the quarterly account status counts over time.
+Showing the lost accounts as a negative value helps de-clutter the picture and
+as well as helps perception by encoding values above the axis as "good" and
+below as "bad" (assuming we don't want to lose customers). We can use color to
+help as well (blues/greens: good, reds: bad).
+
+```{r}
+library(ggplot2)
+library(dplyr, warn.conflicts = FALSE)
+library(tidyr)
+accounts_by_status(example_sales$account_id, example_sales$order_date,
+                   with_counts = TRUE, 
+                   by="month") |>
+  select(period_start, starts_with("n_")) |>
+  # negate the lost counts for visualization
+  mutate(across(contains("lost"), ~ -.x)) |>
+  # pivot to prepare for ggplot
+  pivot_longer(starts_with("n_"), names_to = "status", values_to = "count") |>
+  mutate(status=stringr::str_remove(status, "n_")) |>
+  ggplot(aes(period_start, count, color = status)) +
+  geom_line(linewidth=1.2) +
+  scale_color_manual(values = c(
+    "active" = "#1f78b4",
+    "new" = "#33a02c",
+    "returning" = "#a6cee3",
+    "temporarily_lost" = "#fb9a99",
+    "terminally_lost" = "#e31a1c",
+    "regained" = "#b2df8a"
+  )) +
+  theme_minimal()
+```
+
+
+## Year-to-date helpers
+
+`mcrutils` provides a handful functions that can be helpful in creating 
+year-to-date analyses
+
+With `ytd_bounds()`, quickly find the date bounds of the latest year-to-date 
+period in vector of dates, possibly spanning multiple years:
+```{r}
+c(
+  "2023-01-01", "2023-06-15", "2023-12-31",
+  "2024-01-01", "2024-03-15", "2024-07-15"
+) |>
+  as.Date() |>
+  ytd_bounds()
+```
+
+`is_ytd_comparable()` is a logical vector that indicates whether the dates
+in a vector are within a year-to-date period relative to a given `end_date`. 
+
+Below we have 2.5 years of historical sales data ending on June 1, 2025.
+How were the sales in the comparable period of 2024 and 2023?
+
+```{r}
+set.seed(123)
+sales <- data.frame(
+  date = seq(
+    from = as.Date("2023-01-01"),
+    to = as.Date("2025-06-01"),
+    by = "month"
+  ),
+  amount = rpois(30, lambda = 100)
+)
+
+head(sales)
+
+sales |>
+  group_by(year = lubridate::year(date)) |>
+  summarise(annual_sales = sum(amount))
+```
+
+How were the year-to-date sales in the comparable period of 2024 and 2023?
+
+```{r}
+(bounds <- ytd_bounds(sales$date))
+
+sales |>
+  filter(is_ytd_comparable(date, max(bounds))) |>
+  group_by(year = lubridate::year(date)) |>
+  summarise(ytd_sales = sum(amount))
+```
+
+With `py_dates()` you can rollback a vector of dates to the same period in the
+previous year, moving any fictitious dates to the prior valid day.
+
+```{r}
+c("2024-01-01", "2024-02-29", "2025-07-15") |>
+  as.Date() |>
+  py_dates()
+```
+
+
+
+
+# Visualization
+
+## Auto-formatted datattables
 
 `auto_dt()` uses `guess_col_fmts()` to determine the format of each column. You
 can provide `pct_flags` and `curr_flags` (character vectors) if you need to
@@ -74,7 +218,7 @@ tribble(
 
 
 
-### Quarterly breaks and labels
+## Quarterly breaks and labels
 
 `scales::label_date_short()` is a great function for labeling dates in `ggplot2`,
 but unfortunately it can't support quarterly breaks and labels out of the box.
@@ -150,65 +294,5 @@ economics |>
   ) +
   labs(title="Fixed quarterly breaks") +
   theme(panel.grid.minor.x = element_blank())
-```
-
-### Year-to-date helpers
-
-`mcrutils` provides a handful functions that can be helpful in creating 
-year-to-date analyses
-
-With `ytd_bounds()`, quickly find the date bounds of the latest year-to-date 
-period in vector of dates, possibly spanning multiple years:
-```{r}
-c(
-  "2023-01-01", "2023-06-15", "2023-12-31",
-  "2024-01-01", "2024-03-15", "2024-07-15"
-) |>
-  as.Date() |>
-  ytd_bounds()
-```
-
-`is_ytd_comparable()` is a logical vector that indicates whether the dates
-in a vector are within a year-to-date period relative to a given `end_date`. 
-
-Below we have 2.5 years of historical sales data ending on June 1, 2025.
-How were the sales in the comparable period of 2024 and 2023?
-
-```{r}
-set.seed(123)
-sales <- data.frame(
-  date = seq(
-    from = as.Date("2023-01-01"),
-    to = as.Date("2025-06-01"),
-    by = "month"
-  ),
-  amount = rpois(30, lambda = 100)
-)
-
-head(sales)
-
-sales |>
-  group_by(year = lubridate::year(date)) |>
-  summarise(annual_sales = sum(amount))
-```
-
-How were the year-to-date sales in the comparable period of 2024 and 2023?
-
-```{r}
-(bounds <- ytd_bounds(sales$date))
-
-sales |>
-  filter(is_ytd_comparable(date, max(bounds))) |>
-  group_by(year = lubridate::year(date)) |>
-  summarise(ytd_sales = sum(amount))
-```
-
-With `py_dates()` you can rollback a vector of dates to the same period in the
-previous year, moving any fictitious dates to the prior valid day.
-
-```{r}
-c("2024-01-01", "2024-02-29", "2025-07-15") |>
-  as.Date() |>
-  py_dates()
 ```
 
