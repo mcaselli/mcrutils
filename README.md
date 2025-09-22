@@ -60,6 +60,41 @@ ugly_data |> normalize_logicals()
 #> # ℹ 2 more variables: mixed_factor <fct>, numeric_col <dbl>
 ```
 
+### Customer account status/churn
+
+`accounts_by_status()` takes order data (account IDs and n order dates)
+and categorizes accounts into various statuses (new, returning,
+temporarily lost, terminally lost, and regained) over monthly or
+quarterly time periods. This is useful for understanding customer
+retention and churn. (counts of accounts in each status category can be
+included as well; set `with_counts = TRUE`).
+
+``` r
+set.seed(1234)
+n <- 25
+dates <- seq(as.Date("2022-01-01"), as.Date("2022-06-30"), by = "day")
+orders <- data.frame(
+  account_id = sample(letters[1:10], n, replace = TRUE),
+  order_date = sample(dates, n, replace = TRUE)
+)
+
+accounts_by_status(orders$account_id, orders$order_date)
+#>   period_start period_end              active              new returning
+#> 1   2022-01-01 2022-01-31                b, h             b, h          
+#> 2   2022-02-01 2022-02-28 b, c, d, e, f, i, j c, d, e, f, i, j         b
+#> 3   2022-03-01 2022-03-31                d, f                       d, f
+#> 4   2022-04-01 2022-04-30          d, e, g, h                g         d
+#> 5   2022-05-01 2022-05-31             e, f, h                       e, h
+#> 6   2022-06-01 2022-06-30                f, j                          f
+#>   regained temporarily_lost terminally_lost
+#> 1                                          
+#> 2                         h                
+#> 3                      e, j         b, c, i
+#> 4     e, h                f                
+#> 5        f                             d, g
+#> 6        j                             e, h
+```
+
 ### Year-to-date helpers
 
 `mcrutils` provides a handful functions that can be helpful in creating

@@ -30,32 +30,32 @@ The function returns a data frame with the following columns:
 \itemize{
 \item \code{period_start} (date): The start date of the period.
 \item \code{period_end} (date) : The end date of the period.
-\item \code{active_accounts} (list of character): Accounts with orders in the current
+\item \code{active} (list of character): Accounts with orders in the current
 period.
-\item \code{new_accounts} (list of character): Accounts with their first-ever order in
+\item \code{new} (list of character): Accounts with their first-ever order in
 the current period.
-\item \code{returning_accounts} (list of character): Accounts with orders in both the
+\item \code{returning} (list of character): Accounts with orders in both the
 current and prior periods.
-\item \code{temporarily_lost_accounts} (list of character): Accounts with orders in
+\item \code{temporarily_lost} (list of character): Accounts with orders in
 the prior period but not in the current period, yet have orders in future
 periods.
-\item \code{terminally_lost_accounts} (list of character): Accounts with orders in the
+\item \code{terminally_lost} (list of character): Accounts with orders in the
 prior period but not in the current period, and no orders in future periods.
-\item \code{regained_accounts} (list of character): Accounts with orders in the current period, no orders in
+\item \code{regained} (list of character): Accounts with orders in the current period, no orders in
 the prior period, but had orders in earlier periods. i.e. an account that
 comes back after being "temporarily lost"
 }
 
 if \code{with_counts} is TRUE, additional columns are included:
 \itemize{
-\item \code{n_active_accounts} (int): Count of active accounts in the current period.
-\item \code{n_new_accounts} (int): Count of new accounts in the current period.
-\item \code{n_returning_accounts} (int): Count of returning accounts in the current period.
-\item \code{n_temporarily_lost_accounts} (int): Count of temporarily lost accounts in the
+\item \code{n_active} (int): Count of active accounts in the current period.
+\item \code{n_new} (int): Count of new accounts in the current period.
+\item \code{n_returning} (int): Count of returning accounts in the current period.
+\item \code{n_temporarily_lost} (int): Count of temporarily lost accounts in the
 current period.
-\item \code{n_terminally_lost_accounts} (int): Count of terminally lost accounts in the
+\item \code{n_terminally_lost} (int): Count of terminally lost accounts in the
 current period.
-\item \code{n_regained_accounts} (int): Count of regained accounts in the current period.
+\item \code{n_regained} (int): Count of regained accounts in the current period.
 }
 }
 \description{
