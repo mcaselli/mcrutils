@@ -27,6 +27,8 @@ Imports:
     dplyr,
     DT,
     lubridate,
+    purrr,
+    rlang,
     stringr,
     tidyselect
 URL: https://github.com/mcaselli/mcrutils, https://mcaselli.github.io/mcrutils/
