@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">mcrutils</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9003</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9004</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -95,7 +95,8 @@
 <div class="section level3">
 <h3 id="customer-account-statuschurn">Customer account status/churn<a class="anchor" aria-label="anchor" href="#customer-account-statuschurn"></a>
 </h3>
-<p><code><a href="reference/accounts_by_status.html">accounts_by_status()</a></code> takes order data (account IDs and order dates) and categorizes accounts into various statuses (new, returning, temporarily lost, regained and terminally lost) over monthly or quarterly time periods, also producing a running list of cumulative accounts. This is useful for understanding customer retention and churn. (counts of accounts in each status category can be included as well; set <code>with_counts = TRUE</code>).</p>
+<p><code><a href="reference/accounts_by_status.html">accounts_by_status()</a></code> takes order data (account IDs and order dates) and categorizes accounts into different statuses (new, returning, temporarily lost, regained, terminally lost) based on their order behavior in each time interval (months, weeks, quarters, etc are supported).</p>
+<p>It also produces a running list of cumulative accounts. This function is useful for understanding customer retention and churn. (counts of accounts in each status category can be included as well; set <code>with_counts = TRUE</code>).</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1234</span><span class="op">)</span></span>
 <span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">25</span></span>

@@ -20,7 +20,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mcrutils</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9003</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9004</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -126,11 +126,12 @@ these columns to logical type. This is a nice one-liner in a
 <div class="section level3">
 <h3 id="customer-account-status-churn-and-retention">Customer account status, churn, and retention<a class="anchor" aria-label="anchor" href="#customer-account-status-churn-and-retention"></a>
 </h3>
-<p><code><a href="../reference/accounts_by_status.html">accounts_by_status()</a></code> categorizes accounts into various
-statuses (active, new, returning, temporarily lost, regained and
-terminally lost) as well as a running list of cumulative accounts, over
-specified time periods (monthly or quarterly). This is useful for
-understanding customer retention and churn.</p>
+<p><code><a href="../reference/accounts_by_status.html">accounts_by_status()</a></code> categorizes accounts into statuses
+based on their order activity (active, new, returning, temporarily lost,
+regained and terminally lost) in each time interval (monthly, weekly,
+quarterly, etc. are supported). It also produces a running list of
+cumulative accounts. This is useful for understanding customer retention
+and churn.</p>
 <p><code>mcrutils</code> includes an example dataset
 <code>example_sales</code> with 50 orders from 10 accounts over the year
 2022.</p>
