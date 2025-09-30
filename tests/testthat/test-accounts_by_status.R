@@ -337,6 +337,35 @@ test_that("accounts_by_status() correctly lists terminally_lost accounts", {
 })
 
 
+test_that("accounts_by_status() correctly lists cumulative accounts", {
+  orders <- dplyr::tribble(
+    ~account_id, ~order_date,
+    "A", "2022-01-15",
+    "B", "2022-01-20",
+    "C", "2022-01-25",
+    "A", "2022-02-10",
+    "C", "2022-02-15",
+    "D", "2022-03-05",
+    "E", "2022-03-25",
+    "B", "2022-04-10",
+    "F", "2022-04-15"
+  ) |> dplyr::mutate(order_date = as.Date(order_date))
+
+  result <- accounts_by_status(orders$account_id, orders$order_date)
+
+  expected <- dplyr::tribble(
+    ~period_start, ~cumulative,
+    as.Date("2022-01-01"), c("A", "B", "C"),
+    as.Date("2022-02-01"), c("A", "B", "C"),
+    as.Date("2022-03-01"), c("A", "B", "C", "D", "E"),
+    as.Date("2022-04-01"), c("A", "B", "C", "D", "E", "F")
+  ) |> data.frame()
+
+  expect_equal(result |> dplyr::select(period_start, cumulative), expected)
+
+})
+
+
 test_that("accounts_by_status() with_counts = TRUE works", {
   orders <- dplyr::tribble(
     ~account_id, ~order_date,
@@ -354,15 +383,15 @@ test_that("accounts_by_status() with_counts = TRUE works", {
   result <- accounts_by_status(orders$account_id, orders$order_date, with_counts = TRUE)
 
   expected_counts <- dplyr::tribble(
-    ~period_start, ~n_active, ~n_new, ~n_returning, ~n_temporarily_lost, ~n_terminally_lost, ~n_regained,
-    as.Date("2022-01-01"), 3, 3, 0, 0, 0, 0,
-    as.Date("2022-02-01"), 2, 0, 2, 1, 0, 0,
-    as.Date("2022-03-01"), 2, 2, 0, 0, 2, 0,
-    as.Date("2022-04-01"), 2, 1, 0, 0, 2, 1
+    ~period_start, ~n_active, ~n_new, ~n_returning, ~n_temporarily_lost, ~n_terminally_lost, ~n_regained, ~n_cumulative,
+    as.Date("2022-01-01"), 3, 3, 0, 0, 0, 0, 3,
+    as.Date("2022-02-01"), 2, 0, 2, 1, 0, 0, 3,
+    as.Date("2022-03-01"), 2, 2, 0, 0, 2, 0, 5,
+    as.Date("2022-04-01"), 2, 1, 0, 0, 2, 1, 6
   ) |> data.frame()
 
   expect_equal(result |> dplyr::select(period_start, n_active, n_new, n_returning,
                                        n_temporarily_lost, n_terminally_lost,
-                                       n_regained), expected_counts)
+                                       n_regained, n_cumulative), expected_counts)
 
 })

@@ -65,9 +65,9 @@ df
 ## Customer account status, churn, and retention
 
 `accounts_by_status()` categorizes accounts into various statuses (active, new,
-returning, temporarily lost, terminally lost, and regained) over specified time
-periods (monthly or quarterly). This is useful for understanding customer
-retention and churn.
+returning, temporarily lost, regained and terminally lost) as well as a running
+list of cumulative accounts, over specified time periods (monthly or quarterly).
+This is useful for understanding customer retention and churn.
 
 `mcrutils` includes an example dataset `example_sales` with 50 orders from 10
 accounts over the year 2022.
@@ -125,7 +125,8 @@ accounts_by_status(example_sales$account_id, example_sales$order_date,
     "returning" = "#a6cee3",
     "temporarily_lost" = "#fb9a99",
     "terminally_lost" = "#e31a1c",
-    "regained" = "#b2df8a"
+    "regained" = "#b2df8a",
+    "cumulative" = "#999999"
   )) +
   theme_minimal()
 ```

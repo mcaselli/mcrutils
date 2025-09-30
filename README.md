@@ -64,10 +64,11 @@ ugly_data |> normalize_logicals()
 
 `accounts_by_status()` takes order data (account IDs and order dates)
 and categorizes accounts into various statuses (new, returning,
-temporarily lost, terminally lost, and regained) over monthly or
-quarterly time periods. This is useful for understanding customer
-retention and churn. (counts of accounts in each status category can be
-included as well; set `with_counts = TRUE`).
+temporarily lost, regained and terminally lost) over monthly or
+quarterly time periods, also producing a running list of cumulative
+accounts. This is useful for understanding customer retention and churn.
+(counts of accounts in each status category can be included as well; set
+`with_counts = TRUE`).
 
 ``` r
 set.seed(1234)
@@ -86,13 +87,13 @@ accounts_by_status(orders$account_id, orders$order_date)
 #> 4   2022-04-01 2022-04-30          d, e, g, h                g         d
 #> 5   2022-05-01 2022-05-31             e, f, h                       e, h
 #> 6   2022-06-01 2022-06-30                f, j                          f
-#>   regained temporarily_lost terminally_lost
-#> 1                                          
-#> 2                         h                
-#> 3                      e, j         b, c, i
-#> 4     e, h                f                
-#> 5        f                             d, g
-#> 6        j                             e, h
+#>   regained temporarily_lost terminally_lost                cumulative
+#> 1                                                                b, h
+#> 2                         h                    b, h, c, d, e, f, i, j
+#> 3                      e, j         b, c, i    b, h, c, d, e, f, i, j
+#> 4     e, h                f                 b, h, c, d, e, f, i, j, g
+#> 5        f                             d, g b, h, c, d, e, f, i, j, g
+#> 6        j                             e, h b, h, c, d, e, f, i, j, g
 ```
 
 ### Year-to-date helpers
