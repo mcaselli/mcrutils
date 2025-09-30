@@ -18,20 +18,23 @@ active_accounts_in_range <- function(account_id, order_date, start_date, end_dat
   return(active_accounts)
 }
 
-#' Analyze account activity status over time periods
+#' Compute history of account activity status over time periods
 #'
 #' @description
 #' `r lifecycle::badge('experimental')`
 #'
-#' This function categorizes accounts into various statuses (new, returning,
-#' temporarily lost, regained, terminally lost and cumulative) over specified
-#' time periods (monthly or quarterly). This is useful for understanding
-#' customer retention and churn.
+#' This function categorizes accounts into different statuses (new, returning,
+#' temporarily lost, regained, terminally lost and cumulative) based on their
+#' order behavior in each time period. This is useful for
+#' understanding customer retention and churn. Counts of accounts in each status
+#' category can be included by setting `with_counts = TRUE`.
 #'
 #'
 #' @param account_id A vector of account IDs
 #' @param order_date A vector of order dates corresponding to the account IDs
-#' @param by The time period to group by, either "month" or "quarter"
+#' @param by The time period resolution. Defaults to "month", but anything
+#'   supported as a `unit` argument for [lubridate::floor_date] and `by` for
+#'   [seq.Date] is an option, e.g. "week", "quarter", "2 months" etc.
 #' @param with_counts Logical, if TRUE, include counts of accounts in each
 #'   status category
 #' @return A data frame with columns for period start and end dates, lists of
@@ -81,9 +84,8 @@ active_accounts_in_range <- function(account_id, order_date, start_date, end_dat
 #' )
 #'
 #' accounts_by_status(orders$account_id, orders$order_date, with_counts = TRUE)
-accounts_by_status <- function(account_id, order_date, by = c("month", "quarter"),
+accounts_by_status <- function(account_id, order_date, by = "month",
                                with_counts = FALSE) {
-  by <- rlang::arg_match(by)
   df <- data.frame(account_id = account_id, order_date = as.Date(order_date))
 
   date_range <- range(df$order_date)
