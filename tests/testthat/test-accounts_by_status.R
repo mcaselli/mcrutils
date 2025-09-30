@@ -89,7 +89,7 @@ test_that("active_accounts_in_range() works with factors", {
 })
 
 
-test_that("accounts_by_status() properly calculates period_start and period_end",
+test_that("accounts_by_status() properly calculates period_start and period_end for monthly and quarterly periods",
 {
   orders <- data.frame(
     account_id = c("A", "B", "C"),
@@ -106,6 +106,26 @@ test_that("accounts_by_status() properly calculates period_start and period_end"
   expect_equal(result_quarterly$period_start, as.Date(c("2022-07-01", "2022-10-01", "2023-01-01")))
   expect_equal(result_quarterly$period_end, as.Date(c("2022-09-30", "2022-12-31", "2023-03-31")))
 
+})
+
+
+test_that("accounts_by_status() properly calculates period_start and period_end for weekly periods", {
+  orders <- data.frame(
+    account_id = c("A", "B", "C"),
+    order_date = as.Date(c(
+      "2022-09-15", "2022-10-10", "2022-10-05"
+    ))
+  )
+
+  result_weekly <- accounts_by_status(orders$account_id, orders$order_date, by = "week")
+  expect_equal(
+    result_weekly$period_start,
+    as.Date(c("2022-09-11", "2022-09-18", "2022-09-25", "2022-10-02", "2022-10-09"))
+  )
+  expect_equal(
+    result_weekly$period_end,
+    as.Date(c("2022-09-17", "2022-09-24", "2022-10-01", "2022-10-08", "2022-10-15"))
+  )
 })
 
 
