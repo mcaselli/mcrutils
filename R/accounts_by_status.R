@@ -24,9 +24,9 @@ active_accounts_in_range <- function(account_id, order_date, start_date, end_dat
 #' `r lifecycle::badge('experimental')`
 #'
 #' This function categorizes accounts into various statuses (new, returning,
-#' temporarily lost, terminally lost, and regained) over specified time periods
-#' (monthly or quarterly). This is useful for understanding customer retention
-#' and churn.
+#' temporarily lost, regained, terminally lost and cumulative) over specified
+#' time periods (monthly or quarterly). This is useful for understanding
+#' customer retention and churn.
 #'
 #'
 #' @param account_id A vector of account IDs
@@ -55,6 +55,8 @@ active_accounts_in_range <- function(account_id, order_date, start_date, end_dat
 #' - `regained` (list of character): Accounts with orders in the current period, no orders in
 #' the prior period, but had orders in earlier periods. i.e. an account that
 #' comes back after being "temporarily lost"
+#' - `cumulative` (list of character): All accounts that have ever had an order
+#' up to and including the current period.
 #'
 #' if `with_counts` is TRUE, additional columns are included:
 #' - `n_active` (int): Count of active accounts in the current period.
@@ -65,6 +67,8 @@ active_accounts_in_range <- function(account_id, order_date, start_date, end_dat
 #' - `n_terminally_lost` (int): Count of terminally lost accounts in the
 #' current period.
 #' - `n_regained` (int): Count of regained accounts in the current period.
+#' - `n_cumulative` (int): Count of all accounts that have ever had an order
+#' up to and including the current period.
 #' @export
 #'
 #' @examples
@@ -147,6 +151,9 @@ accounts_by_status <- function(account_id, order_date, by = c("month", "quarter"
 
     regained <- setdiff(setdiff(result$active[[i]], prior_period_active), new)
     result$regained[[i]] <- regained
+
+    cumulative <- union(cumulative_prior, result$active[[i]])
+    result$cumulative[[i]] <- cumulative
   }
 
   result <- result |>

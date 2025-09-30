@@ -44,6 +44,8 @@ prior period but not in the current period, and no orders in future periods.
 \item \code{regained} (list of character): Accounts with orders in the current period, no orders in
 the prior period, but had orders in earlier periods. i.e. an account that
 comes back after being "temporarily lost"
+\item \code{cumulative} (list of character): All accounts that have ever had an order
+up to and including the current period.
 }
 
 if \code{with_counts} is TRUE, additional columns are included:
@@ -56,15 +58,17 @@ current period.
 \item \code{n_terminally_lost} (int): Count of terminally lost accounts in the
 current period.
 \item \code{n_regained} (int): Count of regained accounts in the current period.
+\item \code{n_cumulative} (int): Count of all accounts that have ever had an order
+up to and including the current period.
 }
 }
 \description{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 
 This function categorizes accounts into various statuses (new, returning,
-temporarily lost, terminally lost, and regained) over specified time periods
-(monthly or quarterly). This is useful for understanding customer retention
-and churn.
+temporarily lost, regained, terminally lost and cumulative) over specified
+time periods (monthly or quarterly). This is useful for understanding
+customer retention and churn.
 }
 \examples{
 set.seed(1234)
