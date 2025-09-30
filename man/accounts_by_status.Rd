@@ -2,7 +2,7 @@
 % Please edit documentation in R/accounts_by_status.R
 \name{accounts_by_status}
 \alias{accounts_by_status}
-\title{Analyze account activity status over time periods}
+\title{Compute history of account activity status over time periods}
 \usage{
 accounts_by_status(account_id, order_date, by = "month", with_counts = FALSE)
 }
@@ -11,8 +11,8 @@ accounts_by_status(account_id, order_date, by = "month", with_counts = FALSE)
 
 \item{order_date}{A vector of order dates corresponding to the account IDs}
 
-\item{by}{The time period to group by. Defaults to "month", but anything
-supported as a \code{unit} for \link[lubridate:round_date]{lubridate::floor_date} and  \code{by} for
+\item{by}{The time period resolution. Defaults to "month", but anything
+supported as a \code{unit} argument for \link[lubridate:round_date]{lubridate::floor_date} and \code{by} for
 \link{seq.Date} is an option, e.g. "week", "quarter", "2 months" etc.}
 
 \item{with_counts}{Logical, if TRUE, include counts of accounts in each
@@ -62,10 +62,11 @@ up to and including the current period.
 \description{
 \ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
 
-This function categorizes accounts into various statuses (new, returning,
-temporarily lost, regained, terminally lost and cumulative) over specified
-time periods (monthly or quarterly). This is useful for understanding
-customer retention and churn.
+This function categorizes accounts into different statuses (new, returning,
+temporarily lost, regained, terminally lost and cumulative) based on their
+order behavior in each time period. This is useful for
+understanding customer retention and churn. Counts of accounts in each status
+category can be included by setting \code{with_counts = TRUE}.
 }
 \examples{
 set.seed(1234)

@@ -66,11 +66,13 @@ ugly_data |> normalize_logicals()
 ### Customer account status/churn
 
 `accounts_by_status()` takes order data (account IDs and order dates) and
-categorizes accounts into various statuses (new, returning, temporarily lost,
-regained and terminally lost) over monthly or quarterly time periods, also
-producing a running list of cumulative accounts. This is useful for
-understanding customer retention and churn. (counts of accounts in each status
-category can be included as well; set `with_counts = TRUE`).
+categorizes accounts into different statuses (new, returning,
+temporarily lost, regained, terminally lost) based on their
+order behavior in each time interval (months, weeks, quarters, etc are supported). 
+
+It also produces a running list of cumulative accounts. This function is useful
+for understanding customer retention and churn. (counts of accounts in each
+status category can be included as well; set `with_counts = TRUE`).
 
 
 ```{r accounts_by_status_example}
