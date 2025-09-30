@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">mcrutils</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9002</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9003</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -95,7 +95,7 @@
 <div class="section level3">
 <h3 id="customer-account-statuschurn">Customer account status/churn<a class="anchor" aria-label="anchor" href="#customer-account-statuschurn"></a>
 </h3>
-<p><code><a href="reference/accounts_by_status.html">accounts_by_status()</a></code> takes order data (account IDs and order dates) and categorizes accounts into various statuses (new, returning, temporarily lost, terminally lost, and regained) over monthly or quarterly time periods. This is useful for understanding customer retention and churn. (counts of accounts in each status category can be included as well; set <code>with_counts = TRUE</code>).</p>
+<p><code><a href="reference/accounts_by_status.html">accounts_by_status()</a></code> takes order data (account IDs and order dates) and categorizes accounts into various statuses (new, returning, temporarily lost, regained and terminally lost) over monthly or quarterly time periods, also producing a running list of cumulative accounts. This is useful for understanding customer retention and churn. (counts of accounts in each status category can be included as well; set <code>with_counts = TRUE</code>).</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1234</span><span class="op">)</span></span>
 <span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">25</span></span>
@@ -113,13 +113,13 @@
 <span><span class="co">#&gt; 4   2022-04-01 2022-04-30          d, e, g, h                g         d</span></span>
 <span><span class="co">#&gt; 5   2022-05-01 2022-05-31             e, f, h                       e, h</span></span>
 <span><span class="co">#&gt; 6   2022-06-01 2022-06-30                f, j                          f</span></span>
-<span><span class="co">#&gt;   regained temporarily_lost terminally_lost</span></span>
-<span><span class="co">#&gt; 1                                          </span></span>
-<span><span class="co">#&gt; 2                         h                </span></span>
-<span><span class="co">#&gt; 3                      e, j         b, c, i</span></span>
-<span><span class="co">#&gt; 4     e, h                f                </span></span>
-<span><span class="co">#&gt; 5        f                             d, g</span></span>
-<span><span class="co">#&gt; 6        j                             e, h</span></span></code></pre></div>
+<span><span class="co">#&gt;   regained temporarily_lost terminally_lost                cumulative</span></span>
+<span><span class="co">#&gt; 1                                                                b, h</span></span>
+<span><span class="co">#&gt; 2                         h                    b, h, c, d, e, f, i, j</span></span>
+<span><span class="co">#&gt; 3                      e, j         b, c, i    b, h, c, d, e, f, i, j</span></span>
+<span><span class="co">#&gt; 4     e, h                f                 b, h, c, d, e, f, i, j, g</span></span>
+<span><span class="co">#&gt; 5        f                             d, g b, h, c, d, e, f, i, j, g</span></span>
+<span><span class="co">#&gt; 6        j                             e, h b, h, c, d, e, f, i, j, g</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="year-to-date-helpers">Year-to-date helpers<a class="anchor" aria-label="anchor" href="#year-to-date-helpers"></a>
