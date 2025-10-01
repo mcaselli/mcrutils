@@ -84,7 +84,7 @@ orders <- data.frame(
   order_date = sample(dates, n, replace = TRUE)
 )
 
-accounts_by_status(orders$account_id, orders$order_date)
+orders |> accounts_by_status(account_id, order_date)
 ```
 
 

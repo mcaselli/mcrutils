@@ -4,16 +4,17 @@
 \alias{active_accounts_in_range}
 \title{List active accounts in a date range}
 \usage{
-active_accounts_in_range(account_id, order_date, start_date, end_date)
+active_accounts_in_range(data, account_id, order_date, start_date, end_date)
 }
 \arguments{
-\item{account_id}{A vector of account IDs}
+\item{data}{A data frame or tibble of order information containing at least
+account IDs and order dates}
 
-\item{order_date}{A vector of order dates corresponding to the account IDs}
+\item{account_id, order_date}{<\code{\link[dplyr:dplyr_data_masking]{data-masked}}>
+columns in \code{data} corresponding to an account identifier and order dates,
+erspectively}
 
-\item{start_date}{The start date of the range (inclusive)}
-
-\item{end_date}{The end date of the range (inclusive)}
+\item{start_date, end_date}{The start date and end_date of the range (inclusive)}
 }
 \value{
 A vector of unique account IDs that were active in the specified date range

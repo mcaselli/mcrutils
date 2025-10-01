@@ -81,22 +81,23 @@ using this data, we can see how many accounts were new, returning, lost, or
 regained each month
 
 ```{r accounts_by_status_example}
-accounts_by_status(example_sales$account_id, example_sales$order_date)
+example_sales |> 
+  accounts_by_status(account_id, order_date)
 ```
 
 you can get the count of accounts in each status category by setting
 `with_counts = TRUE`
 
 ```{r accounts_by_status_with_counts}
-accounts_by_status(example_sales$account_id, example_sales$order_date,
-                   with_counts = TRUE)
+example_sales |>
+  accounts_by_status(account_id, order_date, with_counts = TRUE)
 ```
 
 quarterly analysis is also supported by setting `by = "quarter"`
 
 ```{r accounts_by_status_quarterly}
-accounts_by_status(example_sales$account_id, example_sales$order_date,
-                   by = "quarter")
+example_sales |>
+  accounts_by_status(account_id, order_date, by = "quarter")
 ```
 
 Here's how you might visualize the quarterly account status counts over time.
@@ -109,17 +110,17 @@ help as well (blues/greens: good, reds: bad).
 library(ggplot2)
 library(dplyr, warn.conflicts = FALSE)
 library(tidyr)
-accounts_by_status(example_sales$account_id, example_sales$order_date,
-                   with_counts = TRUE, 
-                   by="month") |>
+
+example_sales |>
+  accounts_by_status(account_id, order_date, with_counts = TRUE, by = "month") |>
   select(period_start, starts_with("n_")) |>
   # negate the lost counts for visualization
   mutate(across(contains("lost"), ~ -.x)) |>
   # pivot to prepare for ggplot
   pivot_longer(starts_with("n_"), names_to = "status", values_to = "count") |>
-  mutate(status=stringr::str_remove(status, "n_")) |>
+  mutate(status = stringr::str_remove(status, "n_")) |>
   ggplot(aes(period_start, count, color = status)) +
-  geom_line(linewidth=1.2) +
+  geom_line(linewidth = 1.2) +
   scale_color_manual(values = c(
     "active" = "#1f78b4",
     "new" = "#33a02c",

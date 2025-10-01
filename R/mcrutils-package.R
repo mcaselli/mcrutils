@@ -8,6 +8,7 @@
 #' @importFrom dplyr select
 #' @importFrom lifecycle deprecated
 #' @importFrom lubridate ymd
+#' @importFrom rlang :=
 #' @importFrom tidyselect all_of
 #' @importFrom tidyselect contains
 #' @importFrom tidyselect where

@@ -4,12 +4,21 @@
 \alias{accounts_by_status}
 \title{Compute history of account activity status over time periods}
 \usage{
-accounts_by_status(account_id, order_date, by = "month", with_counts = FALSE)
+accounts_by_status(
+  data,
+  account_id,
+  order_date,
+  by = "month",
+  with_counts = FALSE
+)
 }
 \arguments{
-\item{account_id}{A vector of account IDs}
+\item{data}{A data frame or tibble of order information containing at least
+account IDs and order dates}
 
-\item{order_date}{A vector of order dates corresponding to the account IDs}
+\item{account_id, order_date}{<\code{\link[dplyr:dplyr_data_masking]{data-masked}}>
+columns in \code{data} corresponding to an account identifier and order dates,
+erspectively}
 
 \item{by}{The time period resolution. Defaults to "month", but anything
 supported as a \code{unit} argument for \link[lubridate:round_date]{lubridate::floor_date} and \code{by} for
@@ -77,5 +86,5 @@ orders <- data.frame(
  order_date = sample(dates, n, replace = TRUE)
 )
 
-accounts_by_status(orders$account_id, orders$order_date, with_counts = TRUE)
+orders |> accounts_by_status(account_id, order_date, with_counts = TRUE)
 }

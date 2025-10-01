@@ -1,20 +1,23 @@
 
 #' List active accounts in a date range
 #'
-#' @param account_id A vector of account IDs
-#' @param order_date A vector of order dates corresponding to the account IDs
-#' @param start_date The start date of the range (inclusive)
-#' @param end_date The end date of the range (inclusive)
+#' @param data A data frame or tibble of order information containing at least
+#'   account IDs and order dates
+#' @param account_id,order_date <[`data-masked`][dplyr::dplyr_data_masking]>
+#'   columns in `data` corresponding to an account identifier and order dates,
+#'   erspectively
+#' @param start_date,end_date The start date and end_date of the range (inclusive)
 #' @return A vector of unique account IDs that were active in the specified date range
-active_accounts_in_range <- function(account_id, order_date, start_date, end_date) {
-  df <- data.frame(account_id = account_id, order_date = as.Date(order_date))
-  active_accounts <- df |>
+active_accounts_in_range <- function(data, account_id, order_date, start_date, end_date) {
+
+  active_accounts <- data |>
+    mutate({{ order_date }} := as.Date({{ order_date }})) |>
     # both date bounds are inclusive--does that make using this function
     # more difficult than e.g. having the upper bound be exclusive?
-    dplyr::filter(order_date >= start_date & order_date <= end_date) |>
-    dplyr::distinct(account_id) |>
-    dplyr::arrange(account_id) |>
-    dplyr::pull(account_id)
+    dplyr::filter({{ order_date }} >= start_date & {{ order_date }} <= end_date) |>
+    dplyr::distinct({{ account_id }}) |>
+    dplyr::arrange({{ account_id }}) |>
+    dplyr::pull({{ account_id }})
   return(active_accounts)
 }
 
@@ -30,8 +33,7 @@ active_accounts_in_range <- function(account_id, order_date, start_date, end_dat
 #' category can be included by setting `with_counts = TRUE`.
 #'
 #'
-#' @param account_id A vector of account IDs
-#' @param order_date A vector of order dates corresponding to the account IDs
+#' @inheritParams active_accounts_in_range
 #' @param by The time period resolution. Defaults to "month", but anything
 #'   supported as a `unit` argument for [lubridate::floor_date] and `by` for
 #'   [seq.Date] is an option, e.g. "week", "quarter", "2 months" etc.
@@ -83,12 +85,15 @@ active_accounts_in_range <- function(account_id, order_date, start_date, end_dat
 #'  order_date = sample(dates, n, replace = TRUE)
 #' )
 #'
-#' accounts_by_status(orders$account_id, orders$order_date, with_counts = TRUE)
-accounts_by_status <- function(account_id, order_date, by = "month",
+#' orders |> accounts_by_status(account_id, order_date, with_counts = TRUE)
+accounts_by_status <- function(data, account_id, order_date, by = "month",
                                with_counts = FALSE) {
-  df <- data.frame(account_id = account_id, order_date = as.Date(order_date))
+  data <- data |>
+    dplyr::mutate({{ order_date }} := as.Date({{ order_date }}))
 
-  date_range <- range(df$order_date)
+  date_range <- data |>
+    dplyr::pull({{ order_date }}) |>
+    range(na.rm = TRUE)
 
   period_start <- seq(
     from = lubridate::floor_date(date_range[1], unit = by),
@@ -105,8 +110,9 @@ accounts_by_status <- function(account_id, order_date, by = "month",
       active = purrr::map2(
         period_start, period_end,
         ~ active_accounts_in_range(
-          account_id = df$account_id,
-          order_date = df$order_date,
+          data = data,
+          account_id = {{ account_id }},
+          order_date = {{ order_date }},
           start_date = .x,
           end_date = .y
         )
