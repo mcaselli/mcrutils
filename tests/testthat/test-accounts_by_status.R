@@ -9,8 +9,9 @@ test_that("active_accounts_in_range() works", {
 
   expect_equal(
     active_accounts_in_range(
-      account_id = df$account_id,
-      order_date = df$order_date,
+      data = df,
+      account_id = account_id,
+      order_date = order_date,
       start_date = as.Date("2022-01-01"),
       end_date = as.Date("2022-01-31")
     ),
@@ -19,8 +20,9 @@ test_that("active_accounts_in_range() works", {
 
   expect_equal(
     active_accounts_in_range(
-      account_id = df$account_id,
-      order_date = df$order_date,
+      data = df,
+      account_id = account_id,
+      order_date = order_date,
       start_date = as.Date("2022-02-01"),
       end_date = as.Date("2022-02-28")
     ),
@@ -29,8 +31,9 @@ test_that("active_accounts_in_range() works", {
 
   expect_equal(
     active_accounts_in_range(
-      account_id = df$account_id,
-      order_date = df$order_date,
+      data = df,
+      account_id = account_id,
+      order_date = order_date,
       start_date = as.Date("2022-03-01"),
       end_date = as.Date("2022-03-31")
     ),
@@ -39,8 +42,9 @@ test_that("active_accounts_in_range() works", {
 
   expect_equal(
     active_accounts_in_range(
-      account_id = df$account_id,
-      order_date = df$order_date,
+      data = df,
+      account_id = account_id,
+      order_date = order_date,
       start_date = as.Date("2022-04-01"),
       end_date = as.Date("2022-04-30")
     ),
@@ -58,8 +62,9 @@ test_that("active_accounts_in_range() returns empty vector when no orders in ran
 
   expect_equal(
     active_accounts_in_range(
-      account_id = df$account_id,
-      order_date = df$order_date,
+      data = df,
+      account_id = account_id,
+      order_date = order_date,
       start_date = as.Date("2022-02-01"),
       end_date = as.Date("2022-02-28")
     ),
@@ -79,8 +84,9 @@ test_that("active_accounts_in_range() works with factors", {
 
   expect_equal(
     active_accounts_in_range(
-      account_id = df$account_id,
-      order_date = df$order_date,
+      data = df,
+      account_id = account_id,
+      order_date = order_date,
       start_date = as.Date("2022-01-01"),
       end_date = as.Date("2022-01-31")
     ),
@@ -98,11 +104,11 @@ test_that("accounts_by_status() properly calculates period_start and period_end 
     ))
   )
 
-  result_monthly <- accounts_by_status(orders$account_id, orders$order_date, by = "month")
+  result_monthly <- orders |> accounts_by_status(account_id, order_date, by = "month")
   expect_equal(result_monthly$period_start, as.Date(c("2022-09-01", "2022-10-01", "2022-11-01", "2022-12-01", "2023-01-01")))
   expect_equal(result_monthly$period_end, as.Date(c("2022-09-30", "2022-10-31", "2022-11-30", "2022-12-31", "2023-01-31")))
 
-  result_quarterly <- accounts_by_status(orders$account_id, orders$order_date, by = "quarter")
+  result_quarterly <- orders |> accounts_by_status(account_id, order_date, by = "quarter")
   expect_equal(result_quarterly$period_start, as.Date(c("2022-07-01", "2022-10-01", "2023-01-01")))
   expect_equal(result_quarterly$period_end, as.Date(c("2022-09-30", "2022-12-31", "2023-03-31")))
 
@@ -117,7 +123,7 @@ test_that("accounts_by_status() properly calculates period_start and period_end 
     ))
   )
 
-  result_weekly <- accounts_by_status(orders$account_id, orders$order_date, by = "week")
+  result_weekly <- orders |> accounts_by_status(account_id, order_date, by = "week")
   expect_equal(
     result_weekly$period_start,
     as.Date(c("2022-09-11", "2022-09-18", "2022-09-25", "2022-10-02", "2022-10-09"))
@@ -144,7 +150,7 @@ test_that("accounts_by_status() correctly lists new accounts", {
     "F", "2022-04-15"
   ) |> dplyr::mutate(order_date = as.Date(order_date))
 
-  result <- accounts_by_status(orders$account_id, orders$order_date)
+  result <- orders |> accounts_by_status(account_id, order_date)
 
   expected <- dplyr::tribble(
     ~period_start, ~new,
@@ -162,7 +168,7 @@ test_that("accounts_by_status() correctly lists new accounts", {
     as.Date("2022-04-01"), c("F")
   ) |> data.frame()
 
-  result_quarterly <- accounts_by_status(orders$account_id, orders$order_date, by = "quarter")
+  result_quarterly <- orders |> accounts_by_status(account_id, order_date, by = "quarter")
 
   expect_equal(result_quarterly |> dplyr::select(period_start, new), expected_quarterly)
 
@@ -183,7 +189,7 @@ test_that("accounts_by_status() correctly lists active accounts", {
     "F", "2022-04-15"
   ) |> dplyr::mutate(order_date = as.Date(order_date))
 
-  result <- accounts_by_status(orders$account_id, orders$order_date)
+  result <- orders |> accounts_by_status(account_id, order_date)
 
   expected <- dplyr::tribble(
     ~period_start, ~active,
@@ -201,7 +207,7 @@ test_that("accounts_by_status() correctly lists active accounts", {
     as.Date("2022-04-01"), c("B", "F")
   ) |> data.frame()
 
-  result_quarterly <- accounts_by_status(orders$account_id, orders$order_date, by = "quarter")
+  result_quarterly <- orders |> accounts_by_status(account_id, order_date, by = "quarter")
 
   expect_equal(result_quarterly |> dplyr::select(period_start, active), expected_quarterly)
 })
@@ -220,7 +226,7 @@ test_that("accounts_by_status() correctly lists returning accounts", {
     "F", "2022-04-15"
   ) |> dplyr::mutate(order_date = as.Date(order_date))
 
-  result <- accounts_by_status(orders$account_id, orders$order_date)
+  result <- orders |> accounts_by_status(account_id, order_date)
 
   expected <- dplyr::tribble(
     ~period_start, ~returning,
@@ -238,7 +244,7 @@ test_that("accounts_by_status() correctly lists returning accounts", {
     as.Date("2022-04-01"), c("B")
   ) |> data.frame()
 
-  result_quarterly <- accounts_by_status(orders$account_id, orders$order_date, by = "quarter")
+  result_quarterly <- orders |> accounts_by_status(account_id, order_date, by = "quarter")
 
   expect_equal(result_quarterly |> dplyr::select(period_start, returning), expected_quarterly)
 })
@@ -258,7 +264,7 @@ test_that("accounts_by_status() correctly lists regained accounts", {
     "F", "2022-04-15"
   ) |> dplyr::mutate(order_date = as.Date(order_date))
 
-  result <- accounts_by_status(orders$account_id, orders$order_date)
+  result <- orders |> accounts_by_status(account_id, order_date)
 
   expected <- dplyr::tribble(
     ~period_start, ~regained,
@@ -276,7 +282,7 @@ test_that("accounts_by_status() correctly lists regained accounts", {
     as.Date("2022-04-01"), character(0)
   ) |> data.frame()
 
-  result_quarterly <- accounts_by_status(orders$account_id, orders$order_date, by = "quarter")
+  result_quarterly <- orders |> accounts_by_status(account_id, order_date, by = "quarter")
 
   expect_equal(result_quarterly |> dplyr::select(period_start, regained), expected_quarterly)
 })
@@ -295,7 +301,7 @@ test_that("accounts_by_status() correctly lists temporarily_lost accounts", {
     "F", "2022-04-15"
   ) |> dplyr::mutate(order_date = as.Date(order_date))
 
-  result <- accounts_by_status(orders$account_id, orders$order_date)
+  result <- orders |> accounts_by_status(account_id, order_date)
 
   expected <- dplyr::tribble(
     ~period_start, ~temporarily_lost,
@@ -313,7 +319,7 @@ test_that("accounts_by_status() correctly lists temporarily_lost accounts", {
     as.Date("2022-04-01"), character(0)
   ) |> data.frame()
 
-  result_quarterly <- accounts_by_status(orders$account_id, orders$order_date, by = "quarter")
+  result_quarterly <- orders |> accounts_by_status(account_id, order_date, by = "quarter")
 
   expect_equal(result_quarterly |> dplyr::select(period_start, temporarily_lost), expected_quarterly)
 })
@@ -333,7 +339,7 @@ test_that("accounts_by_status() correctly lists terminally_lost accounts", {
     "F", "2022-04-15"
   ) |> dplyr::mutate(order_date = as.Date(order_date))
 
-  result <- accounts_by_status(orders$account_id, orders$order_date)
+  result <- orders |> accounts_by_status(account_id, order_date)
 
   expected <- dplyr::tribble(
     ~period_start, ~terminally_lost,
@@ -351,7 +357,7 @@ test_that("accounts_by_status() correctly lists terminally_lost accounts", {
     as.Date("2022-04-01"), c("A", "C", "D", "E")
   ) |> data.frame()
 
-  result_quarterly <- accounts_by_status(orders$account_id, orders$order_date, by = "quarter")
+  result_quarterly <- orders |> accounts_by_status(account_id, order_date, by = "quarter")
 
   expect_equal(result_quarterly |> dplyr::select(period_start, terminally_lost), expected_quarterly)
 })
@@ -371,7 +377,7 @@ test_that("accounts_by_status() correctly lists cumulative accounts", {
     "F", "2022-04-15"
   ) |> dplyr::mutate(order_date = as.Date(order_date))
 
-  result <- accounts_by_status(orders$account_id, orders$order_date)
+  result <- orders |> accounts_by_status(account_id, order_date)
 
   expected <- dplyr::tribble(
     ~period_start, ~cumulative,
@@ -400,7 +406,7 @@ test_that("accounts_by_status() with_counts = TRUE works", {
     "F", "2022-04-15"
   ) |> dplyr::mutate(order_date = as.Date(order_date))
 
-  result <- accounts_by_status(orders$account_id, orders$order_date, with_counts = TRUE)
+  result <- orders |> accounts_by_status(account_id, order_date, with_counts = TRUE)
 
   expected_counts <- dplyr::tribble(
     ~period_start, ~n_active, ~n_new, ~n_returning, ~n_temporarily_lost, ~n_terminally_lost, ~n_regained, ~n_cumulative,

@@ -82,7 +82,7 @@ orders <- data.frame(
   order_date = sample(dates, n, replace = TRUE)
 )
 
-accounts_by_status(orders$account_id, orders$order_date)
+orders |> accounts_by_status(account_id, order_date)
 #>   period_start period_end              active              new returning
 #> 1   2022-01-01 2022-01-31                b, h             b, h          
 #> 2   2022-02-01 2022-02-28 b, c, d, e, f, i, j c, d, e, f, i, j         b
