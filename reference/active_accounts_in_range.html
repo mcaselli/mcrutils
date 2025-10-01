@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mcrutils</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9004</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9005</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -39,27 +39,26 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">active_accounts_in_range</span><span class="op">(</span><span class="va">account_id</span>, <span class="va">order_date</span>, <span class="va">start_date</span>, <span class="va">end_date</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">active_accounts_in_range</span><span class="op">(</span><span class="va">data</span>, <span class="va">account_id</span>, <span class="va">order_date</span>, <span class="va">start_date</span>, <span class="va">end_date</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
 
-<dl><dt id="arg-account-id">account_id<a class="anchor" aria-label="anchor" href="#arg-account-id"></a></dt>
-<dd><p>A vector of account IDs</p></dd>
+<dl><dt id="arg-data">data<a class="anchor" aria-label="anchor" href="#arg-data"></a></dt>
+<dd><p>A data frame or tibble of order information containing at least
+account IDs and order dates</p></dd>
 
 
-<dt id="arg-order-date">order_date<a class="anchor" aria-label="anchor" href="#arg-order-date"></a></dt>
-<dd><p>A vector of order dates corresponding to the account IDs</p></dd>
+<dt id="arg-account-id-order-date">account_id, order_date<a class="anchor" aria-label="anchor" href="#arg-account-id-order-date"></a></dt>
+<dd><p>&lt;<code><a href="https://dplyr.tidyverse.org/reference/dplyr_data_masking.html" class="external-link">data-masked</a></code>&gt;
+columns in <code>data</code> corresponding to an account identifier and order dates,
+erspectively</p></dd>
 
 
-<dt id="arg-start-date">start_date<a class="anchor" aria-label="anchor" href="#arg-start-date"></a></dt>
-<dd><p>The start date of the range (inclusive)</p></dd>
-
-
-<dt id="arg-end-date">end_date<a class="anchor" aria-label="anchor" href="#arg-end-date"></a></dt>
-<dd><p>The end date of the range (inclusive)</p></dd>
+<dt id="arg-start-date-end-date">start_date, end_date<a class="anchor" aria-label="anchor" href="#arg-start-date-end-date"></a></dt>
+<dd><p>The start date and end_date of the range (inclusive)</p></dd>
 
 </dl></div>
     <div class="section level2">
