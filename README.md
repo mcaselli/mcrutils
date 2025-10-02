@@ -99,6 +99,16 @@ orders |> accounts_by_status(account_id, order_date)
 #> 6        j                             e, h b, h, c, d, e, f, i, j, g
 ```
 
+`plot_accounts_by_status()` creates a line plot of the count of each
+account status over time.
+
+``` r
+orders |> 
+  plot_accounts_by_status(account_id, order_date)
+```
+
+<img src="man/figures/README-plot_accounts_by_status-1.png" width="100%" />
+
 ### Year-to-date helpers
 
 `mcrutils` provides a handful functions that can be helpful in creating

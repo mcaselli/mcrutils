@@ -1,4 +1,7 @@
-#' Plot Accounts by Status Over Time
+#' Plot Count of Accounts by Status Over Time
+#'
+#' @description
+#' `r lifecycle::badge('experimental')`
 #'
 #' This function generates a line plot visualizing the counts of accounts by
 #' their status over time. It uses the [accounts_by_status()] function to
@@ -10,12 +13,12 @@
 #'   displayed with solid lines, even if the period includes dates greater than
 #'   the final `order_date` in `data`.
 #' @param include_cumulative Logical, if TRUE, include the cumulative account
-#'    counts in the plot. Defaults to TRUE.
-#' @return A ggplot2 object representing the line plot of count of each account
-#'    status over time (active, new, returning, temporarily lost, terminally
-#'    lost, regained, and optionally cumulative).  If
-#'    `force_final_period_complete` is FALSE, the final period may be displayed
-#'    with dashed lines to indicate it may be incomplete.
+#'   counts in the plot. Defaults to TRUE.
+#' @return A ggplot2 object: a line plot of the count of accounts of each status
+#'   over time (active, new, returning, temporarily lost, terminally lost,
+#'   regained, and optionally cumulative).  If `force_final_period_complete` is
+#'   FALSE, the final period will be displayed with a dashed line if the period
+#'   includes dates greater than the final `order_date` in `data`.
 #' @examples
 #' example_sales |>
 #'   plot_accounts_by_status(account_id, order_date, by = "quarter")
@@ -23,7 +26,6 @@
 plot_accounts_by_status <- function(data, account_id, order_date, by = "month",
                                     force_final_period_complete = FALSE,
                                     include_cumulative = TRUE) {
-
   latest_order <- data |>
     dplyr::pull({{ order_date }}) |>
     max(na.rm = TRUE)
@@ -55,11 +57,12 @@ plot_accounts_by_status <- function(data, account_id, order_date, by = "month",
       mutate(status = fct_relabel(.data$status, ~ stringr::str_to_title(stringr::str_replace_all(.x, "_", " "))))
   }
 
-
   churn_summary_complete_periods <- churn_summary |>
     dplyr::filter(!.data$incomplete_period)
 
-  if(any(churn_summary$incomplete_period)){
+  if (any(churn_summary$incomplete_period)) {
+    # include the last complete period to get a line segment connecting the last
+    # complete period with the first incomplete period.
     churn_summary_incomplete_periods <- rbind(
       tail(churn_summary_complete_periods, 1),
       (churn_summary |> dplyr::filter(.data$incomplete_period))
@@ -69,20 +72,19 @@ plot_accounts_by_status <- function(data, account_id, order_date, by = "month",
     churn_summary_incomplete_periods <- NULL
   }
 
-
   churn_summary_complete_periods <- munge_to_plot(churn_summary_complete_periods, by)
-
-
-
-  #return(list(complete=churn_summary_complete_periods, incomplete=churn_summary_incomplete_periods))
 
   churn_summary_complete_periods |>
     ggplot2::ggplot(ggplot2::aes(.data[[by]], .data$count, color = .data$status)) +
     ggplot2::geom_line(linewidth = 1.2) +
     {
-      if (!is.null(churn_summary_incomplete_periods)) ggplot2::geom_line(data = churn_summary_incomplete_periods, linewidth = 1.2, linetype = "dashed")
+      if (!is.null(churn_summary_incomplete_periods)) {
+        ggplot2::geom_line(
+          data = churn_summary_incomplete_periods,
+          linewidth = 1.2, linetype = "dashed"
+        )
+      }
     } +
-    ggplot2::scale_y_continuous(breaks = scales::breaks_pretty()) + # integers
     ggplot2::scale_color_manual(
       values = c(
         "Active" = "#1f78b4",

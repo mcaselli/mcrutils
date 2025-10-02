@@ -33,7 +33,6 @@ Imports:
     lubridate,
     purrr,
     rlang,
-    scales,
     stringr,
     tidyr,
     tidyselect,

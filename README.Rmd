@@ -87,6 +87,15 @@ orders <- data.frame(
 orders |> accounts_by_status(account_id, order_date)
 ```
 
+`plot_accounts_by_status()` creates a line plot of the count of each account
+status over time.
+
+```{r plot_accounts_by_status}
+orders |> 
+  plot_accounts_by_status(account_id, order_date)
+```
+
+
 
 ### Year-to-date helpers
 

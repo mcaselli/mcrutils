@@ -2,7 +2,7 @@
 % Please edit documentation in R/plot_accounts_by_status.R
 \name{plot_accounts_by_status}
 \alias{plot_accounts_by_status}
-\title{Plot Accounts by Status Over Time}
+\title{Plot Count of Accounts by Status Over Time}
 \usage{
 plot_accounts_by_status(
   data,
@@ -34,13 +34,15 @@ the final \code{order_date} in \code{data}.}
 counts in the plot. Defaults to TRUE.}
 }
 \value{
-A ggplot2 object representing the line plot of count of each account
-status over time (active, new, returning, temporarily lost, terminally
-lost, regained, and optionally cumulative).  If
-\code{force_final_period_complete} is FALSE, the final period may be displayed
-with dashed lines to indicate it may be incomplete.
+A ggplot2 object: a line plot of the count of accounts of each status
+over time (active, new, returning, temporarily lost, terminally lost,
+regained, and optionally cumulative).  If \code{force_final_period_complete} is
+FALSE, the final period will be displayed with a dashed line if the period
+includes dates greater than the final \code{order_date} in \code{data}.
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+
 This function generates a line plot visualizing the counts of accounts by
 their status over time. It uses the \code{\link[=accounts_by_status]{accounts_by_status()}} function to
 categorize accounts and then creates a plot using \code{ggplot2}.
