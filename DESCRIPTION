@@ -18,22 +18,26 @@ LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Suggests: 
-    ggplot2,
     knitr,
     rmarkdown,
     testthat (>= 3.0.0),
-    tidyr
+    vdiffr
 Config/testthat/edition: 3
 Imports: 
     cli,
     dplyr,
     DT,
+    forcats,
+    ggplot2,
     lifecycle,
     lubridate,
     purrr,
     rlang,
+    scales,
     stringr,
-    tidyselect
+    tidyr,
+    tidyselect,
+    utils
 URL: https://github.com/mcaselli/mcrutils, https://mcaselli.github.io/mcrutils/
 BugReports: https://github.com/mcaselli/mcrutils/issues
 VignetteBuilder: knitr
