@@ -70,39 +70,60 @@ lost) in each time interval (monthly, weekly, quarterly, etc. are supported).
 It also produces  a running list of cumulative accounts. This is useful for
 understanding customer retention and churn.
 
-`mcrutils` includes an example dataset `example_sales` with 50 orders from 10
-accounts over the year 2022.
+The `data.frame` returned by `accounts_by_status()` quickly gets unwieldy to
+print, so to see how it works, let's make a small example data set with a list
+of 25 orders from 10 accounts over 6 months.
 
 ```{r}
-head(example_sales)
+set.seed(1234)
+n <- 25
+dates <- seq(as.Date("2022-01-01"), as.Date("2022-06-30"), by = "day")
+orders <- data.frame(
+  account_id = sample(letters[1:10], n, replace = TRUE),
+  order_date = sample(dates, n, replace = TRUE)
+) |> arrange(order_date)
+
+orders |> glimpse()
 ```
 
-using this data, we can see how many accounts were new, returning, lost, or
-regained each quarter
+`accounts_by_status()` splits the order data by time periods, and returns the
+accounts in each status category for each period as a list-column.
 
-```{r accounts_by_status_example}
-example_sales |> 
-  accounts_by_status(account_id, order_date, by="quarter")
+```{r}
+orders |> accounts_by_status(account_id, order_date, by = "month")
 ```
 
-you can get the count of accounts in each status category by setting
-`with_counts = TRUE`
+If you want the count of accounts in each status category, set `with_counts =
+TRUE` (the lists of account_ids are still included, we just omit them from the
+printed output here).
 
-```{r accounts_by_status_with_counts}
-example_sales |>
-  accounts_by_status(account_id, order_date,
-    by = "quarter", with_counts = TRUE
-  )
+
+```{r}
+orders |>
+  accounts_by_status(account_id, order_date, by = "month", with_counts = TRUE) |>
+  select(period_start, starts_with("n_"))
 ```
 
+Visualizing the count of accounts in each status over time can be helpful to
+understand how the business is doing in terms of customer retention and churn.
 
-Here's how you might visualize the quarterly account status counts over time.
+`mcrutils` includes a larger example dataset `example_sales` with about 5000
+orders between accounts over in the 2022--2024 time period.
+
+```{r}
+example_sales |> glimpse()
+```
+
+`accounts_by_status()` produces six status counts, plus one cumulative count--
+that's up to seven data series to plot, so we need to be thoughtful about design
+choices.
+
 Showing the lost accounts as a negative value helps de-clutter the picture and
-as well as helps perception by encoding values above the axis as "good" and
-below as "bad" (assuming we don't want to lose customers). We can use color to
-help as well (blues/greens: good, reds: bad).
+helps perception by encoding values above the axis as "good" and below as "bad"
+(assuming we don't want to lose customers). We can use color to help as well
+(blues/greens: good, reds: bad).
 
-```{r manual_accounts_plot, fig.width=7, fig.height=4}
+```{r manual_accounts_plot}
 library(ggplot2)
 library(dplyr, warn.conflicts = FALSE)
 library(tidyr)
@@ -132,19 +153,22 @@ example_sales |>
 
 `plot_accounts_by_status()` is a convenience function that does the above and a
 bit more, cleaning up the legend, x-axis title, and if the last order_date is
-before the end of the final time period, the final period will be shown with
-dashed lines to indicate that the data may be incomplete.
+before the end of the final time period (as in `example_sales`, which has no
+orders after 2024-12-20), the final period will be shown with dashed lines to
+indicate that the data may be incomplete.
 
 
-```{r plot_accounts_1, fig.width=7, fig.height=4}
-example_sales |> 
-  plot_accounts_by_status(account_id, order_date, by="quarter")
+```{r plot_accounts_1}
+example_sales |>
+  plot_accounts_by_status(account_id, order_date, by = "quarter")
 ```
 
-You can suppress the dashed lines for incomplete periods with with `force_final_period_complete = TRUE`, and exclude the cumulative line with `include_cumulative = FALSE`.
+You can suppress the dashed lines for incomplete periods with with
+`force_final_period_complete = TRUE`, and exclude the cumulative line with
+`include_cumulative = FALSE`.
 
-```{r plot_accounts_2, fig.width=7, fig.height=4}
-example_sales |> 
+```{r plot_accounts_2}
+example_sales |>
   plot_accounts_by_status(
     account_id, order_date,
     by = "quarter",
@@ -152,7 +176,6 @@ example_sales |>
     include_cumulative = FALSE
   )
 ```
-
 
 
 ## Year-to-date helpers
@@ -265,10 +288,14 @@ economics |>
     breaks = breaks_quarters(),
     labels = label_quarters_short()
   ) +
-  labs(title="Automatic Quarterly Breaks",
-       subtitle ="with concise labels") +
+  labs(
+    title = "Automatic Quarterly Breaks",
+    subtitle = "with concise labels"
+  ) +
   theme(panel.grid.minor.x = element_blank())
 ```
+
+
 
 The automatic version of `breaks_quarters()` tries to return a reasonable number of breaks over a wide range of dates, down-sampling to semesters and years as needed.
 
@@ -281,8 +308,10 @@ economics |>
     breaks = breaks_quarters(),
     labels = label_quarters_short()
   ) +
-  labs(title="Switching to semesters for longer ranges",
-       subtitle = "always labelling Q1/Q3, never Q2/Q4") +
+  labs(
+    title = "Switching to semesters for longer ranges",
+    subtitle = "always labelling Q1/Q3, never Q2/Q4"
+  ) +
   theme(panel.grid.minor.x = element_blank())
 ```
 
@@ -295,8 +324,10 @@ economics |>
     breaks = breaks_quarters(),
     labels = label_quarters_short()
   ) +
-  labs(title="Switching to yearly for very long ranges",
-       subtitle = "rather silly") +
+  labs(
+    title = "Switching to yearly for very long ranges",
+    subtitle = "rather silly"
+  ) +
   theme(panel.grid.minor.x = element_blank())
 ```
 
@@ -308,15 +339,13 @@ these quarterly functions to the more standard date breaks and labels in
 You can force a fixed break width if quarters are desired regardless of the date range.
 
 ```{r fixed-quarterly-breaks}
-economics |>
-  filter(date >= "2005-02-01", date <= "2008-12-01") |>
-  ggplot(aes(date, pce)) +
-  geom_line() +
+example_sales |>
+  plot_accounts_by_status(account_id, order_date, by = "quarter") +
   scale_x_date(
     breaks = breaks_quarters(width = "1 quarter"),
     labels = label_quarters_short()
   ) +
-  labs(title="Fixed quarterly breaks") +
   theme(panel.grid.minor.x = element_blank())
 ```
+
 

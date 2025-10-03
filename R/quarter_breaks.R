@@ -46,24 +46,24 @@ breaks_quarters <- function(n = 9, width = NULL) {
 
       if (unit == "month") {
         result <- switch(as.character(mag),
-               "3" = calc_quarter_breaks(x),
-               "6" = calc_semester_breaks(x),
-               "12" = calc_year_breaks(x),
-               stop("Invalid width for breaks_quarters. If unit is months, value must be 3, 6 or 12")
+          "3" = calc_quarter_breaks(x),
+          "6" = calc_semester_breaks(x),
+          "12" = calc_year_breaks(x),
+          stop("Invalid width for breaks_quarters. If unit is months, value must be 3, 6 or 12")
         )
         return(result)
       } else if (unit == "quarter") {
         result <- switch(as.character(mag),
-               "1" = calc_quarter_breaks(x),
-               "2" = calc_semester_breaks(x),
-               "4" = calc_year_breaks(x),
-               stop("Invalid width for breaks_quarters. If unit is quarters, value must be 1, 2, or 4")
+          "1" = calc_quarter_breaks(x),
+          "2" = calc_semester_breaks(x),
+          "4" = calc_year_breaks(x),
+          stop("Invalid width for breaks_quarters. If unit is quarters, value must be 1, 2, or 4")
         )
         return(result)
       } else if (unit == "year") {
         result <- switch(as.character(mag),
-               "1" = calc_year_breaks(x),
-               stop("Invalid width for breaks_quarters. If unit is years, value must be 1")
+          "1" = calc_year_breaks(x),
+          stop("Invalid width for breaks_quarters. If unit is years, value must be 1")
         )
         return(result)
       }
