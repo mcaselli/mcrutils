@@ -21,7 +21,7 @@ test_that("plot_accounts_by_status() displays a complete final period as solid",
     example_sales |>
       rbind(data.frame(
         account_id = "f",
-        order_date = as.Date("2023-12-31")
+        order_date = as.Date("2024-12-31")
       )) |>
       plot_accounts_by_status(account_id, order_date, by = "quarter")
   )
