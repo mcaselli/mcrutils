@@ -78,11 +78,11 @@ head(example_sales)
 ```
 
 using this data, we can see how many accounts were new, returning, lost, or
-regained each month
+regained each quarter
 
 ```{r accounts_by_status_example}
 example_sales |> 
-  accounts_by_status(account_id, order_date)
+  accounts_by_status(account_id, order_date, by="quarter")
 ```
 
 you can get the count of accounts in each status category by setting
@@ -90,15 +90,11 @@ you can get the count of accounts in each status category by setting
 
 ```{r accounts_by_status_with_counts}
 example_sales |>
-  accounts_by_status(account_id, order_date, with_counts = TRUE)
+  accounts_by_status(account_id, order_date,
+    by = "quarter", with_counts = TRUE
+  )
 ```
 
-quarterly analysis is also supported by setting `by = "quarter"`
-
-```{r accounts_by_status_quarterly}
-example_sales |>
-  accounts_by_status(account_id, order_date, by = "quarter")
-```
 
 Here's how you might visualize the quarterly account status counts over time.
 Showing the lost accounts as a negative value helps de-clutter the picture and
@@ -106,13 +102,13 @@ as well as helps perception by encoding values above the axis as "good" and
 below as "bad" (assuming we don't want to lose customers). We can use color to
 help as well (blues/greens: good, reds: bad).
 
-```{r}
+```{r manual_accounts_plot, fig.width=7, fig.height=4}
 library(ggplot2)
 library(dplyr, warn.conflicts = FALSE)
 library(tidyr)
 
 example_sales |>
-  accounts_by_status(account_id, order_date, with_counts = TRUE, by = "month") |>
+  accounts_by_status(account_id, order_date, with_counts = TRUE, by = "quarter") |>
   select(period_start, starts_with("n_")) |>
   # negate the lost counts for visualization
   mutate(across(contains("lost"), ~ -.x)) |>
@@ -132,6 +128,31 @@ example_sales |>
   )) +
   theme_minimal()
 ```
+
+
+`plot_accounts_by_status()` is a convenience function that does the above and a
+bit more, cleaning up the legend, x-axis title, and if the last order_date is
+before the end of the final time period, the final period will be shown with
+dashed lines to indicate that the data may be incomplete.
+
+
+```{r plot_accounts_1, fig.width=7, fig.height=4}
+example_sales |> 
+  plot_accounts_by_status(account_id, order_date, by="quarter")
+```
+
+You can suppress the dashed lines for incomplete periods with with `force_final_period_complete = TRUE`, and exclude the cumulative line with `include_cumulative = FALSE`.
+
+```{r plot_accounts_2, fig.width=7, fig.height=4}
+example_sales |> 
+  plot_accounts_by_status(
+    account_id, order_date,
+    by = "quarter",
+    force_final_period_complete = TRUE,
+    include_cumulative = FALSE
+  )
+```
+
 
 
 ## Year-to-date helpers
