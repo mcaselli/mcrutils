@@ -132,109 +132,84 @@ regained and terminally lost) in each time interval (monthly, weekly,
 quarterly, etc. are supported). It also produces a running list of
 cumulative accounts. This is useful for understanding customer retention
 and churn.</p>
-<p><code>mcrutils</code> includes an example dataset
-<code>example_sales</code> with 50 orders from 10 accounts over the year
-2022.</p>
+<p>The <code>data.frame</code> returned by
+<code><a href="../reference/accounts_by_status.html">accounts_by_status()</a></code> quickly gets unwieldy to print, so to
+see how it works, let’s make a small example data set with a list of 25
+orders from 10 accounts over 6 months.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">example_sales</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   account_id order_date</span></span>
-<span><span class="co">#&gt; 1          b 2022-01-04</span></span>
-<span><span class="co">#&gt; 2          a 2022-01-10</span></span>
-<span><span class="co">#&gt; 3          c 2022-01-12</span></span>
-<span><span class="co">#&gt; 4          f 2022-01-13</span></span>
-<span><span class="co">#&gt; 5          i 2022-01-14</span></span>
-<span><span class="co">#&gt; 6          b 2022-01-19</span></span></code></pre></div>
-<p>using this data, we can see how many accounts were new, returning,
-lost, or regained each quarter</p>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1234</span><span class="op">)</span></span>
+<span><span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">25</span></span>
+<span><span class="va">dates</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2022-01-01"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2022-06-30"</span><span class="op">)</span>, by <span class="op">=</span> <span class="st">"day"</span><span class="op">)</span></span>
+<span><span class="va">orders</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  account_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">letters</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">]</span>, <span class="va">n</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>  order_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="va">dates</span>, <span class="va">n</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="op">)</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">order_date</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">orders</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Rows: 25</span></span>
+<span><span class="co">#&gt; Columns: 2</span></span>
+<span><span class="co">#&gt; $ account_id <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "h"<span style="color: #949494;">, </span>"b"<span style="color: #949494;">, </span>"b"<span style="color: #949494;">, </span>"f"<span style="color: #949494;">, </span>"d"<span style="color: #949494;">, </span>"i"<span style="color: #949494;">, </span>"e"<span style="color: #949494;">, </span>"c"<span style="color: #949494;">, </span>"d"<span style="color: #949494;">, </span>"d"<span style="color: #949494;">, </span>"j"<span style="color: #949494;">, </span>"f"<span style="color: #949494;">,</span>…</span></span>
+<span><span class="co">#&gt; $ order_date <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2022-01-02<span style="color: #949494;">, </span>2022-01-26<span style="color: #949494;">, </span>2022-02-10<span style="color: #949494;">, </span>2022-02-11<span style="color: #949494;">, </span>2022-02-12…</span></span></code></pre></div>
+<p><code><a href="../reference/accounts_by_status.html">accounts_by_status()</a></code> splits the order data by time
+periods, and returns the accounts in each status category for each
+period as a list-column.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">example_sales</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu"><a href="../reference/accounts_by_status.html">accounts_by_status</a></span><span class="op">(</span><span class="va">account_id</span>, <span class="va">order_date</span>, by<span class="op">=</span><span class="st">"quarter"</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   period_start period_end                                active</span></span>
-<span><span class="co">#&gt; 1   2022-01-01 2022-03-31             a, b, c, d, e, f, g, h, i</span></span>
-<span><span class="co">#&gt; 2   2022-04-01 2022-06-30             a, b, c, d, e, f, g, h, i</span></span>
-<span><span class="co">#&gt; 3   2022-07-01 2022-09-30       a, b, c, d, f, g, h, i, j, k, l</span></span>
-<span><span class="co">#&gt; 4   2022-10-01 2022-12-31 a, b, c, d, e, f, g, h, i, j, k, l, m</span></span>
-<span><span class="co">#&gt; 5   2023-01-01 2023-03-31    a, b, c, d, e, f, g, h, j, k, l, m</span></span>
-<span><span class="co">#&gt; 6   2023-04-01 2023-06-30          a, b, c, d, e, g, h, k, l, m</span></span>
-<span><span class="co">#&gt; 7   2023-07-01 2023-09-30                   a, b, c, d, k, l, m</span></span>
-<span><span class="co">#&gt; 8   2023-10-01 2023-12-31                a, b, c, d, j, k, l, m</span></span>
-<span><span class="co">#&gt;                         new                          returning regained</span></span>
-<span><span class="co">#&gt; 1 a, b, c, d, e, f, g, h, i                                            </span></span>
-<span><span class="co">#&gt; 2                                    a, b, c, d, e, f, g, h, i         </span></span>
-<span><span class="co">#&gt; 3                   j, k, l             a, b, c, d, f, g, h, i         </span></span>
-<span><span class="co">#&gt; 4                         m    a, b, c, d, f, g, h, i, j, k, l        e</span></span>
-<span><span class="co">#&gt; 5                           a, b, c, d, e, f, g, h, j, k, l, m         </span></span>
-<span><span class="co">#&gt; 6                                 a, b, c, d, e, g, h, k, l, m         </span></span>
-<span><span class="co">#&gt; 7                                          a, b, c, d, k, l, m         </span></span>
-<span><span class="co">#&gt; 8                                          a, b, c, d, k, l, m        j</span></span>
-<span><span class="co">#&gt;   temporarily_lost terminally_lost                            cumulative</span></span>
-<span><span class="co">#&gt; 1                                              a, b, c, d, e, f, g, h, i</span></span>
-<span><span class="co">#&gt; 2                                              a, b, c, d, e, f, g, h, i</span></span>
-<span><span class="co">#&gt; 3                e                    a, b, c, d, e, f, g, h, i, j, k, l</span></span>
-<span><span class="co">#&gt; 4                                  a, b, c, d, e, f, g, h, i, j, k, l, m</span></span>
-<span><span class="co">#&gt; 5                                i a, b, c, d, e, f, g, h, i, j, k, l, m</span></span>
-<span><span class="co">#&gt; 6                j               f a, b, c, d, e, f, g, h, i, j, k, l, m</span></span>
-<span><span class="co">#&gt; 7                          e, g, h a, b, c, d, e, f, g, h, i, j, k, l, m</span></span>
-<span><span class="co">#&gt; 8                                  a, b, c, d, e, f, g, h, i, j, k, l, m</span></span></code></pre></div>
-<p>you can get the count of accounts in each status category by setting
-<code>with_counts = TRUE</code></p>
+<code class="sourceCode R"><span><span class="va">orders</span> <span class="op">|&gt;</span> <span class="fu"><a href="../reference/accounts_by_status.html">accounts_by_status</a></span><span class="op">(</span><span class="va">account_id</span>, <span class="va">order_date</span>, by <span class="op">=</span> <span class="st">"month"</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   period_start period_end              active              new returning</span></span>
+<span><span class="co">#&gt; 1   2022-01-01 2022-01-31                b, h             b, h          </span></span>
+<span><span class="co">#&gt; 2   2022-02-01 2022-02-28 b, c, d, e, f, i, j c, d, e, f, i, j         b</span></span>
+<span><span class="co">#&gt; 3   2022-03-01 2022-03-31                d, f                       d, f</span></span>
+<span><span class="co">#&gt; 4   2022-04-01 2022-04-30          d, e, g, h                g         d</span></span>
+<span><span class="co">#&gt; 5   2022-05-01 2022-05-31             e, f, h                       e, h</span></span>
+<span><span class="co">#&gt; 6   2022-06-01 2022-06-30                f, j                          f</span></span>
+<span><span class="co">#&gt;   regained temporarily_lost terminally_lost                cumulative</span></span>
+<span><span class="co">#&gt; 1                                                                b, h</span></span>
+<span><span class="co">#&gt; 2                         h                    b, h, c, d, e, f, i, j</span></span>
+<span><span class="co">#&gt; 3                      e, j         b, c, i    b, h, c, d, e, f, i, j</span></span>
+<span><span class="co">#&gt; 4     e, h                f                 b, h, c, d, e, f, i, j, g</span></span>
+<span><span class="co">#&gt; 5        f                             d, g b, h, c, d, e, f, i, j, g</span></span>
+<span><span class="co">#&gt; 6        j                             e, h b, h, c, d, e, f, i, j, g</span></span></code></pre></div>
+<p>If you want the count of accounts in each status category, set
+<code>with_counts = TRUE</code> (the lists of account_ids are still
+included, we just omit them from the printed output here).</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">example_sales</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="../reference/accounts_by_status.html">accounts_by_status</a></span><span class="op">(</span><span class="va">account_id</span>, <span class="va">order_date</span>,</span>
-<span>    by <span class="op">=</span> <span class="st">"quarter"</span>, with_counts <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span>  <span class="op">)</span></span>
-<span><span class="co">#&gt;   period_start period_end                                active</span></span>
-<span><span class="co">#&gt; 1   2022-01-01 2022-03-31             a, b, c, d, e, f, g, h, i</span></span>
-<span><span class="co">#&gt; 2   2022-04-01 2022-06-30             a, b, c, d, e, f, g, h, i</span></span>
-<span><span class="co">#&gt; 3   2022-07-01 2022-09-30       a, b, c, d, f, g, h, i, j, k, l</span></span>
-<span><span class="co">#&gt; 4   2022-10-01 2022-12-31 a, b, c, d, e, f, g, h, i, j, k, l, m</span></span>
-<span><span class="co">#&gt; 5   2023-01-01 2023-03-31    a, b, c, d, e, f, g, h, j, k, l, m</span></span>
-<span><span class="co">#&gt; 6   2023-04-01 2023-06-30          a, b, c, d, e, g, h, k, l, m</span></span>
-<span><span class="co">#&gt; 7   2023-07-01 2023-09-30                   a, b, c, d, k, l, m</span></span>
-<span><span class="co">#&gt; 8   2023-10-01 2023-12-31                a, b, c, d, j, k, l, m</span></span>
-<span><span class="co">#&gt;                         new                          returning regained</span></span>
-<span><span class="co">#&gt; 1 a, b, c, d, e, f, g, h, i                                            </span></span>
-<span><span class="co">#&gt; 2                                    a, b, c, d, e, f, g, h, i         </span></span>
-<span><span class="co">#&gt; 3                   j, k, l             a, b, c, d, f, g, h, i         </span></span>
-<span><span class="co">#&gt; 4                         m    a, b, c, d, f, g, h, i, j, k, l        e</span></span>
-<span><span class="co">#&gt; 5                           a, b, c, d, e, f, g, h, j, k, l, m         </span></span>
-<span><span class="co">#&gt; 6                                 a, b, c, d, e, g, h, k, l, m         </span></span>
-<span><span class="co">#&gt; 7                                          a, b, c, d, k, l, m         </span></span>
-<span><span class="co">#&gt; 8                                          a, b, c, d, k, l, m        j</span></span>
-<span><span class="co">#&gt;   temporarily_lost terminally_lost                            cumulative</span></span>
-<span><span class="co">#&gt; 1                                              a, b, c, d, e, f, g, h, i</span></span>
-<span><span class="co">#&gt; 2                                              a, b, c, d, e, f, g, h, i</span></span>
-<span><span class="co">#&gt; 3                e                    a, b, c, d, e, f, g, h, i, j, k, l</span></span>
-<span><span class="co">#&gt; 4                                  a, b, c, d, e, f, g, h, i, j, k, l, m</span></span>
-<span><span class="co">#&gt; 5                                i a, b, c, d, e, f, g, h, i, j, k, l, m</span></span>
-<span><span class="co">#&gt; 6                j               f a, b, c, d, e, f, g, h, i, j, k, l, m</span></span>
-<span><span class="co">#&gt; 7                          e, g, h a, b, c, d, e, f, g, h, i, j, k, l, m</span></span>
-<span><span class="co">#&gt; 8                                  a, b, c, d, e, f, g, h, i, j, k, l, m</span></span>
-<span><span class="co">#&gt;   n_active n_new n_returning n_regained n_temporarily_lost n_terminally_lost</span></span>
-<span><span class="co">#&gt; 1        9     9           0          0                  0                 0</span></span>
-<span><span class="co">#&gt; 2        9     0           9          0                  0                 0</span></span>
-<span><span class="co">#&gt; 3       11     3           8          0                  1                 0</span></span>
-<span><span class="co">#&gt; 4       13     1          11          1                  0                 0</span></span>
-<span><span class="co">#&gt; 5       12     0          12          0                  0                 1</span></span>
-<span><span class="co">#&gt; 6       10     0          10          0                  1                 1</span></span>
-<span><span class="co">#&gt; 7        7     0           7          0                  0                 3</span></span>
-<span><span class="co">#&gt; 8        8     0           7          1                  0                 0</span></span>
-<span><span class="co">#&gt;   n_cumulative</span></span>
-<span><span class="co">#&gt; 1            9</span></span>
-<span><span class="co">#&gt; 2            9</span></span>
-<span><span class="co">#&gt; 3           12</span></span>
-<span><span class="co">#&gt; 4           13</span></span>
-<span><span class="co">#&gt; 5           13</span></span>
-<span><span class="co">#&gt; 6           13</span></span>
-<span><span class="co">#&gt; 7           13</span></span>
-<span><span class="co">#&gt; 8           13</span></span></code></pre></div>
-<p>Here’s how you might visualize the quarterly account status counts
-over time. Showing the lost accounts as a negative value helps
-de-clutter the picture and as well as helps perception by encoding
-values above the axis as “good” and below as “bad” (assuming we don’t
-want to lose customers). We can use color to help as well (blues/greens:
-good, reds: bad).</p>
+<code class="sourceCode R"><span><span class="va">orders</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="../reference/accounts_by_status.html">accounts_by_status</a></span><span class="op">(</span><span class="va">account_id</span>, <span class="va">order_date</span>, by <span class="op">=</span> <span class="st">"month"</span>, with_counts <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">period_start</span>, <span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html" class="external-link">starts_with</a></span><span class="op">(</span><span class="st">"n_"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   period_start n_active n_new n_returning n_regained n_temporarily_lost</span></span>
+<span><span class="co">#&gt; 1   2022-01-01        2     2           0          0                  0</span></span>
+<span><span class="co">#&gt; 2   2022-02-01        7     6           1          0                  1</span></span>
+<span><span class="co">#&gt; 3   2022-03-01        2     0           2          0                  2</span></span>
+<span><span class="co">#&gt; 4   2022-04-01        4     1           1          2                  1</span></span>
+<span><span class="co">#&gt; 5   2022-05-01        3     0           2          1                  0</span></span>
+<span><span class="co">#&gt; 6   2022-06-01        2     0           1          1                  0</span></span>
+<span><span class="co">#&gt;   n_terminally_lost n_cumulative</span></span>
+<span><span class="co">#&gt; 1                 0            2</span></span>
+<span><span class="co">#&gt; 2                 0            8</span></span>
+<span><span class="co">#&gt; 3                 3            8</span></span>
+<span><span class="co">#&gt; 4                 0            9</span></span>
+<span><span class="co">#&gt; 5                 2            9</span></span>
+<span><span class="co">#&gt; 6                 2            9</span></span></code></pre></div>
+<p>Visualizing the count of accounts in each status over time can be
+helpful to understand how the business is doing in terms of customer
+retention and churn.</p>
+<p><code>mcrutils</code> includes a larger example dataset
+<code>example_sales</code> with about 5000 orders between accounts over
+in the 2022–2024 time period.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">example_sales</span> <span class="op">|&gt;</span> <span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Rows: 5,300</span></span>
+<span><span class="co">#&gt; Columns: 2</span></span>
+<span><span class="co">#&gt; $ account_id <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "l_17"<span style="color: #949494;">, </span>"l_3"<span style="color: #949494;">, </span>"qw_1"<span style="color: #949494;">, </span>"qw_7"<span style="color: #949494;">, </span>"l_10"<span style="color: #949494;">, </span>"l_7"<span style="color: #949494;">, </span>"p_5"<span style="color: #949494;">, </span>"l_20"…</span></span>
+<span><span class="co">#&gt; $ order_date <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2022-01-01<span style="color: #949494;">, </span>2022-01-01<span style="color: #949494;">, </span>2022-01-01<span style="color: #949494;">, </span>2022-01-01<span style="color: #949494;">, </span>2022-01-02…</span></span></code></pre></div>
+<p><code><a href="../reference/accounts_by_status.html">accounts_by_status()</a></code> produces six status counts, plus
+one cumulative count– that’s up to seven data series to plot, so we need
+to be thoughtful about design choices.</p>
+<p>Showing the lost accounts as a negative value helps de-clutter the
+picture and helps perception by encoding values above the axis as “good”
+and below as “bad” (assuming we don’t want to lose customers). We can
+use color to help as well (blues/greens: good, reds: bad).</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span>, warn.conflicts <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org" class="external-link">tidyr</a></span><span class="op">)</span></span>
@@ -259,28 +234,29 @@ good, reds: bad).</p>
 <span>    <span class="st">"cumulative"</span> <span class="op">=</span> <span class="st">"#999999"</span></span>
 <span>  <span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="mcrutils_files/figure-html/manual_accounts_plot-1.png" width="672"></p>
+<p><img src="mcrutils_files/figure-html/manual_accounts_plot-1.png" width="700"></p>
 <p><code><a href="../reference/plot_accounts_by_status.html">plot_accounts_by_status()</a></code> is a convenience function that
 does the above and a bit more, cleaning up the legend, x-axis title, and
-if the last order_date is before the end of the final time period, the
+if the last order_date is before the end of the final time period (as in
+<code>example_sales</code>, which has no orders after 2024-12-20), the
 final period will be shown with dashed lines to indicate that the data
 may be incomplete.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">example_sales</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu"><a href="../reference/plot_accounts_by_status.html">plot_accounts_by_status</a></span><span class="op">(</span><span class="va">account_id</span>, <span class="va">order_date</span>, by<span class="op">=</span><span class="st">"quarter"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="mcrutils_files/figure-html/plot_accounts_1-1.png" width="672"></p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">example_sales</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="../reference/plot_accounts_by_status.html">plot_accounts_by_status</a></span><span class="op">(</span><span class="va">account_id</span>, <span class="va">order_date</span>, by <span class="op">=</span> <span class="st">"quarter"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="mcrutils_files/figure-html/plot_accounts_1-1.png" width="700"></p>
 <p>You can suppress the dashed lines for incomplete periods with with
 <code>force_final_period_complete = TRUE</code>, and exclude the
 cumulative line with <code>include_cumulative = FALSE</code>.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">example_sales</span> <span class="op">|&gt;</span> </span>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">example_sales</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/plot_accounts_by_status.html">plot_accounts_by_status</a></span><span class="op">(</span></span>
 <span>    <span class="va">account_id</span>, <span class="va">order_date</span>,</span>
 <span>    by <span class="op">=</span> <span class="st">"quarter"</span>,</span>
 <span>    force_final_period_complete <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>    include_cumulative <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
-<p><img src="mcrutils_files/figure-html/plot_accounts_2-1.png" width="672"></p>
+<p><img src="mcrutils_files/figure-html/plot_accounts_2-1.png" width="700"></p>
 </div>
 <div class="section level3">
 <h3 id="year-to-date-helpers">Year-to-date helpers<a class="anchor" aria-label="anchor" href="#year-to-date-helpers"></a>
@@ -290,7 +266,7 @@ helpful in creating year-to-date analyses</p>
 <p>With <code><a href="../reference/ytd_bounds.html">ytd_bounds()</a></code>, quickly find the date bounds of the
 latest year-to-date period in vector of dates, possibly spanning
 multiple years:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
 <span>  <span class="st">"2023-01-01"</span>, <span class="st">"2023-06-15"</span>, <span class="st">"2023-12-31"</span>,</span>
 <span>  <span class="st">"2024-01-01"</span>, <span class="st">"2024-03-15"</span>, <span class="st">"2024-07-15"</span></span>
@@ -303,7 +279,7 @@ whether the dates in a vector are within a year-to-date period relative
 to a given <code>end_date</code>.</p>
 <p>Below we have 2.5 years of historical sales data ending on June 1,
 2025. How were the sales in the comparable period of 2024 and 2023?</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
 <span><span class="va">sales</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
 <span>  date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span></span>
@@ -334,7 +310,7 @@ to a given <code>end_date</code>.</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>  <span style="text-decoration: underline;">2</span>025          600</span></span></code></pre></div>
 <p>How were the year-to-date sales in the comparable period of 2024 and
 2023?</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="op">(</span><span class="va">bounds</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ytd_bounds.html">ytd_bounds</a></span><span class="op">(</span><span class="va">sales</span><span class="op">$</span><span class="va">date</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "2025-01-01" "2025-06-01"</span></span>
 <span></span>
@@ -351,7 +327,7 @@ to a given <code>end_date</code>.</p>
 <p>With <code><a href="../reference/py_dates.html">py_dates()</a></code> you can rollback a vector of dates to
 the same period in the previous year, moving any fictitious dates to the
 prior valid day.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2024-01-01"</span>, <span class="st">"2024-02-29"</span>, <span class="st">"2025-07-15"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/py_dates.html">py_dates</a></span><span class="op">(</span><span class="op">)</span></span>
@@ -369,7 +345,7 @@ determine the format of each column. You can provide
 <code>pct_flags</code> and <code>curr_flags</code> (character vectors)
 if you need to control the list of “signal” words that indicate a column
 is a percentage or currency.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
 <span>  <span class="op">~</span><span class="va">product</span>, <span class="op">~</span><span class="va">weight</span>, <span class="op">~</span><span class="va">dollaz_earned</span>, <span class="op">~</span><span class="va">growth_pct</span>,</span>
 <span>  <span class="st">"Widget A"</span>, <span class="fl">13.53</span>, <span class="fl">1023.21</span>, <span class="fl">0.051</span>,</span>
@@ -395,7 +371,7 @@ and <code><a href="../reference/label_quarters_short.html">label_quarters_short(
 these breaks in a two-line format (like
 <code><a href="https://scales.r-lib.org/reference/label_date.html" class="external-link">scales::label_date_short()</a></code>), labeling every quarter, but
 only including the year when it changes from the previous label.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">economics</span> <span class="op">|&gt;</span></span>
@@ -406,14 +382,16 @@ only including the year when it changes from the previous label.</p>
 <span>    breaks <span class="op">=</span> <span class="fu"><a href="../reference/breaks_quarters.html">breaks_quarters</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>    labels <span class="op">=</span> <span class="fu"><a href="../reference/label_quarters_short.html">label_quarters_short</a></span><span class="op">(</span><span class="op">)</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title<span class="op">=</span><span class="st">"Automatic Quarterly Breaks"</span>,</span>
-<span>       subtitle <span class="op">=</span><span class="st">"with concise labels"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
+<span>    title <span class="op">=</span> <span class="st">"Automatic Quarterly Breaks"</span>,</span>
+<span>    subtitle <span class="op">=</span> <span class="st">"with concise labels"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>panel.grid.minor.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="mcrutils_files/figure-html/automatic-quarterly-breaks-1.png" width="700"></p>
 <p>The automatic version of <code><a href="../reference/breaks_quarters.html">breaks_quarters()</a></code> tries to
 return a reasonable number of breaks over a wide range of dates,
 down-sampling to semesters and years as needed.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">economics</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">date</span> <span class="op">&gt;=</span> <span class="st">"2005-05-01"</span>, <span class="va">date</span> <span class="op">&lt;=</span> <span class="st">"2009-03-01"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">date</span>, <span class="va">pce</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
@@ -422,11 +400,13 @@ down-sampling to semesters and years as needed.</p>
 <span>    breaks <span class="op">=</span> <span class="fu"><a href="../reference/breaks_quarters.html">breaks_quarters</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>    labels <span class="op">=</span> <span class="fu"><a href="../reference/label_quarters_short.html">label_quarters_short</a></span><span class="op">(</span><span class="op">)</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title<span class="op">=</span><span class="st">"Switching to semesters for longer ranges"</span>,</span>
-<span>       subtitle <span class="op">=</span> <span class="st">"always labelling Q1/Q3, never Q2/Q4"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
+<span>    title <span class="op">=</span> <span class="st">"Switching to semesters for longer ranges"</span>,</span>
+<span>    subtitle <span class="op">=</span> <span class="st">"always labelling Q1/Q3, never Q2/Q4"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>panel.grid.minor.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="mcrutils_files/figure-html/semester-breaks-1.png" width="700"></p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">economics</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">date</span> <span class="op">&gt;=</span> <span class="st">"2000-05-01"</span>, <span class="va">date</span> <span class="op">&lt;=</span> <span class="st">"2010-03-01"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">date</span>, <span class="va">pce</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
@@ -435,8 +415,10 @@ down-sampling to semesters and years as needed.</p>
 <span>    breaks <span class="op">=</span> <span class="fu"><a href="../reference/breaks_quarters.html">breaks_quarters</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>    labels <span class="op">=</span> <span class="fu"><a href="../reference/label_quarters_short.html">label_quarters_short</a></span><span class="op">(</span><span class="op">)</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title<span class="op">=</span><span class="st">"Switching to yearly for very long ranges"</span>,</span>
-<span>       subtitle <span class="op">=</span> <span class="st">"rather silly"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
+<span>    title <span class="op">=</span> <span class="st">"Switching to yearly for very long ranges"</span>,</span>
+<span>    subtitle <span class="op">=</span> <span class="st">"rather silly"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>panel.grid.minor.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="mcrutils_files/figure-html/yearly-breaks-for-long-ranges-1.png" width="700"></p>
 <p>With very long date ranges like this, you are likely better off
@@ -444,16 +426,13 @@ switching from these quarterly functions to the more standard date
 breaks and labels in <code>ggplot2</code>.</p>
 <p>You can force a fixed break width if quarters are desired regardless
 of the date range.</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">economics</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">date</span> <span class="op">&gt;=</span> <span class="st">"2005-02-01"</span>, <span class="va">date</span> <span class="op">&lt;=</span> <span class="st">"2008-12-01"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">date</span>, <span class="va">pce</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">example_sales</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="../reference/plot_accounts_by_status.html">plot_accounts_by_status</a></span><span class="op">(</span><span class="va">account_id</span>, <span class="va">order_date</span>, by <span class="op">=</span> <span class="st">"quarter"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_date.html" class="external-link">scale_x_date</a></span><span class="op">(</span></span>
 <span>    breaks <span class="op">=</span> <span class="fu"><a href="../reference/breaks_quarters.html">breaks_quarters</a></span><span class="op">(</span>width <span class="op">=</span> <span class="st">"1 quarter"</span><span class="op">)</span>,</span>
 <span>    labels <span class="op">=</span> <span class="fu"><a href="../reference/label_quarters_short.html">label_quarters_short</a></span><span class="op">(</span><span class="op">)</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title<span class="op">=</span><span class="st">"Fixed quarterly breaks"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>panel.grid.minor.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="mcrutils_files/figure-html/fixed-quarterly-breaks-1.png" width="700"></p>
 </div>

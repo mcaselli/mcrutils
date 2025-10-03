@@ -123,7 +123,7 @@
 <span><span class="co">#&gt; 6        j                             e, h b, h, c, d, e, f, i, j, g</span></span></code></pre></div>
 <p><code><a href="reference/plot_accounts_by_status.html">plot_accounts_by_status()</a></code> creates a line plot of the count of each account status over time.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">orders</span> <span class="op">|&gt;</span> </span>
+<code class="sourceCode R"><span><span class="va">orders</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="reference/plot_accounts_by_status.html">plot_accounts_by_status</a></span><span class="op">(</span><span class="va">account_id</span>, <span class="va">order_date</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-plot_accounts_by_status-1.png" width="100%"></p>
 </div>
@@ -212,7 +212,7 @@
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_date.html" class="external-link">scale_x_date</a></span><span class="op">(</span></span>
 <span>    breaks <span class="op">=</span> <span class="fu"><a href="reference/breaks_quarters.html">breaks_quarters</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>    labels <span class="op">=</span> <span class="fu"><a href="reference/label_quarters_short.html">label_quarters_short</a></span><span class="op">(</span><span class="op">)</span></span>
-<span>  <span class="op">)</span> </span></code></pre></div>
+<span>  <span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-automatic-quarterly-breaks-1.png" width="100%"></p>
 <p>By default, <code><a href="reference/breaks_quarters.html">breaks_quarters()</a></code> tries to return a reasonable number of breaks over a wide range of dates, down-sampling to semesters and years as needed. See <code><a href="articles/mcrutils.html">vignette("mcrutils")</a></code> for more examples.</p>
 </div>
