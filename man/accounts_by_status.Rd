@@ -82,8 +82,8 @@ set.seed(1234)
 n <- 50
 dates <- seq(as.Date("2022-01-01"), as.Date("2022-12-31"), by = "day")
 orders <- data.frame(
- account_id = sample(letters[1:10], n, replace = TRUE),
- order_date = sample(dates, n, replace = TRUE)
+  account_id = sample(letters[1:10], n, replace = TRUE),
+  order_date = sample(dates, n, replace = TRUE)
 )
 
 orders |> accounts_by_status(account_id, order_date, with_counts = TRUE)

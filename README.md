@@ -103,7 +103,7 @@ orders |> accounts_by_status(account_id, order_date)
 account status over time.
 
 ``` r
-orders |> 
+orders |>
   plot_accounts_by_status(account_id, order_date)
 ```
 
@@ -219,7 +219,7 @@ economics |>
   scale_x_date(
     breaks = breaks_quarters(),
     labels = label_quarters_short()
-  ) 
+  )
 ```
 
 <img src="man/figures/README-automatic-quarterly-breaks-1.png" width="100%" />

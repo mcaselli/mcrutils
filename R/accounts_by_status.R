@@ -1,4 +1,3 @@
-
 #' List active accounts in a date range
 #'
 #' @param data A data frame or tibble of order information containing at least
@@ -9,7 +8,6 @@
 #' @param start_date,end_date The start date and end_date of the range (inclusive)
 #' @return A vector of unique account IDs that were active in the specified date range
 active_accounts_in_range <- function(data, account_id, order_date, start_date, end_date) {
-
   active_accounts <- data |>
     mutate({{ order_date }} := as.Date({{ order_date }})) |>
     # both date bounds are inclusive--does that make using this function
@@ -81,8 +79,8 @@ active_accounts_in_range <- function(data, account_id, order_date, start_date, e
 #' n <- 50
 #' dates <- seq(as.Date("2022-01-01"), as.Date("2022-12-31"), by = "day")
 #' orders <- data.frame(
-#'  account_id = sample(letters[1:10], n, replace = TRUE),
-#'  order_date = sample(dates, n, replace = TRUE)
+#'   account_id = sample(letters[1:10], n, replace = TRUE),
+#'   order_date = sample(dates, n, replace = TRUE)
 #' )
 #'
 #' orders |> accounts_by_status(account_id, order_date, with_counts = TRUE)
@@ -167,7 +165,7 @@ accounts_by_status <- function(data, account_id, order_date, by = "month",
   result <- result |>
     dplyr::relocate(regained, temporarily_lost, terminally_lost, .after = returning)
 
-  if (with_counts){
+  if (with_counts) {
     result <- result |>
       dplyr::rowwise() |>
       dplyr::mutate(
@@ -182,5 +180,3 @@ accounts_by_status <- function(data, account_id, order_date, by = "month",
 
   return(result)
 }
-
-

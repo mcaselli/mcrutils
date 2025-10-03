@@ -36,4 +36,3 @@ test_that("plot_accounts_by_status() can exclude cumulative", {
       plot_accounts_by_status(account_id, order_date, by = "quarter", include_cumulative = FALSE)
   )
 })
-

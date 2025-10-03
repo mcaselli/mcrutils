@@ -50,7 +50,6 @@ test_that("active_accounts_in_range() works", {
     ),
     c("F")
   )
-
 })
 
 
@@ -95,8 +94,7 @@ test_that("active_accounts_in_range() works with factors", {
 })
 
 
-test_that("accounts_by_status() properly calculates period_start and period_end for monthly and quarterly periods",
-{
+test_that("accounts_by_status() properly calculates period_start and period_end for monthly and quarterly periods", {
   orders <- data.frame(
     account_id = c("A", "B", "C"),
     order_date = as.Date(c(
@@ -111,7 +109,6 @@ test_that("accounts_by_status() properly calculates period_start and period_end 
   result_quarterly <- orders |> accounts_by_status(account_id, order_date, by = "quarter")
   expect_equal(result_quarterly$period_start, as.Date(c("2022-07-01", "2022-10-01", "2023-01-01")))
   expect_equal(result_quarterly$period_end, as.Date(c("2022-09-30", "2022-12-31", "2023-03-31")))
-
 })
 
 
@@ -136,7 +133,6 @@ test_that("accounts_by_status() properly calculates period_start and period_end 
 
 
 test_that("accounts_by_status() correctly lists new accounts", {
-
   orders <- dplyr::tribble(
     ~account_id, ~order_date,
     "A", "2022-01-15",
@@ -171,7 +167,6 @@ test_that("accounts_by_status() correctly lists new accounts", {
   result_quarterly <- orders |> accounts_by_status(account_id, order_date, by = "quarter")
 
   expect_equal(result_quarterly |> dplyr::select(period_start, new), expected_quarterly)
-
 })
 
 
@@ -388,7 +383,6 @@ test_that("accounts_by_status() correctly lists cumulative accounts", {
   ) |> data.frame()
 
   expect_equal(result |> dplyr::select(period_start, cumulative), expected)
-
 })
 
 
@@ -416,8 +410,9 @@ test_that("accounts_by_status() with_counts = TRUE works", {
     as.Date("2022-04-01"), 2, 1, 0, 0, 2, 1, 6
   ) |> data.frame()
 
-  expect_equal(result |> dplyr::select(period_start, n_active, n_new, n_returning,
-                                       n_temporarily_lost, n_terminally_lost,
-                                       n_regained, n_cumulative), expected_counts)
-
+  expect_equal(result |> dplyr::select(
+    period_start, n_active, n_new, n_returning,
+    n_temporarily_lost, n_terminally_lost,
+    n_regained, n_cumulative
+  ), expected_counts)
 })
