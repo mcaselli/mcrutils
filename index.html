@@ -121,13 +121,18 @@
 <span><span class="co">#&gt; 4     e, h                f                 b, h, c, d, e, f, i, j, g</span></span>
 <span><span class="co">#&gt; 5        f                             d, g b, h, c, d, e, f, i, j, g</span></span>
 <span><span class="co">#&gt; 6        j                             e, h b, h, c, d, e, f, i, j, g</span></span></code></pre></div>
+<p><code><a href="reference/plot_accounts_by_status.html">plot_accounts_by_status()</a></code> creates a line plot of the count of each account status over time.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">orders</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu"><a href="reference/plot_accounts_by_status.html">plot_accounts_by_status</a></span><span class="op">(</span><span class="va">account_id</span>, <span class="va">order_date</span><span class="op">)</span></span></code></pre></div>
+<p><img src="reference/figures/README-plot_accounts_by_status-1.png" width="100%"></p>
 </div>
 <div class="section level3">
 <h3 id="year-to-date-helpers">Year-to-date helpers<a class="anchor" aria-label="anchor" href="#year-to-date-helpers"></a>
 </h3>
 <p><code>mcrutils</code> provides a handful functions that can be helpful in creating year-to-date analyses</p>
 <p>Below we have 2.5 years of historical sales data ending on June 1, 2025. It’s trivial to calculate the total sales grouped by year:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
 <span><span class="va">sales</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
 <span>  date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span></span>
@@ -160,7 +165,7 @@
 <span><span class="co">#&gt; 3  2025          600</span></span></code></pre></div>
 <p><code><a href="reference/is_ytd_comparable.html">is_ytd_comparable()</a></code> is a logical vector that indicates whether the dates in a vector are within a year-to-date period relative to a given <code>end_date</code>.</p>
 <p>So we can quickly filter the historical data to see how we’re doing in 2025 compared to the same period (i.e. January - June) in 2023 and 2024:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="op">(</span><span class="va">bounds</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/ytd_bounds.html">ytd_bounds</a></span><span class="op">(</span><span class="va">sales</span><span class="op">$</span><span class="va">date</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "2025-01-01" "2025-06-01"</span></span>
 <span></span>
@@ -179,7 +184,7 @@
 <h3 id="one-line-datatables">one-line datatables<a class="anchor" aria-label="anchor" href="#one-line-datatables"></a>
 </h3>
 <p><code><a href="reference/auto_dt.html">auto_dt()</a></code> is a one-line function that creates a <code><a href="https://rdrr.io/pkg/DT/man/datatable.html" class="external-link">DT::datatable</a></code> object from a data frame or tibble, and applies percent, currency, and round formatting to numeric columns, guessing the correct format from the data type and column names. The datatable has filters at the top and no rownames.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
 <span>  <span class="op">~</span><span class="va">product</span>, <span class="op">~</span><span class="va">weight</span>, <span class="op">~</span><span class="va">revenue</span>, <span class="op">~</span><span class="va">growth_pct</span>,</span>
 <span>  <span class="st">"Widget A"</span>, <span class="fl">13.53</span>, <span class="fl">1023.21</span>, <span class="fl">0.051</span>,</span>
@@ -197,7 +202,7 @@
 </h3>
 <p><code><a href="https://scales.r-lib.org/reference/label_date.html" class="external-link">scales::label_date_short()</a></code> is a great function for labeling dates in <code>ggplot2</code>, but unfortunately it can’t support quarterly breaks and labels out of the box.</p>
 <p><code><a href="reference/label_quarters_short.html">label_quarters_short()</a></code> generates similar labels for quarterly date breaks, labeling every quarter, but only including the year when it changes from the previous label. <code><a href="reference/breaks_quarters.html">breaks_quarters()</a></code> generates quarterly breaks for date scales.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">economics</span> <span class="op">|&gt;</span></span>
