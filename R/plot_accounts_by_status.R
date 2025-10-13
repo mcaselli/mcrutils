@@ -8,6 +8,9 @@
 #' categorize accounts and then creates a plot using `ggplot2`.
 #'
 #' @inheritParams accounts_by_status
+#' @param lost either "detailed" or "simple", if "detailed", terminally lost and
+#'   temporarily lost accounts are shown separately, if "simple", they are
+#'   combined into a single lost category. Defaults to "detailed".
 #' @param force_final_period_complete Logical, if TRUE, treat the final period
 #'   as complete even if it may not be. This forces the final period to be
 #'   displayed with solid lines, even if the period includes dates greater than
@@ -24,8 +27,11 @@
 #'   plot_accounts_by_status(account_id, order_date, by = "quarter")
 #' @export
 plot_accounts_by_status <- function(data, account_id, order_date, by = "month",
+                                    lost = c("detailed", "simple"),
                                     force_final_period_complete = FALSE,
                                     include_cumulative = TRUE) {
+  lost <- rlang::arg_match(lost)
+
   latest_order <- data |>
     dplyr::pull({{ order_date }}) |>
     max(na.rm = TRUE)
@@ -36,6 +42,15 @@ plot_accounts_by_status <- function(data, account_id, order_date, by = "month",
     mutate(incomplete_period = .data$period_end > latest_order) |>
     (\(x) if (!include_cumulative) {
       x |> select(-dplyr::contains("cumulative"))
+    } else {
+      x
+    })() |>
+    (\(x) if (lost == "simple") {
+      x |>
+        mutate(
+          n_lost = .data$n_terminally_lost + .data$n_temporarily_lost,
+        )  |>
+         select(-"n_temporarily_lost", -"n_terminally_lost")
     } else {
       x
     })()
@@ -53,7 +68,7 @@ plot_accounts_by_status <- function(data, account_id, order_date, by = "month",
       # pivot to prepare for ggplot
       pivot_longer(dplyr::starts_with("n_"), names_to = "status", values_to = "count") |>
       mutate(status = stringr::str_remove(.data$status, "n_")) |>
-      mutate(status = factor(.data$status, levels = c("active", "returning", "new", "regained", "temporarily_lost", "terminally_lost", "cumulative"))) |>
+      mutate(status = factor(.data$status, levels = c("active", "returning", "new", "regained", "lost", "temporarily_lost", "terminally_lost", "cumulative"))) |>
       mutate(status = fct_relabel(.data$status, ~ stringr::str_to_title(stringr::str_replace_all(.x, "_", " "))))
   }
 
@@ -90,6 +105,7 @@ plot_accounts_by_status <- function(data, account_id, order_date, by = "month",
         "Active" = "#1f78b4",
         "New" = "#33a02c",
         "Returning" = "#a6cee3",
+        "Lost" = "yellow",
         "Temporarily Lost" = "#fb9a99",
         "Terminally Lost" = "#e31a1c",
         "Regained" = "#b2df8a",
