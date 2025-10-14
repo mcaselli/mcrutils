@@ -142,12 +142,14 @@ sales |>
 ### one-line datatables
 
 `auto_dt()` is a one-line function that creates a `DT::datatable` object
-from a data frame or tibble, and applies percent, currency, and round
+from a data frame or tibble. It includes buttons to copy or download the data, 
+filter tools, and no rownames. It applies percent, currency, and round
 formatting to numeric columns, guessing the correct format from the data
-type and column names. The datatable has filters at the top and no
-rownames.
+type and column names. See `vignette("mcrutils")` for more examples, including how to specify the
+set of strings that flag a column as percentage or currency.
 
-```{r auto_dt_example, screenshot.opts=list(vwidth= 800, vheight = 600), message=FALSE}
+
+```{r auto_dt_example, eval=FALSE}
 tribble(
   ~product, ~weight, ~revenue, ~growth_pct,
   "Widget A", 13.53, 1023.21, 0.051,
@@ -159,8 +161,8 @@ tribble(
   auto_dt(numeric_digits = 1, pct_digits = 0)
 ```
 
-`vignette("mcrutils")` has more examples, including how to specify the
-set of strings that flag a column as percentage or currency.
+![auto_dt() output](\man\figures\README-manual_screenshot_auto_dt.png)
+
 
 ### Quarterly breaks and labels
 

@@ -4,7 +4,14 @@
 \alias{auto_dt}
 \title{creates a datatable with some automatic formatting}
 \usage{
-auto_dt(data, pct_digits = 1, currency_digits = 0, numeric_digits = 0, ...)
+auto_dt(
+  data,
+  pct_digits = 1,
+  currency_digits = 0,
+  numeric_digits = 0,
+  buttons = TRUE,
+  ...
+)
 }
 \arguments{
 \item{data}{a data frame to be displayed as a datatable}
@@ -14,6 +21,9 @@ auto_dt(data, pct_digits = 1, currency_digits = 0, numeric_digits = 0, ...)
 \item{currency_digits}{number of digits to display for currency columns}
 
 \item{numeric_digits}{number of digits to display for numeric columns}
+
+\item{buttons}{logical, if TRUE include buttons for copy, csv, and excel
+downloads}
 
 \item{...}{additional arguments passed to \code{\link[=guess_col_fmts]{guess_col_fmts()}}}
 }

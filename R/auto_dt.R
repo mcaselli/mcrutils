@@ -51,15 +51,39 @@ guess_col_fmts <- function(data, pct_flags = c("frac", "pct", "percent"),
 #' @param pct_digits number of digits to display for percentage columns
 #' @param currency_digits number of digits to display for currency columns
 #' @param numeric_digits number of digits to display for numeric columns
+#' @param buttons logical, if TRUE include buttons for copy, csv, and excel
+#' downloads
 #' @param ... additional arguments passed to [guess_col_fmts()]
 #'
 #' @return a datatable with formatted columns, filter at top, and no rownames
 #' @export
 auto_dt <- function(data, pct_digits = 1, currency_digits = 0,
-                    numeric_digits = 0, ...) {
+                    numeric_digits = 0,
+                    buttons = TRUE, ...) {
   col_classes <- guess_col_fmts(data, ...)
 
-  DT::datatable(data, rownames = FALSE, filter = "top") |>
+  dt_args <- list(data, rownames = FALSE, filter = "top")
+  if (buttons) {
+    button_args <- list(
+      extensions = "Buttons",
+      options = list(
+        # set order of display of elements
+        # B = buttons, f = filter, r = processing, t = table, i = info, p = pagination
+        dom = "Bfrtip",
+        buttons = list(
+          "copy",
+          list(
+            extend = "collection",
+            buttons = c("csv", "excel"),
+            text = "Download"
+          )
+        )
+      )
+    )
+    dt_args <- c(dt_args, button_args)
+  }
+
+  do.call(DT::datatable, dt_args) |>
     DT::formatPercentage(
       col_classes$pct,
       digits = pct_digits

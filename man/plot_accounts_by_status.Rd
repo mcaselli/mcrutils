@@ -9,6 +9,7 @@ plot_accounts_by_status(
   account_id,
   order_date,
   by = "month",
+  lost = c("detailed", "simple"),
   force_final_period_complete = FALSE,
   include_cumulative = TRUE
 )
@@ -24,6 +25,10 @@ erspectively}
 \item{by}{The time period resolution. Defaults to "month", but anything
 supported as a \code{unit} argument for \link[lubridate:round_date]{lubridate::floor_date} and \code{by} for
 \link{seq.Date} is an option, e.g. "week", "quarter", "2 months" etc.}
+
+\item{lost}{either "detailed" or "simple", if "detailed", terminally lost and
+temporarily lost accounts are shown separately, if "simple", they are
+combined into a single lost category. Defaults to "detailed".}
 
 \item{force_final_period_complete}{Logical, if TRUE, treat the final period
 as complete even if it may not be. This forces the final period to be

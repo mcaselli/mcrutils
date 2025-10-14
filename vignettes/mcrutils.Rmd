@@ -250,6 +250,9 @@ can provide `pct_flags` and `curr_flags` (character vectors) if you need to
 control the list of "signal" words that indicate a column is a percentage or
 currency.
 
+You can suppress the buttons for copy, csv, and excel downloads with `buttons =
+FALSE`.
+
 
 ```{r guess_col_fmts_example, screenshot.opts=list(vwidth= 800, vheight = 600), message=FALSE}
 tribble(
