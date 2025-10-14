@@ -13,7 +13,7 @@ categorize accounts and then creates a plot using ggplot2."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">mcrutils</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9005</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9006</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -23,6 +23,7 @@ categorize accounts and then creates a plot using ggplot2."></head><body>
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../articles/mcrutils.html">Get started</a></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://github.com/mcaselli/mcrutils/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
@@ -53,6 +54,7 @@ categorize accounts and then creates a plot using <code>ggplot2</code>.</p>
 <span>  <span class="va">account_id</span>,</span>
 <span>  <span class="va">order_date</span>,</span>
 <span>  by <span class="op">=</span> <span class="st">"month"</span>,</span>
+<span>  lost <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"detailed"</span>, <span class="st">"simple"</span><span class="op">)</span>,</span>
 <span>  force_final_period_complete <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  include_cumulative <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -77,6 +79,12 @@ erspectively</p></dd>
 <dd><p>The time period resolution. Defaults to "month", but anything
 supported as a <code>unit</code> argument for <a href="https://lubridate.tidyverse.org/reference/round_date.html" class="external-link">lubridate::floor_date</a> and <code>by</code> for
 <a href="https://rdrr.io/r/base/seq.Date.html" class="external-link">seq.Date</a> is an option, e.g. "week", "quarter", "2 months" etc.</p></dd>
+
+
+<dt id="arg-lost">lost<a class="anchor" aria-label="anchor" href="#arg-lost"></a></dt>
+<dd><p>either "detailed" or "simple", if "detailed", terminally lost and
+temporarily lost accounts are shown separately, if "simple", they are
+combined into a single lost category. Defaults to "detailed".</p></dd>
 
 
 <dt id="arg-force-final-period-complete">force_final_period_complete<a class="anchor" aria-label="anchor" href="#arg-force-final-period-complete"></a></dt>
