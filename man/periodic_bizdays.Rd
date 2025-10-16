@@ -7,9 +7,8 @@
 periodic_bizdays(from, to, by = "month", quantlib_calendars = "UnitedStates")
 }
 \arguments{
-\item{from}{start date (Date)}
-
-\item{to}{end date (Date)}
+\item{from, to}{start and end dates. Date object or something coercible
+with \code{\link[=as.Date]{as.Date()}}.}
 
 \item{by}{periodicity, passed to \code{\link[=seq.Date]{seq.Date()}} (e.g., "month", "quarter",
 "year"). See \code{?seq.Date} for more options.}
@@ -22,17 +21,17 @@ prefix.}
 a tibble with columns:
 \describe{
 \item{calendar}{the QuantLib calendar used}
-\item{start}{the start date of the interval}
-\item{end}{the end date of the interval}
-\item{business_days}{the number of business days in the interval,
+\item{start}{the start date of the period}
+\item{end}{the end date of the period}
+\item{business_days}{the number of business days in the period,
 according to the calendar}
 }
 }
 \description{
-This function calculates the number of business days in periodic intervals
-(e.g., monthly, quarterly) between two dates, using specified QuantLib
-calendars for holiday definitions. Convenience wrapper for
-\code{\link[bizdays:bizdays]{bizdays::bizdays()}}.
+A Convenience wrapper for \code{\link[bizdays:bizdays]{bizdays::bizdays()}}. This function calculates the
+number of business days in periodic intervals (e.g., monthly, quarterly)
+between two dates, using specified QuantLib calendars for holiday
+definitions.
 }
 \examples{
 periodic_bizdays(
