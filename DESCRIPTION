@@ -20,10 +20,12 @@ RoxygenNote: 7.3.3
 Suggests: 
     knitr,
     rmarkdown,
+    RQuantLib,
     testthat (>= 3.0.0),
     vdiffr
 Config/testthat/edition: 3
 Imports: 
+    bizdays,
     cli,
     dplyr,
     DT,
