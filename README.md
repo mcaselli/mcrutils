@@ -109,13 +109,39 @@ orders |>
 
 <img src="man/figures/README-plot_accounts_by_status-1.png" width="100%" />
 
+### Business days in periodic intervals
+
+`periodic_bizdays()` is a convenience wrapper around
+`bizdays::bizdays()` that calculates the number of business days in each
+periodic interval (e.g., monthly, quarterly) between two dates, using
+calendars from `RQuantLib` for holiday definitions.
+
+``` r
+periodic_bizdays(
+  from = "2025-01-01",
+  to = "2025-12-31",
+  by = "quarter",
+  quantlib_calendars = c("UnitedStates", "UnitedKingdom")
+)
+#> # A tibble: 8 × 4
+#>   calendar      start      end        business_days
+#>   <chr>         <date>     <date>             <int>
+#> 1 UnitedStates  2025-01-01 2025-03-31            60
+#> 2 UnitedStates  2025-04-01 2025-06-30            62
+#> 3 UnitedStates  2025-07-01 2025-09-30            63
+#> 4 UnitedStates  2025-10-01 2025-12-31            61
+#> 5 UnitedKingdom 2025-01-01 2025-03-31            62
+#> 6 UnitedKingdom 2025-04-01 2025-06-30            60
+#> 7 UnitedKingdom 2025-07-01 2025-09-30            64
+#> 8 UnitedKingdom 2025-10-01 2025-12-31            63
+```
+
 ### Year-to-date helpers
 
 `mcrutils` provides a handful functions that can be helpful in creating
 year-to-date analyses
 
 Below we have 2.5 years of historical sales data ending on June 1, 2025.
-It’s trivial to calculate the total sales grouped by year:
 
 ``` r
 set.seed(123)
@@ -138,19 +164,17 @@ head(sales)
 #> 4 2023-04-01    101
 #> 5 2023-05-01    117
 #> 6 2023-06-01    104
-
-sales |>
-  group_by(year = lubridate::year(date)) |>
-  summarise(annual_sales = sum(amount))
-#> # A tibble: 3 × 2
-#>    year annual_sales
-#>   <dbl>        <int>
-#> 1  2023         1199
-#> 2  2024         1166
-#> 3  2025          600
 ```
 
-`is_ytd_comparable()` is a logical vector that indicates whether the
+`ytd_bounds()` gets the start and end of the year-to-date period for the
+latest year in a vector of dates,
+
+``` r
+(bounds <- ytd_bounds(sales$date))
+#> [1] "2025-01-01" "2025-06-01"
+```
+
+and `is_ytd_comparable()` is a logical vector that indicates whether the
 dates in a vector are within a year-to-date period relative to a given
 `end_date`.
 
@@ -158,9 +182,6 @@ So we can quickly filter the historical data to see how we’re doing in
 2025 compared to the same period (i.e. January - June) in 2023 and 2024:
 
 ``` r
-(bounds <- ytd_bounds(sales$date))
-#> [1] "2025-01-01" "2025-06-01"
-
 sales |>
   filter(is_ytd_comparable(date, max(bounds))) |>
   group_by(year = lubridate::year(date)) |>

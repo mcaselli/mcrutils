@@ -178,31 +178,33 @@ example_sales |>
 ```
 
 
-## Year-to-date helpers
+## Business days in periodic intervals
 
-`mcrutils` provides a handful functions that can be helpful in creating 
-year-to-date analyses
+`periodic_bizdays()` is a convenience wrapper around `bizdays::bizdays()`, that
+calculates the number of business days in each periodic interval (e.g., monthly,
+quarterly) between two dates, using calendars from RQuantLib for holiday
+definitions.
 
-With `ytd_bounds()`, quickly find the date bounds of the latest year-to-date 
-period in vector of dates, possibly spanning multiple years:
-```{r}
-c(
-  "2023-01-01", "2023-06-15", "2023-12-31",
-  "2024-01-01", "2024-03-15", "2024-07-15"
-) |>
-  as.Date() |>
-  ytd_bounds()
+```{r periodic_bizdays_example}
+periodic_bizdays(
+  from = "2025-01-01",
+  to = "2025-12-31",
+  by = "quarter",
+  quantlib_calendars = c("UnitedStates", "UnitedKingdom")
+)
 ```
 
-`is_ytd_comparable()` is a logical vector that indicates whether the dates
-in a vector are within a year-to-date period relative to a given `end_date`. 
+## Year-to-date helpers
+
+`mcrutils` provides a handful functions that can be helpful in creating
+year-to-date analyses
 
 Below we have 2.5 years of historical sales data ending on June 1, 2025.
-How were the sales in the comparable period of 2024 and 2023?
+
 
 ```{r}
 set.seed(123)
-sales <- data.frame(
+sales <- tibble(
   date = seq(
     from = as.Date("2023-01-01"),
     to = as.Date("2025-06-01"),
@@ -213,16 +215,23 @@ sales <- data.frame(
 
 head(sales)
 
-sales |>
-  group_by(year = lubridate::year(date)) |>
-  summarise(annual_sales = sum(amount))
 ```
 
-How were the year-to-date sales in the comparable period of 2024 and 2023?
+`ytd_bounds()` gets the start and end of the year-to-date period for the latest
+year in a vector of dates, 
 
 ```{r}
 (bounds <- ytd_bounds(sales$date))
+```
 
+and `is_ytd_comparable()` is a logical vector that
+indicates whether the dates in a vector are within a year-to-date period
+relative to a given `end_date`.
+
+So we can quickly filter the historical data to see how we're doing in
+2025 compared to the same period (i.e. January - June) in 2023 and 2024:
+
+```{r}
 sales |>
   filter(is_ytd_comparable(date, max(bounds))) |>
   group_by(year = lubridate::year(date)) |>
@@ -237,7 +246,6 @@ c("2024-01-01", "2024-02-29", "2025-07-15") |>
   as.Date() |>
   py_dates()
 ```
-
 
 
 
