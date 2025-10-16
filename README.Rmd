@@ -96,6 +96,21 @@ orders |>
 ```
 
 
+### Business days in periodic intervals
+
+`periodic_bizdays()` is a convenience wrapper around `bizdays::bizdays()` that
+calculates the number of business days in each periodic interval (e.g., monthly,
+quarterly) between two dates, using calendars from `RQuantLib` for holiday
+definitions.
+
+```{r periodic_bizdays_example}
+periodic_bizdays(
+  from = "2025-01-01",
+  to = "2025-12-31",
+  by = "quarter",
+  quantlib_calendars = c("UnitedStates", "UnitedKingdom")
+)
+```
 
 ### Year-to-date helpers
 
@@ -103,7 +118,7 @@ orders |>
 year-to-date analyses
 
 Below we have 2.5 years of historical sales data ending on June 1, 2025.
-It's trivial to calculate the total sales grouped by year:
+
 
 ```{r}
 set.seed(123)
@@ -118,21 +133,23 @@ sales <- tibble(
 
 head(sales)
 
-sales |>
-  group_by(year = lubridate::year(date)) |>
-  summarise(annual_sales = sum(amount))
 ```
 
-`is_ytd_comparable()` is a logical vector that indicates whether the
-dates in a vector are within a year-to-date period relative to a given
-`end_date`.
+`ytd_bounds()` gets the start and end of the year-to-date period for the latest
+year in a vector of dates, 
+
+```{r}
+(bounds <- ytd_bounds(sales$date))
+```
+
+and `is_ytd_comparable()` is a logical vector that
+indicates whether the dates in a vector are within a year-to-date period
+relative to a given `end_date`.
 
 So we can quickly filter the historical data to see how we're doing in
 2025 compared to the same period (i.e. January - June) in 2023 and 2024:
 
 ```{r}
-(bounds <- ytd_bounds(sales$date))
-
 sales |>
   filter(is_ytd_comparable(date, max(bounds))) |>
   group_by(year = lubridate::year(date)) |>

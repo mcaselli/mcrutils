@@ -1,7 +1,7 @@
 Package: mcrutils
 Type: Package
 Title: Miscellaneous Utilities for Data Cleaning, Analysis, and Reporting
-Version: 0.0.0.9006
+Version: 0.0.0.9007
 Authors@R: c(
     person(
       "Michael", "Caselli",
@@ -20,10 +20,12 @@ RoxygenNote: 7.3.3
 Suggests: 
     knitr,
     rmarkdown,
+    RQuantLib,
     testthat (>= 3.0.0),
     vdiffr
 Config/testthat/edition: 3
 Imports: 
+    bizdays,
     cli,
     dplyr,
     DT,
