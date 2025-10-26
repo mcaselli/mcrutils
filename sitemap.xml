@@ -9,6 +9,7 @@
 <url><loc>https://mcaselli.github.io/mcrutils/reference/accounts_by_status.html</loc></url>
 <url><loc>https://mcaselli.github.io/mcrutils/reference/active_accounts_in_range.html</loc></url>
 <url><loc>https://mcaselli.github.io/mcrutils/reference/auto_dt.html</loc></url>
+<url><loc>https://mcaselli.github.io/mcrutils/reference/bizday_of_period.html</loc></url>
 <url><loc>https://mcaselli.github.io/mcrutils/reference/breaks_quarters.html</loc></url>
 <url><loc>https://mcaselli.github.io/mcrutils/reference/calc_quarter_breaks.html</loc></url>
 <url><loc>https://mcaselli.github.io/mcrutils/reference/calc_semester_breaks.html</loc></url>
@@ -19,6 +20,7 @@
 <url><loc>https://mcaselli.github.io/mcrutils/reference/index.html</loc></url>
 <url><loc>https://mcaselli.github.io/mcrutils/reference/is_ytd_comparable.html</loc></url>
 <url><loc>https://mcaselli.github.io/mcrutils/reference/label_quarters_short.html</loc></url>
+<url><loc>https://mcaselli.github.io/mcrutils/reference/load_calendars.html</loc></url>
 <url><loc>https://mcaselli.github.io/mcrutils/reference/mcrutils-package.html</loc></url>
 <url><loc>https://mcaselli.github.io/mcrutils/reference/normalize_logicals.html</loc></url>
 <url><loc>https://mcaselli.github.io/mcrutils/reference/periodic_bizdays.html</loc></url>

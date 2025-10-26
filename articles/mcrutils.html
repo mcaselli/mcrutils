@@ -61,7 +61,7 @@
       <h1>mcrutils</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/mcaselli/mcrutils/blob/v0.0.0.9007/vignettes/mcrutils.Rmd" class="external-link"><code>vignettes/mcrutils.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/mcaselli/mcrutils/blob/master/vignettes/mcrutils.Rmd" class="external-link"><code>vignettes/mcrutils.Rmd</code></a></small>
       <div class="d-none name"><code>mcrutils.Rmd</code></div>
     </div>
 
@@ -287,13 +287,128 @@ dates, using calendars from RQuantLib for holiday definitions.</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">8</span> UnitedKingdom 2025-10-01 2025-12-31            63</span></span></code></pre></div>
 </div>
 <div class="section level3">
+<h3 id="business-day-of-period">Business day of period<a class="anchor" aria-label="anchor" href="#business-day-of-period"></a>
+</h3>
+<p><code><a href="../reference/bizday_of_period.html">bizday_of_period()</a></code> calculates the business day of the
+period (month, quarter, or year) for a given date and calendar e.g. date
+x is the 3rd business day of the month.</p>
+<p>This can be helpful in creating an apples-to-apples “burn-up” chart
+showing cumulative orders, revenue, etc through the period vs. a similar
+period in a prior year.</p>
+<p>When there are multiple records per day, it’s generally faster to
+create a lookup table from date to business day of period, and then join
+that to your data frame.</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span>, warn.conflicts <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://lubridate.tidyverse.org" class="external-link">lubridate</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Attaching package: 'lubridate'</span></span>
+<span><span class="co">#&gt; The following objects are masked from 'package:base':</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt;     date, intersect, setdiff, union</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://purrr.tidyverse.org/" class="external-link">purrr</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># make some orders data</span></span>
+<span><span class="va">n_orders</span> <span class="op">&lt;-</span> <span class="fl">6000</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
+<span><span class="va">orders</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
+<span>  order_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2024-01-01"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2025-12-31"</span><span class="op">)</span>, by <span class="op">=</span> <span class="st">"day"</span><span class="op">)</span>,</span>
+<span>    <span class="va">n_orders</span>,</span>
+<span>    replace <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  units <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Poisson.html" class="external-link">rpois</a></span><span class="op">(</span><span class="va">n_orders</span>, lambda <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">+</span> <span class="fl">1</span>,</span>
+<span>  market <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html" class="external-link">sample</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"UnitedStates"</span>, <span class="st">"UnitedKingdom"</span><span class="op">)</span>, <span class="va">n_orders</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">order_date</span>, <span class="va">market</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>order_id <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/row_number.html" class="external-link">row_number</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/relocate.html" class="external-link">relocate</a></span><span class="op">(</span><span class="va">order_id</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># make a lookup table for business day of month and quarter</span></span>
+<span></span>
+<span><span class="co">## first load the relevant calendars</span></span>
+<span><span class="fu"><a href="../reference/load_calendars.html">load_calendars</a></span><span class="op">(</span></span>
+<span>  dates <span class="op">=</span> <span class="va">orders</span><span class="op">$</span><span class="va">order_date</span>,</span>
+<span>  calendars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">orders</span><span class="op">$</span><span class="va">market</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">bizday_lookup</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
+<span>  date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span></span>
+<span>    from <span class="op">=</span> <span class="fu">lubridate</span><span class="fu">::</span><span class="fu"><a href="https://lubridate.tidyverse.org/reference/round_date.html" class="external-link">floor_date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">orders</span><span class="op">$</span><span class="va">order_date</span><span class="op">)</span>, <span class="st">"month"</span><span class="op">)</span>,</span>
+<span>    to <span class="op">=</span> <span class="fu">lubridate</span><span class="fu">::</span><span class="fu"><a href="https://lubridate.tidyverse.org/reference/round_date.html" class="external-link">ceiling_date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">orders</span><span class="op">$</span><span class="va">order_date</span><span class="op">)</span>, <span class="st">"month"</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span>,</span>
+<span>    by <span class="op">=</span> <span class="st">"day"</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/expand_grid.html" class="external-link">expand_grid</a></span><span class="op">(</span>market <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">orders</span><span class="op">$</span><span class="va">market</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>    bizday_of_month <span class="op">=</span> <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/pmap.html" class="external-link">pmap_int</a></span><span class="op">(</span></span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">date</span>, <span class="va">.data</span><span class="op">$</span><span class="va">market</span><span class="op">)</span>,</span>
+<span>      \<span class="op">(</span><span class="va">date</span>, <span class="va">market</span><span class="op">)</span> <span class="op">{</span></span>
+<span>        <span class="fu"><a href="../reference/bizday_of_period.html">bizday_of_period</a></span><span class="op">(</span><span class="va">date</span>, <span class="va">market</span>, period <span class="op">=</span> <span class="st">"month"</span><span class="op">)</span></span>
+<span>      <span class="op">}</span></span>
+<span>    <span class="op">)</span>,</span>
+<span>    bizday_of_quarter <span class="op">=</span> <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/pmap.html" class="external-link">pmap_int</a></span><span class="op">(</span></span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">date</span>, <span class="va">.data</span><span class="op">$</span><span class="va">market</span><span class="op">)</span>,</span>
+<span>      \<span class="op">(</span><span class="va">date</span>, <span class="va">market</span><span class="op">)</span> <span class="op">{</span></span>
+<span>        <span class="fu"><a href="../reference/bizday_of_period.html">bizday_of_period</a></span><span class="op">(</span><span class="va">date</span>, <span class="va">market</span>, period <span class="op">=</span> <span class="st">"quarter"</span><span class="op">)</span></span>
+<span>      <span class="op">}</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">bizday_lookup</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 4</span></span></span>
+<span><span class="co">#&gt;   date       market        bizday_of_month bizday_of_quarter</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 2024-01-01 UnitedKingdom               0                 0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 2024-01-01 UnitedStates                0                 0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> 2024-01-02 UnitedKingdom               0                 0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 2024-01-02 UnitedStates                0                 0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 2024-01-03 UnitedKingdom               1                 1</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> 2024-01-03 UnitedStates                1                 1</span></span></code></pre></div>
+<p>Then join to your orders data:</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">orders_with_bizday</span> <span class="op">&lt;-</span> <span class="va">orders</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html" class="external-link">left_join</a></span><span class="op">(</span><span class="va">bizday_lookup</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"order_date"</span> <span class="op">=</span> <span class="st">"date"</span>, <span class="st">"market"</span> <span class="op">=</span> <span class="st">"market"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">orders_with_bizday</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 6</span></span></span>
+<span><span class="co">#&gt;   order_id order_date units market        bizday_of_month bizday_of_quarter</span></span>
+<span><span class="co">#&gt;      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span>        1 2024-01-01     4 UnitedKingdom               0                 0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span>        2 2024-01-01     4 UnitedKingdom               0                 0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span>        3 2024-01-01     4 UnitedKingdom               0                 0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span>        4 2024-01-01     4 UnitedKingdom               0                 0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span>        5 2024-01-01     6 UnitedKingdom               0                 0</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span>        6 2024-01-01     4 UnitedKingdom               0                 0</span></span></code></pre></div>
+<p>Now we can make a cumulative sum of units ordered by business day of
+month. Let’s imagine it’s mid-June 2025, and we want to see how orders
+are tracking against the prior year.</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">orders_with_bizday</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">order_date</span> <span class="op">&lt;</span> <span class="fu"><a href="https://lubridate.tidyverse.org/reference/ymd.html" class="external-link">ymd</a></span><span class="op">(</span><span class="st">"2025-06-19"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu"><a href="https://lubridate.tidyverse.org/reference/month.html" class="external-link">month</a></span><span class="op">(</span><span class="va">order_date</span><span class="op">)</span> <span class="op">==</span> <span class="fl">6</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span>year <span class="op">=</span> <span class="fu"><a href="https://lubridate.tidyverse.org/reference/year.html" class="external-link">year</a></span><span class="op">(</span><span class="va">order_date</span><span class="op">)</span>, <span class="va">bizday_of_month</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>units_ordered <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">units</span><span class="op">)</span>, .groups <span class="op">=</span> <span class="st">"drop"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span><span class="va">year</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>cumulative_units_ordered <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cumsum.html" class="external-link">cumsum</a></span><span class="op">(</span><span class="va">units_ordered</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">bizday_of_month</span>, <span class="va">cumulative_units_ordered</span>, color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">year</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">1.2</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
+<span>    title <span class="op">=</span> <span class="st">"Cumulative Units Ordered by Business Day of Month"</span>,</span>
+<span>    x <span class="op">=</span> <span class="st">"Business Day of Month"</span>,</span>
+<span>    y <span class="op">=</span> <span class="st">"Units Ordered"</span>,</span>
+<span>    color <span class="op">=</span> <span class="st">"Year"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p><img src="mcrutils_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
+</div>
+<div class="section level3">
 <h3 id="year-to-date-helpers">Year-to-date helpers<a class="anchor" aria-label="anchor" href="#year-to-date-helpers"></a>
 </h3>
 <p><code>mcrutils</code> provides a handful functions that can be
 helpful in creating year-to-date analyses</p>
 <p>Below we have 2.5 years of historical sales data ending on June 1,
 2025.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
 <span><span class="va">sales</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
 <span>  date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span></span>
@@ -316,7 +431,7 @@ helpful in creating year-to-date analyses</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> 2023-06-01    104</span></span></code></pre></div>
 <p><code><a href="../reference/ytd_bounds.html">ytd_bounds()</a></code> gets the start and end of the year-to-date
 period for the latest year in a vector of dates,</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="op">(</span><span class="va">bounds</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/ytd_bounds.html">ytd_bounds</a></span><span class="op">(</span><span class="va">sales</span><span class="op">$</span><span class="va">date</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "2025-01-01" "2025-06-01"</span></span></code></pre></div>
 <p>and <code><a href="../reference/is_ytd_comparable.html">is_ytd_comparable()</a></code> is a logical vector that
@@ -325,7 +440,7 @@ relative to a given <code>end_date</code>.</p>
 <p>So we can quickly filter the historical data to see how we’re doing
 in 2025 compared to the same period (i.e. January - June) in 2023 and
 2024:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sales</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu"><a href="../reference/is_ytd_comparable.html">is_ytd_comparable</a></span><span class="op">(</span><span class="va">date</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">bounds</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span>year <span class="op">=</span> <span class="fu">lubridate</span><span class="fu">::</span><span class="fu"><a href="https://lubridate.tidyverse.org/reference/year.html" class="external-link">year</a></span><span class="op">(</span><span class="va">date</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -339,7 +454,7 @@ in 2025 compared to the same period (i.e. January - June) in 2023 and
 <p>With <code><a href="../reference/py_dates.html">py_dates()</a></code> you can rollback a vector of dates to
 the same period in the previous year, moving any fictitious dates to the
 prior valid day.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2024-01-01"</span>, <span class="st">"2024-02-29"</span>, <span class="st">"2025-07-15"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/py_dates.html">py_dates</a></span><span class="op">(</span><span class="op">)</span></span>
@@ -359,7 +474,7 @@ if you need to control the list of “signal” words that indicate a column
 is a percentage or currency.</p>
 <p>You can suppress the buttons for copy, csv, and excel downloads with
 <code>buttons = FALSE</code>.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
 <span>  <span class="op">~</span><span class="va">product</span>, <span class="op">~</span><span class="va">weight</span>, <span class="op">~</span><span class="va">dollaz_earned</span>, <span class="op">~</span><span class="va">growth_pct</span>,</span>
 <span>  <span class="st">"Widget A"</span>, <span class="fl">13.53</span>, <span class="fl">1023.21</span>, <span class="fl">0.051</span>,</span>
@@ -385,7 +500,7 @@ and <code><a href="../reference/label_quarters_short.html">label_quarters_short(
 these breaks in a two-line format (like
 <code><a href="https://scales.r-lib.org/reference/label_date.html" class="external-link">scales::label_date_short()</a></code>), labeling every quarter, but
 only including the year when it changes from the previous label.</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">economics</span> <span class="op">|&gt;</span></span>
@@ -405,7 +520,7 @@ only including the year when it changes from the previous label.</p>
 <p>The automatic version of <code><a href="../reference/breaks_quarters.html">breaks_quarters()</a></code> tries to
 return a reasonable number of breaks over a wide range of dates,
 down-sampling to semesters and years as needed.</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">economics</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">date</span> <span class="op">&gt;=</span> <span class="st">"2005-05-01"</span>, <span class="va">date</span> <span class="op">&lt;=</span> <span class="st">"2009-03-01"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">date</span>, <span class="va">pce</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
@@ -420,7 +535,7 @@ down-sampling to semesters and years as needed.</p>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>panel.grid.minor.x <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="mcrutils_files/figure-html/semester-breaks-1.png" width="700"></p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">economics</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">date</span> <span class="op">&gt;=</span> <span class="st">"2000-05-01"</span>, <span class="va">date</span> <span class="op">&lt;=</span> <span class="st">"2010-03-01"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">date</span>, <span class="va">pce</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
@@ -440,7 +555,7 @@ switching from these quarterly functions to the more standard date
 breaks and labels in <code>ggplot2</code>.</p>
 <p>You can force a fixed break width if quarters are desired regardless
 of the date range.</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">example_sales</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="../reference/plot_accounts_by_status.html">plot_accounts_by_status</a></span><span class="op">(</span><span class="va">account_id</span>, <span class="va">order_date</span>, by <span class="op">=</span> <span class="st">"quarter"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_date.html" class="external-link">scale_x_date</a></span><span class="op">(</span></span>
