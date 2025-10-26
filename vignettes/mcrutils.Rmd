@@ -194,6 +194,110 @@ periodic_bizdays(
 )
 ```
 
+
+## Business day of period
+`bizday_of_period()` calculates the business day of the period (month, quarter,
+or year) for a given date and calendar e.g. date x is the 3rd business day of
+the month.
+
+This can be helpful in creating an apples-to-apples "burn-up" chart showing
+cumulative orders, revenue, etc through the period vs. a similar period in a
+prior year.
+
+When there are multiple records per day, it's generally faster to create a
+lookup table from date to business day of period, and then join that to your
+data frame.
+
+
+```{r bizday_of_period_example}
+library(dplyr, warn.conflicts = FALSE)
+library(lubridate)
+library(purrr)
+
+# make some orders data
+n_orders <- 6000
+set.seed(123)
+orders <- tibble(
+  order_date = sample(
+    seq(as.Date("2024-01-01"), as.Date("2025-12-31"), by = "day"),
+    n_orders,
+    replace = TRUE
+  ),
+  units = rpois(n_orders, lambda = 3) + 1,
+  market = sample(c("UnitedStates", "UnitedKingdom"), n_orders, replace = TRUE)
+) |>
+  arrange(order_date, market) |>
+  mutate(order_id = row_number()) |>
+  relocate(order_id)
+
+# make a lookup table for business day of month and quarter
+
+## first load the relevant calendars
+load_calendars(
+  dates = orders$order_date,
+  calendars = unique(orders$market)
+)
+
+bizday_lookup <- tibble(
+  date = seq(
+    from = lubridate::floor_date(min(orders$order_date), "month"),
+    to = lubridate::ceiling_date(max(orders$order_date), "month") - 1,
+    by = "day"
+  )
+) |>
+  tidyr::expand_grid(market = unique(orders$market)) |>
+  mutate(
+    bizday_of_month = purrr::pmap_int(
+      list(.data$date, .data$market),
+      \(date, market) {
+        bizday_of_period(date, market, period = "month")
+      }
+    ),
+    bizday_of_quarter = purrr::pmap_int(
+      list(.data$date, .data$market),
+      \(date, market) {
+        bizday_of_period(date, market, period = "quarter")
+      }
+    )
+  )
+
+head(bizday_lookup)
+```  
+
+Then join to your orders data:
+
+```{r}
+orders_with_bizday <- orders |>
+  left_join(bizday_lookup, by = c("order_date" = "date", "market" = "market"))
+head(orders_with_bizday)
+```
+
+Now we can make a cumulative sum of units ordered by business day of month. 
+Let's imagine it's mid-June 2025, and we want to see how orders are tracking against the prior year.
+
+```{r}
+orders_with_bizday |>
+  filter(order_date < ymd("2025-06-19")) |>
+  filter(month(order_date) == 6) |>
+  group_by(year = year(order_date), bizday_of_month) |>
+  summarise(units_ordered = sum(units), .groups = "drop") |>
+  group_by(year) |>
+  mutate(cumulative_units_ordered = cumsum(units_ordered)) |>
+  ggplot(aes(bizday_of_month, cumulative_units_ordered, color = factor(year))) +
+  geom_line(linewidth = 1.2) +
+  labs(
+    title = "Cumulative Units Ordered by Business Day of Month",
+    x = "Business Day of Month",
+    y = "Units Ordered",
+    color = "Year"
+  ) +
+  theme_minimal()
+```
+
+
+
+
+
 ## Year-to-date helpers
 
 `mcrutils` provides a handful functions that can be helpful in creating
@@ -214,7 +318,6 @@ sales <- tibble(
 )
 
 head(sales)
-
 ```
 
 `ytd_bounds()` gets the start and end of the year-to-date period for the latest
@@ -358,5 +461,3 @@ example_sales |>
   ) +
   theme(panel.grid.minor.x = element_blank())
 ```
-
-

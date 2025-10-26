@@ -1,5 +1,15 @@
 # mcrutils (development version)
 
+## New
+
+- `bizday_of_period()` to compute the business day of a date within a given
+period (e.g. month, quarter).
+
+- `load_calendars()` a convenience wrapper around 
+`bizdays::load_quantlib_calendars()` that takes a vector of dates and a vector 
+of calendars and loads the calendars for the full years spanning the specified 
+dates.
+
 # mcrutils 0.0.0.9007
 
 ## New
