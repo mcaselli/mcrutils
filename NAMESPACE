@@ -2,11 +2,13 @@
 
 export(accounts_by_status)
 export(auto_dt)
+export(bizday_of_period)
 export(breaks_quarters)
 export(detect_hidden_logicals)
 export(guess_col_fmts)
 export(is_ytd_comparable)
 export(label_quarters_short)
+export(load_calendars)
 export(normalize_logicals)
 export(periodic_bizdays)
 export(plot_accounts_by_status)
