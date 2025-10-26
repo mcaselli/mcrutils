@@ -109,7 +109,7 @@ orders |>
 
 <img src="man/figures/README-plot_accounts_by_status-1.png" width="100%" />
 
-### Business days in periodic intervals
+### Business days
 
 `periodic_bizdays()` is a convenience wrapper around
 `bizdays::bizdays()` that calculates the number of business days in each
@@ -135,6 +135,36 @@ periodic_bizdays(
 #> 7 UnitedKingdom 2025-07-01 2025-09-30            64
 #> 8 UnitedKingdom 2025-10-01 2025-12-31            63
 ```
+
+This is handy when analyzing data summarized by month or quarter and you
+want to adjust for business days in each period.
+
+`bizday_of_period()` calculates the business day of the period (month,
+quarter, or year) for a given date and calendar.
+
+``` r
+# Load the calendar first
+library(bizdays)
+#> 
+#> Attaching package: 'bizdays'
+#> The following object is masked from 'package:stats':
+#> 
+#>     offset
+load_quantlib_calendars("UnitedStates",
+  from = as.Date("2025-01-01"),
+  to = as.Date("2025-12-31")
+)
+#> Calendar QuantLib/UnitedStates loaded
+
+bizday_of_period(as.Date("2025-06-15"), "UnitedStates", period = "month")
+#> [1] 10
+bizday_of_period(as.Date("2025-06-15"), "UnitedStates", period = "year")
+#> [1] 114
+```
+
+This is useful for creating a cumulative “burn-up” chart tracking
+mid-period progress against e.g. the prior year (See
+vignette(“mcrutils”) for an example).
 
 ### Year-to-date helpers
 
