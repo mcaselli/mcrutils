@@ -195,7 +195,7 @@ periodic_bizdays(
 ```
 
 
-## Business day of period
+## Cumulative daily sales by business day of period
 `bizday_of_period()` calculates the business day of the period (month, quarter,
 or year) for a given date and calendar e.g. date x is the 3rd business day of
 the month.
@@ -208,100 +208,139 @@ When there are multiple records per day, it's generally faster to create a
 lookup table from date to business day of period, and then join that to your
 data frame.
 
+Using the `example_sales` dataset, first we add a column with the
+QuantLib calendar to be used for each order (in this case the market column is
+close, we just need to eliminate the space in "United States").
 
-```{r bizday_of_period_example}
+```{r head_example_sales}
 library(dplyr, warn.conflicts = FALSE)
 library(lubridate, warn.conflicts = FALSE)
 library(purrr)
+library(stringr)
 
-# make some orders data
-n_orders <- 6000
-set.seed(123)
-orders <- tibble(
-  order_date = sample(
-    seq(as.Date("2024-01-01"), as.Date("2025-12-31"), by = "day"),
-    n_orders,
-    replace = TRUE
-  ),
-  units = rpois(n_orders, lambda = 3) + 1,
-  market = sample(c("UnitedStates", "UnitedKingdom"), n_orders, replace = TRUE)
-) |>
-  arrange(order_date, market) |>
-  mutate(order_id = row_number()) |>
-  relocate(order_id)
+sales <- example_sales |>
+  mutate(calendar = str_replace_all(market, " ", ""))
 
-# make a lookup table for business day of month and quarter
+head(sales)
+```
+
+
+Now we can make a lookup table covering the years and markets in our data set.
+
+`load_calendars()` is as a convenience wrapper around
+`bizdays::load_quantlib_calendars()` that saves you from having to specify the
+start and end date before loading the quantlib calendars--you just provide a
+vector of dates and it will cover the full years spanned by those dates.
+
+
+
+```{r bizday_of_period_example}
 
 ## first load the relevant calendars
 load_calendars(
-  dates = orders$order_date,
-  calendars = unique(orders$market)
+  dates = sales$order_date,
+  calendars = unique(sales$calendar)
 )
 
 bizday_lookup <- tibble(
-  # make a row for each date in the years spanned by the orders data
+  # make a row for each date in the years spanned by the sales data
   date = seq(
-    from = lubridate::floor_date(min(orders$order_date), "month"),
-    to = lubridate::ceiling_date(max(orders$order_date), "month") - 1,
+    from = lubridate::floor_date(min(sales$order_date), "month"),
+    to = lubridate::ceiling_date(max(sales$order_date), "month") - 1,
     by = "day"
   )
 ) |>
-  # cross with each market
-  tidyr::expand_grid(market = unique(orders$market)) |>
+  # cross with each calendar
+  tidyr::expand_grid(calendar = unique(sales$calendar)) |>
   mutate(
-    # calculate the bizday of month and quarter for each date in each market
+    # calculate the business day of month for each date in each market
     bizday_of_month = purrr::pmap_int(
-      list(.data$date, .data$market),
-      \(date, market) {
-        bizday_of_period(date, market, period = "month")
+      list(.data$date, .data$calendar),
+      \(date, calendar) {
+        bizday_of_period(date, calendar, period = "month")
       }
     ),
+    # and again for the business day of quarter
     bizday_of_quarter = purrr::pmap_int(
-      list(.data$date, .data$market),
-      \(date, market) {
-        bizday_of_period(date, market, period = "quarter")
+      list(.data$date, .data$calendar),
+      \(date, calendar) {
+        bizday_of_period(date, calendar, period = "quarter")
       }
     )
   )
 
+# peek at the result
 bizday_lookup |>
-  filter(date >= as.Date("2025-06-02")) |> # a Sunday
+  filter(date >= ymd("2022-06-01")) |> # starting on a Sunday in June
   head()
-```  
-
-Then join to your orders data:
-
-```{r}
-orders_with_bizday <- orders |>
-  left_join(bizday_lookup, by = c("order_date" = "date", "market" = "market"))
-head(orders_with_bizday)
 ```
 
-Now we can make a cumulative sum of units ordered by business day of month. 
-Let's imagine it's mid-June 2025, and we want to see how orders are tracking against the prior year.
+Now we can join the lookup table to the sales data.
 
 ```{r}
-orders_with_bizday |>
-  filter(order_date < ymd("2025-06-19")) |>
-  filter(month(order_date) == 6) |>
+sales_with_bizday <- sales |>
+  left_join(bizday_lookup, by = c("order_date" = "date", "calendar" = "calendar"))
+head(sales_with_bizday)
+```
+
+Let's imagine it's mid-November 2024, and we want to see how orders are tracking
+against the prior year.
+
+First we group by the year and business day of month, then calculate daily units
+ordered and the cumulative sum of units ordered
+
+```{r}
+global_cum_daily_sales <- sales_with_bizday |>
+  filter(order_date < ymd("2024-11-18")) |>
+  filter(month(order_date) == 11) |>
   group_by(year = year(order_date), bizday_of_month) |>
-  summarise(units_ordered = sum(units), .groups = "drop") |>
+  summarise(units_ordered = sum(units_ordered), .groups = "drop") |>
   group_by(year) |>
-  mutate(cumulative_units_ordered = cumsum(units_ordered)) |>
+  mutate(cumulative_units_ordered = cumsum(units_ordered)) 
+
+head(global_cum_daily_sales)
+```
+
+
+Now we can construct a cumulative daily sales chart comparing 2024 to prior years.
+
+```{r}
+global_cum_daily_sales |>
   ggplot(aes(bizday_of_month, cumulative_units_ordered, color = factor(year))) +
   geom_line(linewidth = 1.2) +
   labs(
     title = "Cumulative Units Ordered by Business Day of Month",
-    x = "Business Day of Month",
-    y = "Units Ordered",
     color = "Year"
   ) +
   theme_minimal()
 ```
 
+Or we can look by-market as well, we just need to add another grouping variable
+for the market, then facet the plot.
 
+```{r}
+regional_cum_daily_sales <- sales_with_bizday |>
+  filter(order_date < ymd("2024-11-18")) |>
+  filter(month(order_date) == 11) |>
+  group_by(year = year(order_date), bizday_of_month, market) |>
+  summarise(units_ordered = sum(units_ordered), .groups = "drop") |>
+  group_by(year, market) |>
+  mutate(cumulative_units_ordered = cumsum(units_ordered)) 
 
+head(regional_cum_daily_sales)
+```
 
+```{r}
+regional_cum_daily_sales |>
+  ggplot(aes(bizday_of_month, cumulative_units_ordered, color = factor(year))) +
+  geom_line(linewidth = 1.2) +
+  facet_wrap(~market, ncol=1) +
+  labs(
+    title = "Cumulative Units Ordered by Business Day of Month",
+    color = "Year"
+  ) +
+  theme_minimal()
+```
 
 ## Year-to-date helpers
 
