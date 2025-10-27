@@ -211,7 +211,7 @@ data frame.
 
 ```{r bizday_of_period_example}
 library(dplyr, warn.conflicts = FALSE)
-library(lubridate)
+library(lubridate, warn.conflicts = FALSE)
 library(purrr)
 
 # make some orders data
@@ -239,14 +239,17 @@ load_calendars(
 )
 
 bizday_lookup <- tibble(
+  # make a row for each date in the years spanned by the orders data
   date = seq(
     from = lubridate::floor_date(min(orders$order_date), "month"),
     to = lubridate::ceiling_date(max(orders$order_date), "month") - 1,
     by = "day"
   )
 ) |>
+  # cross with each market
   tidyr::expand_grid(market = unique(orders$market)) |>
   mutate(
+    # calculate the bizday of month and quarter for each date in each market
     bizday_of_month = purrr::pmap_int(
       list(.data$date, .data$market),
       \(date, market) {
@@ -261,7 +264,9 @@ bizday_lookup <- tibble(
     )
   )
 
-head(bizday_lookup)
+bizday_lookup |>
+  filter(date >= as.Date("2025-06-02")) |> # a Sunday
+  head()
 ```  
 
 Then join to your orders data:
