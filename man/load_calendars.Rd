@@ -4,7 +4,7 @@
 \alias{load_calendars}
 \title{Load QuantLib Calendars to cover the years spanning given dates}
 \usage{
-load_calendars(dates, calendars, quiet = TRUE)
+load_calendars(dates, calendars, financial = FALSE, quiet = TRUE)
 }
 \arguments{
 \item{dates}{A vector of dates (Date objects or coercible with \code{\link[=as.Date]{as.Date()}})}
@@ -12,6 +12,12 @@ load_calendars(dates, calendars, quiet = TRUE)
 \item{calendars}{A character vector of RQuantLib calendar names
 (see \code{\link[bizdays:other-calendars]{bizdays::load_quantlib_calendars()}}). Don't include the "QuantLib/"
 prefix.}
+
+\item{financial}{see \code{\link[bizdays:other-calendars]{bizdays::load_quantlib_calendars()}}. Defaults to
+\code{FALSE}, which has the result that the ending business day is considered
+when counting elapsed bizdays between two dates, which yields the results
+we're looking for here (i.e. inclusive counting). Note this is the opposite
+of the default behavior of \code{\link[bizdays:other-calendars]{bizdays::load_quantlib_calendars()}}.}
 
 \item{quiet}{Logical indicating whether to suppress messages during loading
 (default: TRUE)}
