@@ -34,6 +34,7 @@ Imports:
     lifecycle,
     lubridate,
     purrr,
+    qlcal,
     rlang,
     stringr,
     tidyr,
