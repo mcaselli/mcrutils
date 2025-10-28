@@ -7,11 +7,9 @@
 bizday_of_period(date, calendar, period = c("month", "quarter", "year"))
 }
 \arguments{
-\item{date}{A date (Date object or coercible with \code{\link[=as.Date]{as.Date()}})}
+\item{date}{A vector of dates (Date object or coercible with \code{\link[=as.Date]{as.Date()}}).}
 
-\item{calendar}{A RQuantLib calendar name (see
-\code{\link[bizdays:other-calendars]{bizdays::load_quantlib_calendars()}}). Don't include the "QuantLib/"
-prefix.}
+\item{calendar}{(character) A QuantLib calendar id (the vector \link[qlcal:calendars]{qlcal::calendars} lists all valid options).}
 
 \item{period}{The period type: "month", "quarter", or "year"}
 }
@@ -20,24 +18,39 @@ An integer representing the business day of the period for the
 given date and calendar.
 }
 \description{
-Convenience wrapper around \code{bizdays::bizdays()} that calculates the number of
-business days from the start of the period (month, quarter, or year) to
-the given date, using a specified QuantLib calendar for holiday definitions.
+Convenience wrapper around \code{\link[qlcal:businessDaysBetween]{qlcal::businessDaysBetween()}} that calculates
+what business day a date is of a month, quarter, or year, with the first
+business day ofthe period being 1, the second 2, etc.
+It uses a specified QuantLib calendar for holiday definitions.
 }
 \details{
-Be sure to load the calendar first with dates spanning the period of interest.
+NOTE: To ensure predictable, intuitive results, input dates should generally
+be pre-adjusted to business days using a transparent and deterministic method
+like \code{\link[=adjust_to_bizday]{adjust_to_bizday()}}, \code{\link[qlcal:adjust]{qlcal::adjust()}} or similar, because adjustment
+may cause a date to shift from one period to another, e.g. adjustment of a
+weekend/holiday to the next business day may cause the date to shift to the
+next month.
 }
 \examples{
-# Load the calendar first
-library(bizdays)
-load_quantlib_calendars("UnitedStates",
-  from = as.Date("2023-01-01"),
-  to = as.Date("2023-12-31")
-)
-bizday_of_period(as.Date("2023-03-15"), "UnitedStates", period = "month")
-bizday_of_period(as.Date("2023-03-15"), "UnitedStates", period = "quarter")
-bizday_of_period(as.Date("2023-03-15"), "UnitedStates", period = "year")
+# valid calendars
+qlcal::calendars
+
+# July 4 is a US holiday, but not a UK holiday
+bizday_of_period("2024-07-05", "UnitedStates", period = "month")
+bizday_of_period("2024-07-05", "UnitedKingdom", period = "month")
+
+library(dplyr)
+
+tibble(
+  date = seq(as.Date("2025-05-29"), as.Date("2025-06-03"), by = "day"),
+) |>
+  mutate(
+    day_of_week = weekdays(date),
+    adjusted_date = adjust_to_bizday(date, "UnitedStates"),
+    bizday_of_month = bizday_of_period(adjusted_date, "UnitedStates", period = "month"),
+    bizday_of_year = bizday_of_period(adjusted_date, "UnitedStates", period = "year")
+  )
 }
 \seealso{
-\code{\link[=load_calendars]{load_calendars()}}, \code{\link[bizdays:other-calendars]{bizdays::load_quantlib_calendars()}}
+\code{\link[qlcal:calendars]{qlcal::calendars()}}, \code{\link[qlcal:businessDaysBetween]{qlcal::businessDaysBetween()}} \code{\link[=adjust_to_bizday]{adjust_to_bizday()}}
 }

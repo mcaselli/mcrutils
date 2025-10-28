@@ -224,24 +224,9 @@ sales <- example_sales |>
 head(sales)
 ```
 
-
 Now we can make a lookup table covering the years and markets in our data set.
 
-`load_calendars()` is as a convenience wrapper around
-`bizdays::load_quantlib_calendars()` that saves you from having to specify the
-start and end date before loading the quantlib calendars--you just provide a
-vector of dates and it will cover the full years spanned by those dates.
-
-
-
 ```{r bizday_of_period_example}
-
-## first load the relevant calendars
-load_calendars(
-  dates = sales$order_date,
-  calendars = unique(sales$calendar)
-)
-
 bizday_lookup <- tibble(
   # make a row for each date in the years spanned by the sales data
   date = seq(
@@ -253,16 +238,20 @@ bizday_lookup <- tibble(
   # cross with each calendar
   tidyr::expand_grid(calendar = unique(sales$calendar)) |>
   mutate(
+    adjusted_date = purrr::map2_vec(
+      .data$date, .data$calendar,
+      \(date, calendar) adjust_to_bizday(date, calendar)
+    ),
     # calculate the business day of month for each date in each market
     bizday_of_month = purrr::pmap_int(
-      list(.data$date, .data$calendar),
+      list(adjusted_date, .data$calendar),
       \(date, calendar) {
         bizday_of_period(date, calendar, period = "month")
       }
     ),
     # and again for the business day of quarter
     bizday_of_quarter = purrr::pmap_int(
-      list(.data$date, .data$calendar),
+      list(adjusted_date, .data$calendar),
       \(date, calendar) {
         bizday_of_period(date, calendar, period = "quarter")
       }
@@ -271,7 +260,7 @@ bizday_lookup <- tibble(
 
 # peek at the result
 bizday_lookup |>
-  filter(date >= ymd("2022-06-01")) |> # starting on a Sunday in June
+  filter(date >= ymd("2023-07-02")) |> # starting on a Sunday in July
   head()
 ```
 
@@ -292,8 +281,8 @@ ordered and the cumulative sum of units ordered
 ```{r}
 global_cum_daily_sales <- sales_with_bizday |>
   filter(order_date < ymd("2024-11-18")) |>
-  filter(month(order_date) == 11) |>
-  group_by(year = year(order_date), bizday_of_month) |>
+  filter(month(adjusted_date) == 11) |>
+  group_by(year = year(adjusted_date), bizday_of_month) |>
   summarise(units_ordered = sum(units_ordered), .groups = "drop") |>
   group_by(year) |>
   mutate(cumulative_units_ordered = cumsum(units_ordered)) 
