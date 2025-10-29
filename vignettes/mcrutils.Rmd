@@ -177,13 +177,30 @@ example_sales |>
   )
 ```
 
+## Business day evaluation
+`mcrutils` provides several functions for working with business days, including
+`is_bizday()`, `adjust_to_bizday()`, `bizdays_between()`, `periodic_bizdays()`,
+and `bizday_of_period()`.
+
+These functions use calendars from QuantLib for working/non-working day
+definitions, and they are all based on the `{qlcal}` package. In fact, with the
+exception of `periodic_bizdays()`, there are corresponding functions in
+`{qlcal}`.
+ 
+The motivation for the `mcrutils` versions was to facilitate frequent changes to
+the configured QuantLib calendar without making persistent changes to the
+globally configured calendar,i.e. these functions contain the calendar change to
+their own functional scope.
+
+This functionality leverages `{withr}`. `mcrutils` also provides
+`with_calendar()` and `local_calendar()` functions so you can leverage this
+side-effect encapsulation for other `qlcal` use cases.
 
 ## Business days in periodic intervals
 
-`periodic_bizdays()` is a convenience wrapper around `bizdays::bizdays()`, that
-calculates the number of business days in each periodic interval (e.g., monthly,
-quarterly) between two dates, using calendars from RQuantLib for holiday
-definitions.
+`periodic_bizdays()` calculates the number of business days in each periodic
+interval (e.g., monthly, quarterly) between two dates, using calendars from
+QuantLib for holiday definitions.
 
 ```{r periodic_bizdays_example}
 periodic_bizdays(
@@ -195,7 +212,7 @@ periodic_bizdays(
 ```
 
 
-## Business day of period
+## Cumulative daily sales by business day of period
 `bizday_of_period()` calculates the business day of the period (month, quarter,
 or year) for a given date and calendar e.g. date x is the 3rd business day of
 the month.
@@ -208,95 +225,128 @@ When there are multiple records per day, it's generally faster to create a
 lookup table from date to business day of period, and then join that to your
 data frame.
 
+Using the `example_sales` dataset, first we add a column with the
+QuantLib calendar to be used for each order (in this case the market column is
+close, we just need to eliminate the space in "United States").
+
+```{r head_example_sales}
+library(dplyr, warn.conflicts = FALSE)
+library(lubridate, warn.conflicts = FALSE)
+library(purrr)
+library(stringr)
+
+sales <- example_sales |>
+  mutate(calendar = str_replace_all(market, " ", ""))
+
+head(sales)
+```
+
+Now we can make a lookup table covering the years and markets in our data set.
 
 ```{r bizday_of_period_example}
-library(dplyr, warn.conflicts = FALSE)
-library(lubridate)
-library(purrr)
-
-# make some orders data
-n_orders <- 6000
-set.seed(123)
-orders <- tibble(
-  order_date = sample(
-    seq(as.Date("2024-01-01"), as.Date("2025-12-31"), by = "day"),
-    n_orders,
-    replace = TRUE
-  ),
-  units = rpois(n_orders, lambda = 3) + 1,
-  market = sample(c("UnitedStates", "UnitedKingdom"), n_orders, replace = TRUE)
-) |>
-  arrange(order_date, market) |>
-  mutate(order_id = row_number()) |>
-  relocate(order_id)
-
-# make a lookup table for business day of month and quarter
-
-## first load the relevant calendars
-load_calendars(
-  dates = orders$order_date,
-  calendars = unique(orders$market)
-)
-
 bizday_lookup <- tibble(
+  # make a row for each date in the years spanned by the sales data
   date = seq(
-    from = lubridate::floor_date(min(orders$order_date), "month"),
-    to = lubridate::ceiling_date(max(orders$order_date), "month") - 1,
+    from = lubridate::floor_date(min(sales$order_date), "month"),
+    to = lubridate::ceiling_date(max(sales$order_date), "month") - 1,
     by = "day"
   )
 ) |>
-  tidyr::expand_grid(market = unique(orders$market)) |>
+  # cross with each calendar
+  tidyr::expand_grid(calendar = unique(sales$calendar)) |>
   mutate(
+    adjusted_date = purrr::map2_vec(
+      .data$date, .data$calendar,
+      \(date, calendar) adjust_to_bizday(date, calendar)
+    ),
+    # calculate the business day of month for each date in each market
     bizday_of_month = purrr::pmap_int(
-      list(.data$date, .data$market),
-      \(date, market) {
-        bizday_of_period(date, market, period = "month")
+      list(adjusted_date, .data$calendar),
+      \(date, calendar) {
+        bizday_of_period(date, calendar, period = "month")
       }
     ),
+    # and again for the business day of quarter
     bizday_of_quarter = purrr::pmap_int(
-      list(.data$date, .data$market),
-      \(date, market) {
-        bizday_of_period(date, market, period = "quarter")
+      list(adjusted_date, .data$calendar),
+      \(date, calendar) {
+        bizday_of_period(date, calendar, period = "quarter")
       }
     )
   )
 
-head(bizday_lookup)
-```  
-
-Then join to your orders data:
-
-```{r}
-orders_with_bizday <- orders |>
-  left_join(bizday_lookup, by = c("order_date" = "date", "market" = "market"))
-head(orders_with_bizday)
+# peek at the result
+bizday_lookup |>
+  filter(date >= ymd("2023-07-02")) |> # starting on a Sunday in July
+  head()
 ```
 
-Now we can make a cumulative sum of units ordered by business day of month. 
-Let's imagine it's mid-June 2025, and we want to see how orders are tracking against the prior year.
+Now we can join the lookup table to the sales data.
 
 ```{r}
-orders_with_bizday |>
-  filter(order_date < ymd("2025-06-19")) |>
-  filter(month(order_date) == 6) |>
-  group_by(year = year(order_date), bizday_of_month) |>
-  summarise(units_ordered = sum(units), .groups = "drop") |>
+sales_with_bizday <- sales |>
+  left_join(bizday_lookup, by = c("order_date" = "date", "calendar" = "calendar"))
+head(sales_with_bizday)
+```
+
+Let's imagine it's mid-November 2024, and we want to see how orders are tracking
+against the prior year.
+
+First we group by the year and business day of month, then calculate daily units
+ordered and the cumulative sum of units ordered
+
+```{r}
+global_cum_daily_sales <- sales_with_bizday |>
+  filter(order_date < ymd("2024-11-18")) |>
+  filter(month(adjusted_date) == 11) |>
+  group_by(year = year(adjusted_date), bizday_of_month) |>
+  summarise(units_ordered = sum(units_ordered), .groups = "drop") |>
   group_by(year) |>
-  mutate(cumulative_units_ordered = cumsum(units_ordered)) |>
+  mutate(cumulative_units_ordered = cumsum(units_ordered)) 
+
+head(global_cum_daily_sales)
+```
+
+
+Now we can construct a cumulative daily sales chart comparing 2024 to prior years.
+
+```{r}
+global_cum_daily_sales |>
   ggplot(aes(bizday_of_month, cumulative_units_ordered, color = factor(year))) +
   geom_line(linewidth = 1.2) +
   labs(
     title = "Cumulative Units Ordered by Business Day of Month",
-    x = "Business Day of Month",
-    y = "Units Ordered",
     color = "Year"
   ) +
   theme_minimal()
 ```
 
+Or we can look by-market as well, we just need to add another grouping variable
+for the market, then facet the plot.
 
+```{r}
+regional_cum_daily_sales <- sales_with_bizday |>
+  filter(order_date < ymd("2024-11-18")) |>
+  filter(month(order_date) == 11) |>
+  group_by(year = year(order_date), bizday_of_month, market) |>
+  summarise(units_ordered = sum(units_ordered), .groups = "drop") |>
+  group_by(year, market) |>
+  mutate(cumulative_units_ordered = cumsum(units_ordered)) 
 
+head(regional_cum_daily_sales)
+```
 
+```{r}
+regional_cum_daily_sales |>
+  ggplot(aes(bizday_of_month, cumulative_units_ordered, color = factor(year))) +
+  geom_line(linewidth = 1.2) +
+  facet_wrap(~market, ncol=1) +
+  labs(
+    title = "Cumulative Units Ordered by Business Day of Month",
+    color = "Year"
+  ) +
+  theme_minimal()
+```
 
 ## Year-to-date helpers
 

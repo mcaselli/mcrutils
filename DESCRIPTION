@@ -25,7 +25,6 @@ Suggests:
     vdiffr
 Config/testthat/edition: 3
 Imports: 
-    bizdays,
     cli,
     dplyr,
     DT,
@@ -34,13 +33,15 @@ Imports:
     lifecycle,
     lubridate,
     purrr,
+    qlcal,
     rlang,
     stringr,
     tidyr,
     tidyselect,
-    utils
+    utils,
+    withr
 URL: https://github.com/mcaselli/mcrutils, https://mcaselli.github.io/mcrutils/
 BugReports: https://github.com/mcaselli/mcrutils/issues
 VignetteBuilder: knitr
 Depends: 
-    R (>= 3.5)
+    R (>= 4.1)

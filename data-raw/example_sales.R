@@ -1,8 +1,12 @@
 # prepare example_sales dataset for accounts_by_status()
 
 
-simulate_acct_orders <- function(start_date, end_date, orders_per_month, ramp_up = TRUE, ramp_down = FALSE) {
+simulate_acct_orders <- function(start_date, end_date, orders_per_month,
+                                 ramp_up = TRUE, ramp_down = FALSE,
+                                 ql_calendar = "UnitedStates") {
   dates <- seq(as.Date(start_date), as.Date(end_date), by = "day")
+  working_days <- dates[is_bizday(dates, cal = ql_calendar)]
+
   n_days <- length(dates)
   n_orders <- round(orders_per_month * (n_days / 30.44)) # average days per month
 
@@ -20,6 +24,16 @@ simulate_acct_orders <- function(start_date, end_date, orders_per_month, ramp_up
   }
 
   probs <- c(ramp_up, rep(1, n_days - length(ramp_up) - length(ramp_down)), ramp_down)
+
+  # orders should be less likely on non-working days
+  wd_probs <- tibble(
+    dates = dates,
+    working = dates %in% working_days
+  ) |>
+    dplyr::mutate(wd_prob = ifelse(working, 1, 0.05)) |>
+    dplyr::pull(wd_prob)
+
+  probs <- probs * wd_probs
   probs <- probs / sum(probs)
 
   sampled_dates <- sample(dates, n_orders, replace = TRUE, prob = probs)
@@ -27,24 +41,14 @@ simulate_acct_orders <- function(start_date, end_date, orders_per_month, ramp_up
 }
 
 
-# data.frame(order_date = simulate_acct_orders("2022-03-01", "2023-03-30", 40, TRUE, TRUE)) |>
-#   group_by(month=floor_date(order_date, unit="month")) |>
-#   summarise(n=n()) |>
-#   ggplot(aes(x=month, y=n)) +
-#   geom_col()
+data_start <- as.Date("2022-01-01")
+data_end <- as.Date("2024-12-20")
 
 
 # create a data.frame of account parameters as input to simulate_acct_orders()
 set.seed(1234)
 n_accts <- 32
 
-
-data_start <- as.Date("2022-01-01")
-data_end <- as.Date("2024-12-20")
-
-random_dates <- function(start_date, end_date, n) {
-  sample(seq(start_date, end_date, by = "day"), n, replace = TRUE)
-}
 
 n_persistent <- 5
 
@@ -54,7 +58,8 @@ persistent_accts <- data.frame(
   end_date = data_end,
   orders_per_month = sample(seq(1, 7), n_persistent, replace = TRUE),
   ramp_up = FALSE,
-  ramp_down = FALSE
+  ramp_down = FALSE,
+  market = "United States"
 )
 
 n_joiners <- 12
@@ -65,7 +70,13 @@ joiner_accts <- data.frame(
   end_date = data_end,
   orders_per_month = sample(seq(1, 7), n_joiners, replace = TRUE),
   ramp_up = TRUE,
-  ramp_down = FALSE
+  ramp_down = FALSE,
+  market = sample(
+    c("United States", "Germany"),
+    n_joiners,
+    replace = TRUE,
+    prob = c(0.5, 0.5)
+  )
 )
 
 n_leavers <- 20
@@ -78,7 +89,13 @@ leaver_accts <- data.frame(
   end_date = sample(seq(data_start, data_end, by = "day"), n_leavers, replace = TRUE),
   orders_per_month = sample(seq(1, 7), n_leavers, replace = TRUE),
   ramp_up = FALSE,
-  ramp_down = TRUE
+  ramp_down = TRUE,
+  market = sample(
+    c("United States", "Germany"),
+    n_leavers,
+    replace = TRUE,
+    prob = c(0.5, 0.5)
+  )
 )
 
 n_late_joiners <- 14
@@ -95,7 +112,13 @@ late_joiner_accts <- data.frame(
   end_date = data_end,
   orders_per_month = sample(seq(1, 7), n_late_joiners, replace = TRUE),
   ramp_up = TRUE,
-  ramp_down = FALSE
+  ramp_down = FALSE,
+  market = sample(
+    c("United States", "Germany"),
+    n_late_joiners,
+    replace = TRUE,
+    prob = c(0.1, 0.9)
+  )
 )
 
 n_quit_wave <- 12
@@ -105,11 +128,18 @@ quit_wave_accts <- data.frame(
   end_date = sample(seq(data_start + 650, data_start + 750, by = "day"), n_quit_wave, replace = TRUE),
   orders_per_month = sample(seq(1, 7), n_quit_wave, replace = TRUE),
   ramp_up = FALSE,
-  ramp_down = TRUE
+  ramp_down = TRUE,
+  market = "United States"
 )
 
 
-acct_params <- dplyr::bind_rows(persistent_accts, joiner_accts, leaver_accts, late_joiner_accts, quit_wave_accts)
+acct_params <- dplyr::bind_rows(
+  persistent_accts,
+  joiner_accts,
+  leaver_accts,
+  late_joiner_accts,
+  quit_wave_accts
+)
 
 
 example_sales_raw <- acct_params |>
@@ -117,18 +147,19 @@ example_sales_raw <- acct_params |>
   mutate(
     order_dates = list(simulate_acct_orders(start_date, end_date, orders_per_month, ramp_up, ramp_down))
   ) |>
-  select(account_id, order_dates) |>
+  select(account_id, market, order_dates) |>
   tidyr::unnest(cols = order_dates) |>
   rename(order_date = order_dates) |>
   dplyr::arrange(order_date, account_id) |>
   mutate(
     account_num = factor(account_id) |> forcats::fct_inorder() |> as.numeric(),
     account_num = paste0("a", account_num),
-    account_group = stringr::str_extract(account_id, "^[a-z]+")
+    account_group = stringr::str_extract(account_id, "^[a-z]+"),
+    units_ordered = rpois(n(), lambda = 1) + 1
   )
 
 
 example_sales <- example_sales_raw |>
-  select(account_id, order_date)
+  select(account_id, market, order_date, units_ordered)
 
 usethis::use_data(example_sales, overwrite = TRUE)

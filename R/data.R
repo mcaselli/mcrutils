@@ -8,7 +8,9 @@
 #' @format A data frame with 5300 rows and 2 variables:
 #' \describe{
 #'  \item{account_id}{Character. A unique identifier for the customer that placed the order.}
+#'  \item{market}{Character. The market where the order was placed; either "United States" or "Germany"}
 #'  \item{order_date}{Date. The date of the order.}
+#'  \item{units_ordered}{Integer. The number of units ordered in that order.}
 #' }
 #' @source Generated using random sampling for demonstration purposes.
 "example_sales"

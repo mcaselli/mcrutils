@@ -1,14 +1,27 @@
 # mcrutils (development version)
 
 ## New
-
 - `bizday_of_period()` to compute the business day of a date within a given
-period (e.g. month, quarter).
+period (e.g. date xxx is the 3rd business day of the month according to the 
+UnitedStates QuantLib calendar)
 
-- `load_calendars()` a convenience wrapper around 
-`bizdays::load_quantlib_calendars()` that takes a vector of dates and a vector 
-of calendars and loads the calendars for the full years spanning the specified 
-dates.
+- `is_bizday()`, `bizdays_between()` which wrap similar `qlcal` functions, but
+allow evaluation in a specified QuantLib calendar without making persistent 
+changes to the globally configured calendar.
+
+- `with_calendar()` and `local_calendar()` which facilitate temporary changes to 
+the configured `qlcal` QuantLib calendar a'la `with_*()` and `local_*()` 
+functions from the `withr` package.
+
+- `set_calendar()` which changes the globally configured qlcal QuantLib calendar, 
+but only if the specified calendar is valid and different from the
+currently configured calendar.
+
+## Changed
+
+- (internal) removed `bizdays` dependency, now using `qlcal` for business day 
+functions
+
 
 # mcrutils 0.0.0.9007
 

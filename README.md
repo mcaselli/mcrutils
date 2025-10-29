@@ -111,10 +111,10 @@ orders |>
 
 ### Business days
 
-`periodic_bizdays()` is a convenience wrapper around
-`bizdays::bizdays()` that calculates the number of business days in each
+`periodic_bizdays()` calculates the number of business days in each
 periodic interval (e.g., monthly, quarterly) between two dates, using
-calendars from `RQuantLib` for holiday definitions.
+calendars from `QuantLib` (see R package `qlcal`) for holiday
+definitions.
 
 ``` r
 periodic_bizdays(
@@ -126,14 +126,14 @@ periodic_bizdays(
 #> # A tibble: 8 × 4
 #>   calendar      start      end        business_days
 #>   <chr>         <date>     <date>             <int>
-#> 1 UnitedStates  2025-01-01 2025-03-31            60
-#> 2 UnitedStates  2025-04-01 2025-06-30            62
-#> 3 UnitedStates  2025-07-01 2025-09-30            63
-#> 4 UnitedStates  2025-10-01 2025-12-31            61
-#> 5 UnitedKingdom 2025-01-01 2025-03-31            62
-#> 6 UnitedKingdom 2025-04-01 2025-06-30            60
-#> 7 UnitedKingdom 2025-07-01 2025-09-30            64
-#> 8 UnitedKingdom 2025-10-01 2025-12-31            63
+#> 1 UnitedStates  2025-01-01 2025-03-31            61
+#> 2 UnitedStates  2025-04-01 2025-06-30            63
+#> 3 UnitedStates  2025-07-01 2025-09-30            64
+#> 4 UnitedStates  2025-10-01 2025-12-31            62
+#> 5 UnitedKingdom 2025-01-01 2025-03-31            63
+#> 6 UnitedKingdom 2025-04-01 2025-06-30            61
+#> 7 UnitedKingdom 2025-07-01 2025-09-30            65
+#> 8 UnitedKingdom 2025-10-01 2025-12-31            64
 ```
 
 This is handy when analyzing data summarized by month or quarter and you
@@ -157,8 +157,18 @@ load_quantlib_calendars("UnitedStates",
 #> Calendar QuantLib/UnitedStates loaded
 
 bizday_of_period(as.Date("2025-06-15"), "UnitedStates", period = "month")
+#> Warning: ! Date 2025-06-15 is a non-working day in the "UnitedStates" calendar.
+#> ℹ Business day of period can be misleading when run on unadjusted non-working
+#>   days.
+#> ℹ Consider adjusting the input dates before calculating business day of period.
+#>   (See `qlcal::adjust()` or `bizdays::adjust.date()`
 #> [1] 10
 bizday_of_period(as.Date("2025-06-15"), "UnitedStates", period = "year")
+#> Warning: ! Date 2025-06-15 is a non-working day in the "UnitedStates" calendar.
+#> ℹ Business day of period can be misleading when run on unadjusted non-working
+#>   days.
+#> ℹ Consider adjusting the input dates before calculating business day of period.
+#>   (See `qlcal::adjust()` or `bizdays::adjust.date()`
 #> [1] 114
 ```
 
