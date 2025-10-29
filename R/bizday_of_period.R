@@ -42,14 +42,10 @@ bizday_of_period <- function(date, calendar,
                              period = c("month", "quarter", "year")) {
   period <- rlang::arg_match(period)
   date <- as.Date(date)
-  check_valid_single_calendar(calendar)
 
   period_start <- lubridate::floor_date(date, unit = period)
-  start_cal <- qlcal::getId()
-  if (!start_cal == calendar) {
-    withr::defer(qlcal::setCalendar(start_cal))
-    qlcal::setCalendar(calendar)
-  }
+
+  local_calendar(calendar)
 
   input_holidays <- date[qlcal::isHoliday(date)]
 
