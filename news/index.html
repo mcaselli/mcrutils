@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mcrutils</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9007</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9008</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -30,20 +30,23 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/mcaselli/mcrutils/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/mcaselli/mcrutils/blob/0.0.0.9008/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="mcrutils-development-version">mcrutils (development version)<a class="anchor" aria-label="anchor" href="#mcrutils-development-version"></a></h2>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.0.0.9008" id="mcrutils-0009008">mcrutils 0.0.0.9008<a class="anchor" aria-label="anchor" href="#mcrutils-0009008"></a></h2>
 <div class="section level3">
-<h3 id="new-development-version">New<a class="anchor" aria-label="anchor" href="#new-development-version"></a></h3>
+<h3 id="new-0-0-0-9008">New<a class="anchor" aria-label="anchor" href="#new-0-0-0-9008"></a></h3>
 <ul><li><p><code><a href="../reference/bizday_of_period.html">bizday_of_period()</a></code> to compute the business day of a date within a given period (e.g. date xxx is the 3rd business day of the month according to the UnitedStates QuantLib calendar)</p></li>
 <li><p><code><a href="../reference/is_bizday.html">is_bizday()</a></code>, <code><a href="../reference/bizdays_between.html">bizdays_between()</a></code> which wrap similar <code>qlcal</code> functions, but allow evaluation in a specified QuantLib calendar without making persistent changes to the globally configured calendar.</p></li>
 <li><p><code><a href="../reference/set_cal.html">with_calendar()</a></code> and <code><a href="../reference/set_cal.html">local_calendar()</a></code> which facilitate temporary changes to the configured <code>qlcal</code> QuantLib calendar a’la <code>with_*()</code> and <code>local_*()</code> functions from the <code>withr</code> package.</p></li>
 <li><p><code><a href="../reference/set_cal.html">set_calendar()</a></code> which changes the globally configured qlcal QuantLib calendar, but only if the specified calendar is valid and different from the currently configured calendar.</p></li>
 </ul></div>
 <div class="section level3">
-<h3 id="changed-development-version">Changed<a class="anchor" aria-label="anchor" href="#changed-development-version"></a></h3>
+<h3 id="changed-0-0-0-9008">Changed<a class="anchor" aria-label="anchor" href="#changed-0-0-0-9008"></a></h3>
 <ul><li>(internal) removed <code>bizdays</code> dependency, now using <code>qlcal</code> for business day functions</li>
 </ul></div>
 </div>
