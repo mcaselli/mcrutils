@@ -131,7 +131,7 @@
 <div class="section level3">
 <h3 id="business-days">Business days<a class="anchor" aria-label="anchor" href="#business-days"></a>
 </h3>
-<p><code><a href="reference/periodic_bizdays.html">periodic_bizdays()</a></code> is a convenience wrapper around <code><a href="https://rdrr.io/pkg/bizdays/man/bizdays.html" class="external-link">bizdays::bizdays()</a></code> that calculates the number of business days in each periodic interval (e.g., monthly, quarterly) between two dates, using calendars from <code>RQuantLib</code> for holiday definitions.</p>
+<p><code><a href="reference/periodic_bizdays.html">periodic_bizdays()</a></code> calculates the number of business days in each periodic interval (e.g., monthly, quarterly) between two dates, using calendars from <code>QuantLib</code> (see R package <code>qlcal</code>) for holiday definitions.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/periodic_bizdays.html">periodic_bizdays</a></span><span class="op">(</span></span>
 <span>  from <span class="op">=</span> <span class="st">"2025-01-01"</span>,</span>
@@ -142,14 +142,14 @@
 <span><span class="co">#&gt; # A tibble: 8 × 4</span></span>
 <span><span class="co">#&gt;   calendar      start      end        business_days</span></span>
 <span><span class="co">#&gt;   &lt;chr&gt;         &lt;date&gt;     &lt;date&gt;             &lt;int&gt;</span></span>
-<span><span class="co">#&gt; 1 UnitedStates  2025-01-01 2025-03-31            60</span></span>
-<span><span class="co">#&gt; 2 UnitedStates  2025-04-01 2025-06-30            62</span></span>
-<span><span class="co">#&gt; 3 UnitedStates  2025-07-01 2025-09-30            63</span></span>
-<span><span class="co">#&gt; 4 UnitedStates  2025-10-01 2025-12-31            61</span></span>
-<span><span class="co">#&gt; 5 UnitedKingdom 2025-01-01 2025-03-31            62</span></span>
-<span><span class="co">#&gt; 6 UnitedKingdom 2025-04-01 2025-06-30            60</span></span>
-<span><span class="co">#&gt; 7 UnitedKingdom 2025-07-01 2025-09-30            64</span></span>
-<span><span class="co">#&gt; 8 UnitedKingdom 2025-10-01 2025-12-31            63</span></span></code></pre></div>
+<span><span class="co">#&gt; 1 UnitedStates  2025-01-01 2025-03-31            61</span></span>
+<span><span class="co">#&gt; 2 UnitedStates  2025-04-01 2025-06-30            63</span></span>
+<span><span class="co">#&gt; 3 UnitedStates  2025-07-01 2025-09-30            64</span></span>
+<span><span class="co">#&gt; 4 UnitedStates  2025-10-01 2025-12-31            62</span></span>
+<span><span class="co">#&gt; 5 UnitedKingdom 2025-01-01 2025-03-31            63</span></span>
+<span><span class="co">#&gt; 6 UnitedKingdom 2025-04-01 2025-06-30            61</span></span>
+<span><span class="co">#&gt; 7 UnitedKingdom 2025-07-01 2025-09-30            65</span></span>
+<span><span class="co">#&gt; 8 UnitedKingdom 2025-10-01 2025-12-31            64</span></span></code></pre></div>
 <p>This is handy when analyzing data summarized by month or quarter and you want to adjust for business days in each period.</p>
 <p><code><a href="reference/bizday_of_period.html">bizday_of_period()</a></code> calculates the business day of the period (month, quarter, or year) for a given date and calendar.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
@@ -167,8 +167,18 @@
 <span><span class="co">#&gt; Calendar QuantLib/UnitedStates loaded</span></span>
 <span></span>
 <span><span class="fu"><a href="reference/bizday_of_period.html">bizday_of_period</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2025-06-15"</span><span class="op">)</span>, <span class="st">"UnitedStates"</span>, period <span class="op">=</span> <span class="st">"month"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: ! Date 2025-06-15 is a non-working day in the "UnitedStates" calendar.</span></span>
+<span><span class="co">#&gt; ℹ Business day of period can be misleading when run on unadjusted non-working</span></span>
+<span><span class="co">#&gt;   days.</span></span>
+<span><span class="co">#&gt; ℹ Consider adjusting the input dates before calculating business day of period.</span></span>
+<span><span class="co">#&gt;   (See `qlcal::adjust()` or `bizdays::adjust.date()`</span></span>
 <span><span class="co">#&gt; [1] 10</span></span>
 <span><span class="fu"><a href="reference/bizday_of_period.html">bizday_of_period</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2025-06-15"</span><span class="op">)</span>, <span class="st">"UnitedStates"</span>, period <span class="op">=</span> <span class="st">"year"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: ! Date 2025-06-15 is a non-working day in the "UnitedStates" calendar.</span></span>
+<span><span class="co">#&gt; ℹ Business day of period can be misleading when run on unadjusted non-working</span></span>
+<span><span class="co">#&gt;   days.</span></span>
+<span><span class="co">#&gt; ℹ Consider adjusting the input dates before calculating business day of period.</span></span>
+<span><span class="co">#&gt;   (See `qlcal::adjust()` or `bizdays::adjust.date()`</span></span>
 <span><span class="co">#&gt; [1] 114</span></span></code></pre></div>
 <p>This is useful for creating a cumulative “burn-up” chart tracking mid-period progress against e.g. the prior year (See vignette(“mcrutils”) for an example).</p>
 </div>
