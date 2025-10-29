@@ -7,7 +7,7 @@
       Warning:
       ! Dates 2023-04-01 and 2023-04-02 are non-working days in the "UnitedStates" calendar.
       i Business day of period can be misleading when run on unadjusted non-working days.
-      i Consider adjusting the input dates before calculating business day of period. (See `qlcal::adjust()` or `bizdays::adjust.date()`
+      i Consider adjusting the input dates before calculating business day of period. (See `qlcal::adjust()` or `bizdays::adjust.date()`)
     Output
       [1] 0 0 1 2
 

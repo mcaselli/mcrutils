@@ -53,7 +53,7 @@ bizday_of_period <- function(date, calendar,
     cli::cli_warn(c(
       "!" = "{cli::qty(input_holidays)}Date{?s} {.val {input_holidays}} {?is a/are} non-working day{?s} in the {.val {calendar}} calendar.",
       "i" = "Business day of period can be misleading when run on unadjusted non-working days.",
-      "i" = "Consider adjusting the input dates before calculating business day of period. (See {.fn qlcal::adjust} or {.fn bizdays::adjust.date}"
+      "i" = "Consider adjusting the input dates before calculating business day of period. (See {.fn qlcal::adjust} or {.fn bizdays::adjust.date})"
     ))
   }
 
