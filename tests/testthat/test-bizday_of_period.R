@@ -33,3 +33,13 @@ test_that("a period starting on a weekend warns", {
     )
   )
 })
+
+test_that("bizday_of_period() errors on bad calendar", {
+  expect_snapshot(
+    bizday_of_period(as.Date("2023-06-15"),
+      "NonExistentCalendar",
+      period = "month"
+    ),
+    error = TRUE
+  )
+})

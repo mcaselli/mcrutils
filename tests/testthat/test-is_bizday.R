@@ -8,3 +8,10 @@ test_that("is_bizday() works", {
     c(TRUE, TRUE)
   )
 })
+
+test_that("is_bizday() errors for invalid calendar", {
+  expect_snapshot(
+    is_bizday("2024-07-05", "InvalidCalendar"),
+    error = TRUE
+  )
+})

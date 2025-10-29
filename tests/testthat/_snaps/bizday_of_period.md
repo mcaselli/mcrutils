@@ -11,3 +11,13 @@
     Output
       [1] 0 0 1 2
 
+# bizday_of_period() errors on bad calendar
+
+    Code
+      bizday_of_period(as.Date("2023-06-15"), "NonExistentCalendar", period = "month")
+    Condition
+      Error in `check_valid_single_calendar()`:
+      ! `calendar` must be a valid QuantLib calendar id.
+      x "NonExistentCalendar" is not a recognized QuantLib calendar id.
+      i See `qlcal::calendars` for valid options.
+
