@@ -118,15 +118,8 @@ adjust for business days in each period.
 or year) for a given date and calendar.
 
 ```{r}
-# Load the calendar first
-library(bizdays)
-load_quantlib_calendars("UnitedStates",
-  from = as.Date("2025-01-01"),
-  to = as.Date("2025-12-31")
-)
-
-bizday_of_period(as.Date("2025-06-15"), "UnitedStates", period = "month")
-bizday_of_period(as.Date("2025-06-15"), "UnitedStates", period = "year")
+bizday_of_period(as.Date("2025-06-17"), "UnitedStates", period = "month")
+bizday_of_period(as.Date("2025-06-17"), "UnitedStates", period = "year")
 ```
 
 This is useful for creating a cumulative "burn-up" chart tracking mid-period

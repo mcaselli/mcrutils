@@ -143,33 +143,10 @@ want to adjust for business days in each period.
 quarter, or year) for a given date and calendar.
 
 ``` r
-# Load the calendar first
-library(bizdays)
-#> 
-#> Attaching package: 'bizdays'
-#> The following object is masked from 'package:stats':
-#> 
-#>     offset
-load_quantlib_calendars("UnitedStates",
-  from = as.Date("2025-01-01"),
-  to = as.Date("2025-12-31")
-)
-#> Calendar QuantLib/UnitedStates loaded
-
-bizday_of_period(as.Date("2025-06-15"), "UnitedStates", period = "month")
-#> Warning: ! Date 2025-06-15 is a non-working day in the "UnitedStates" calendar.
-#> ℹ Business day of period can be misleading when run on unadjusted non-working
-#>   days.
-#> ℹ Consider adjusting the input dates before calculating business day of period.
-#>   (See `qlcal::adjust()` or `bizdays::adjust.date()`
-#> [1] 10
-bizday_of_period(as.Date("2025-06-15"), "UnitedStates", period = "year")
-#> Warning: ! Date 2025-06-15 is a non-working day in the "UnitedStates" calendar.
-#> ℹ Business day of period can be misleading when run on unadjusted non-working
-#>   days.
-#> ℹ Consider adjusting the input dates before calculating business day of period.
-#>   (See `qlcal::adjust()` or `bizdays::adjust.date()`
-#> [1] 114
+bizday_of_period(as.Date("2025-06-17"), "UnitedStates", period = "month")
+#> [1] 12
+bizday_of_period(as.Date("2025-06-17"), "UnitedStates", period = "year")
+#> [1] 116
 ```
 
 This is useful for creating a cumulative “burn-up” chart tracking
