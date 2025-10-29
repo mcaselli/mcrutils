@@ -98,10 +98,9 @@ orders |>
 
 ### Business days 
 
-`periodic_bizdays()` is a convenience wrapper around `bizdays::bizdays()` that
-calculates the number of business days in each periodic interval (e.g., monthly,
-quarterly) between two dates, using calendars from `RQuantLib` for holiday
-definitions.
+`periodic_bizdays()` calculates the number of business days in each periodic
+interval (e.g., monthly, quarterly) between two dates, using calendars from
+`QuantLib` (see R package `qlcal`) for holiday definitions.
 
 ```{r periodic_bizdays_example}
 periodic_bizdays(

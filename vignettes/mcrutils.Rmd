@@ -177,13 +177,30 @@ example_sales |>
   )
 ```
 
+## Business day evaluation
+`mcrutils` provides several functions for working with business days, including
+`is_bizday()`, `adjust_to_bizday()`, `bizdays_between()`, `periodic_bizdays()`,
+and `bizday_of_period()`.
+
+These functions use calendars from QuantLib for working/non-working day
+definitions, and they are all based on the `{qlcal}` package. In fact, with the
+exception of `periodic_bizdays()`, there are corresponding functions in
+`{qlcal}`.
+ 
+The motivation for the `mcrutils` versions was to facilitate frequent changes to
+the configured QuantLib calendar without making persistent changes to the
+globally configured calendar,i.e. these functions contain the calendar change to
+their own functional scope.
+
+This functionality leverages `{withr}`. `mcrutils` also provides
+`with_calendar()` and `local_calendar()` functions so you can leverage this
+side-effect encapsulation for other `qlcal` use cases.
 
 ## Business days in periodic intervals
 
-`periodic_bizdays()` is a convenience wrapper around `bizdays::bizdays()`, that
-calculates the number of business days in each periodic interval (e.g., monthly,
-quarterly) between two dates, using calendars from RQuantLib for holiday
-definitions.
+`periodic_bizdays()` calculates the number of business days in each periodic
+interval (e.g., monthly, quarterly) between two dates, using calendars from
+QuantLib for holiday definitions.
 
 ```{r periodic_bizdays_example}
 periodic_bizdays(

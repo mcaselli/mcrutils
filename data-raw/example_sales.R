@@ -5,7 +5,7 @@ simulate_acct_orders <- function(start_date, end_date, orders_per_month,
                                  ramp_up = TRUE, ramp_down = FALSE,
                                  ql_calendar = "UnitedStates") {
   dates <- seq(as.Date(start_date), as.Date(end_date), by = "day")
-  working_days <- dates[bizdays::is.bizday(dates, cal = paste0("QuantLib/", ql_calendar))]
+  working_days <- dates[is_bizday(dates, cal = ql_calendar)]
 
   n_days <- length(dates)
   n_orders <- round(orders_per_month * (n_days / 30.44)) # average days per month
@@ -44,10 +44,6 @@ simulate_acct_orders <- function(start_date, end_date, orders_per_month,
 data_start <- as.Date("2022-01-01")
 data_end <- as.Date("2024-12-20")
 
-bizdays::load_quantlib_calendars("UnitedStates",
-  from = lubridate::floor_date(data_start, "year"),
-  to = lubridate::ceiling_date(data_end, "year") + 1
-)
 
 # create a data.frame of account parameters as input to simulate_acct_orders()
 set.seed(1234)

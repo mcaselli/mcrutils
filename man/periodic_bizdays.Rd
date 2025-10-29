@@ -2,7 +2,7 @@
 % Please edit documentation in R/periodic_bizdays.R
 \name{periodic_bizdays}
 \alias{periodic_bizdays}
-\title{Calculate the number of business days in periodic intervals}
+\title{Calculate the Number of Business Days in Months, Quarters, etc}
 \usage{
 periodic_bizdays(from, to, by = "month", quantlib_calendars = "UnitedStates")
 }
@@ -11,11 +11,10 @@ periodic_bizdays(from, to, by = "month", quantlib_calendars = "UnitedStates")
 with \code{\link[=as.Date]{as.Date()}}.}
 
 \item{by}{periodicity, passed to \code{\link[=seq.Date]{seq.Date()}} (e.g., "month", "quarter",
-"year"). See \code{?seq.Date} for more options.}
+"year"). See \code{\link[=seq.Date]{seq.Date()}} for more options.}
 
-\item{quantlib_calendars}{= a character vector of RQuantLib calendar names
-(see \code{\link[bizdays:other-calendars]{bizdays::load_quantlib_calendars()}}). Don't inlcude the "QuantLib/"
-prefix.}
+\item{quantlib_calendars}{(character) A vector of QuantLib calendar ids (the
+vector \link[qlcal:calendars]{qlcal::calendars} lists all valid options).}
 }
 \value{
 a tibble with columns:
@@ -28,10 +27,9 @@ according to the calendar}
 }
 }
 \description{
-A Convenience wrapper for \code{\link[bizdays:bizdays]{bizdays::bizdays()}}. This function calculates the
-number of business days in periodic intervals (e.g., monthly, quarterly)
-between two dates, using specified QuantLib calendars for holiday
-definitions.
+This function calculates the number of business days in each periodic
+interval (e.g., month, quarter) between two dates, using specified QuantLib
+calendars for holiday definitions.
 }
 \examples{
 periodic_bizdays(

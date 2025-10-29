@@ -1,17 +1,15 @@
-#' Calculate the number of business days in periodic intervals
+#' Calculate the Number of Business Days in Months, Quarters, etc
 #'
-#' A Convenience wrapper for [bizdays::bizdays()]. This function calculates the
-#' number of business days in periodic intervals (e.g., monthly, quarterly)
-#' between two dates, using specified QuantLib calendars for holiday
-#' definitions.
+#' This function calculates the number of business days in each periodic
+#' interval (e.g., month, quarter) between two dates, using specified QuantLib
+#' calendars for holiday definitions.
 #'
 #' @param from,to start and end dates. Date object or something coercible
 #' with [as.Date()].
 #' @param by periodicity, passed to [seq.Date()] (e.g., "month", "quarter",
-#'   "year"). See `?seq.Date` for more options.
-#' @param quantlib_calendars = a character vector of RQuantLib calendar names
-#'   (see [bizdays::load_quantlib_calendars()]). Don't inlcude the "QuantLib/"
-#'   prefix.
+#'   "year"). See [seq.Date()] for more options.
+#' @param quantlib_calendars (character) A vector of QuantLib calendar ids (the
+#'   vector [qlcal::calendars] lists all valid options).
 #' @return a tibble with columns:
 #' \describe{
 #'  \item{calendar}{the QuantLib calendar used}
@@ -33,14 +31,6 @@ periodic_bizdays <- function(from, to, by = "month",
   from <- as.Date(from)
   to <- as.Date(to)
 
-  suppressMessages(
-    bizdays::load_quantlib_calendars(quantlib_calendars,
-      from = from,
-      # the calendar needs to cover the end date
-      to = lubridate::ceiling_date(to, unit = by) + 1
-    )
-  )
-
   start <- seq(from, to, by = by)
   end <- dplyr::lead(start) - 1
   end[length(end)] <- to
@@ -53,10 +43,10 @@ periodic_bizdays <- function(from, to, by = "month",
       business_days = purrr::pmap_int(
         list(.data$start, .data$end, .data$calendar),
         \(start, end, calendar) {
-          bizdays::bizdays(
+          bizdays_between(
             from = start,
             to = end,
-            cal = paste0("QuantLib/", calendar)
+            calendar = calendar
           )
         }
       )
