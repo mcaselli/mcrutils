@@ -1,5 +1,8 @@
 # mcrutils (development version)
 
+
+# mcrutils 0.0.0.9008
+
 ## New
 - `bizday_of_period()` to compute the business day of a date within a given
 period (e.g. date xxx is the 3rd business day of the month according to the 
