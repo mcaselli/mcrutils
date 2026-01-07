@@ -9,13 +9,16 @@ is_bizday(date, calendar)
 \arguments{
 \item{date}{A vector of dates (Date object or coercible with \code{\link[=as.Date]{as.Date()}}).}
 
-\item{calendar}{(character) A QuantLib calendar id (the vector \link[qlcal:calendars]{qlcal::calendars} lists all valid options).}
+\item{calendar}{(character) A QuantLib calendar id (the vector
+\link[qlcal:calendars]{qlcal::calendars} lists all valid options).}
 }
 \value{
-A logical vector indicating whether each date is a business day in the specified calendar.
+A logical vector indicating whether each date is a business day in
+the specified calendar.
 }
 \description{
-This function checks if the provided date(s) are business days according to the specified QuantLib calendar.
+This function checks if the provided date(s) are business days according to
+the specified QuantLib calendar.
 }
 \examples{
 # valid calendars

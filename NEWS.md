@@ -1,5 +1,9 @@
 # mcrutils (development version)
 
+## New
+- `most_recent_sunday()` and `most_recent_monday()` to return the date of the 
+most recent Sunday or Monday that is on or before the current date or a 
+specified reference date.
 
 # mcrutils 0.0.0.9008
 
