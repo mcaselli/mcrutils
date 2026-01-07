@@ -2,6 +2,8 @@
 
 ## mcrutils (development version)
 
+## mcrutils 0.0.0.9009
+
 ### New
 
 - [`most_recent_sunday()`](https://mcaselli.github.io/mcrutils/reference/most_recent_x_day.md)
