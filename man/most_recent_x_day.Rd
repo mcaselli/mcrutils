@@ -18,8 +18,8 @@ Defaults to NULL, which uses the current date.}
 A Date object representing the most recent Sunday or Monday
 }
 \description{
-This function returns the date of the most recent Monday that is on or before
-the current date or a specified reference date
+This function returns the date of the most recent Sunday or Monday that
+is on or before the current date or a specified reference date.
 }
 \examples{
 most_recent_monday() # Returns the most recent Monday from today

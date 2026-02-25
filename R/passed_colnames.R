@@ -1,0 +1,46 @@
+#' Get the column names passed to a data-masked expression
+#'
+#' This is a helper function that evaluates a tidyselect expression in the
+#' context of a data frame and returns the names of the columns that
+#' were selected.
+#'
+#' This is useful in a dplyr-style function where you want the user to be
+#' able to specify no, one, or multiple columns using tidyselect syntax,
+#' and you want to get the names of those columns for further processing.
+#'
+
+#'
+#' @param data A data frame in which to evaluate the expression.
+#' @param expr A tidyselect expression (usually a quosure from `rlang::enquo()`)
+#' that specifies which columns to select.
+#'
+#' @return A character vector of column names that were selected by the expression.
+#'
+#' The function returns `character(0)` when NULL is passed, which can signal
+#' no columns were selected. (note `group_by(all_of(character(0)))` conveniently
+#' does nothing.
+#'
+#' The function will error if the expression selects columns that are not
+#' present in the data frame.
+#'
+#' @examples
+#' library(dplyr)
+#'
+#' averages <- function(data, values, groups = NULL) {
+#'   group_cols <- passed_colnames(data, rlang::enquo(groups))
+#'
+#'   data |>
+#'     group_by(across(all_of(group_cols))) |>
+#'     summarise(avg = mean({{ values }}), .groups = "drop")
+#' }
+#'
+#' mtcars |> averages(values = mpg, groups = c(cyl, gear))
+#' mtcars |> averages(values = mpg, groups = cyl)
+#' mtcars |> averages(mpg, starts_with("c"))
+#' mtcars |> averages(values = mpg, groups = NULL)
+#' @export
+passed_colnames <- function(data, expr) {
+  # expr should be a quosure (from enquo())
+  cols <- tidyselect::eval_select(expr, data = data)
+  names(cols)
+}

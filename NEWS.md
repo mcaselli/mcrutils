@@ -1,4 +1,11 @@
 # mcrutils (development version)
+## New
+- `mutate_cagrs()` to compute compound annual growth rates (CAGRs) for 
+specified columns in a data frame.
+- `passed_colnames()`, a helper function that evaluates a tidyselect expression
+in the context of a data frame and returns the names of the columns that
+were selected.
+
 
 # mcrutils 0.0.0.9009
 
