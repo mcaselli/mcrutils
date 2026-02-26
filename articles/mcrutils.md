@@ -223,6 +223,51 @@ example_sales |>
 
 ![](mcrutils_files/figure-html/plot_accounts_2-1.png)
 
+### CAGR
+
+[`mutate_cagrs()`](https://mcaselli.github.io/mcrutils/reference/mutate_cagrs.md)
+adds columns with compound annual growth rates (CAGRs) for a vector of
+values over specified time periods, optionally grouped by one or more
+variables.
+
+Here we’ll first aggregate the `example_sales` data to get monthly sales
+volume by market, then use
+[`mutate_cagrs()`](https://mcaselli.github.io/mcrutils/reference/mutate_cagrs.md)
+to calculate 1-, 2-, and 3-month CAGRs for each market.
+
+``` r
+library(lubridate, warn.conflicts = FALSE)
+
+example_sales |>
+  group_by(
+    market,
+    month = lubridate::floor_date(order_date, unit = "month")
+  ) |>
+  summarize(
+    volume = sum(units_ordered),
+    .groups = "drop_last"
+  ) |>
+  mutate_cagrs(
+    volume,
+    month,
+    group_vars = market,
+    periods = c(1:3)
+  ) |>
+  # peek at the first 4 rows for each market
+  slice_head(n=4, by = market)
+#> # A tibble: 8 × 6
+#>   market        month      volume volume_cagr_1 volume_cagr_2 volume_cagr_3
+#>   <chr>         <date>      <dbl>         <dbl>         <dbl>         <dbl>
+#> 1 Germany       2022-01-01     64        NA           NA            NA     
+#> 2 Germany       2022-02-01    112         0.75        NA            NA     
+#> 3 Germany       2022-03-01     71        -0.366        0.0533       NA     
+#> 4 Germany       2022-04-01    107         0.507       -0.0226        0.187 
+#> 5 United States 2022-01-01    206        NA           NA            NA     
+#> 6 United States 2022-02-01    232         0.126       NA            NA     
+#> 7 United States 2022-03-01    185        -0.203       -0.0523       NA     
+#> 8 United States 2022-04-01    226         0.222       -0.0130        0.0314
+```
+
 ### Business day evaluation
 
 `mcrutils` provides several functions for working with business days,
@@ -304,7 +349,6 @@ States”).
 
 ``` r
 library(dplyr, warn.conflicts = FALSE)
-library(lubridate, warn.conflicts = FALSE)
 library(purrr)
 library(stringr)
 
@@ -433,7 +477,7 @@ global_cum_daily_sales |>
   theme_minimal()
 ```
 
-![](mcrutils_files/figure-html/unnamed-chunk-9-1.png)
+![](mcrutils_files/figure-html/unnamed-chunk-10-1.png)
 
 Or we can look by-market as well, we just need to add another grouping
 variable for the market, then facet the plot.
@@ -472,7 +516,7 @@ regional_cum_daily_sales |>
   theme_minimal()
 ```
 
-![](mcrutils_files/figure-html/unnamed-chunk-11-1.png)
+![](mcrutils_files/figure-html/unnamed-chunk-12-1.png)
 
 ### Year-to-date helpers
 

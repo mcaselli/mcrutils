@@ -41,9 +41,14 @@
 - [`most_recent_monday()`](https://mcaselli.github.io/mcrutils/reference/most_recent_x_day.md)
   [`most_recent_sunday()`](https://mcaselli.github.io/mcrutils/reference/most_recent_x_day.md)
   : Get the date of the prior Sunday or Monday
+- [`mutate_cagrs()`](https://mcaselli.github.io/mcrutils/reference/mutate_cagrs.md)
+  : Add CAGR columns across groups and time with robust ordering and
+  diagnostics
 - [`normalize_logicals()`](https://mcaselli.github.io/mcrutils/reference/normalize_logicals.md)
   : Normalize character or factor columns containing logical data to
   logical type
+- [`passed_colnames()`](https://mcaselli.github.io/mcrutils/reference/passed_colnames.md)
+  : Get the column names passed to a data-masked expression
 - [`periodic_bizdays()`](https://mcaselli.github.io/mcrutils/reference/periodic_bizdays.md)
   : Calculate the Number of Business Days in Months, Quarters, etc
 - [`plot_accounts_by_status()`](https://mcaselli.github.io/mcrutils/reference/plot_accounts_by_status.md)

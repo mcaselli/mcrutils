@@ -101,6 +101,41 @@ orders |>
 
 ![](reference/figures/README-plot_accounts_by_status-1.png)
 
+### CAGR
+
+[`mutate_cagrs()`](https://mcaselli.github.io/mcrutils/reference/mutate_cagrs.md)
+adds columns with compound annual growth rates (CAGRs) for a vector of
+values over specified time periods, optionally grouped by one or more
+variables.
+
+Here we’ll calculate the 1- and 2-year CAGR for revenue by market over a
+3-year period.
+
+``` r
+sales <- data.frame(
+  year = rep(2020:2022, times = 2),
+  market = rep(c("APAC", "EMEA"), each = 3),
+  revenue = c(100, 110, 125, 100, 105, 114)
+)
+
+sales |>
+  mutate_cagrs(
+    values = revenue,
+    time_var = year,
+    group_vars = market,
+    periods = c(1:2)
+  )
+#> # A tibble: 6 × 5
+#>    year market revenue revenue_cagr_1 revenue_cagr_2
+#>   <int> <chr>    <dbl>          <dbl>          <dbl>
+#> 1  2020 APAC       100        NA             NA     
+#> 2  2021 APAC       110         0.100         NA     
+#> 3  2022 APAC       125         0.136          0.118 
+#> 4  2020 EMEA       100        NA             NA     
+#> 5  2021 EMEA       105         0.0500        NA     
+#> 6  2022 EMEA       114         0.0857         0.0677
+```
+
 ### Business days
 
 [`periodic_bizdays()`](https://mcaselli.github.io/mcrutils/reference/periodic_bizdays.md)

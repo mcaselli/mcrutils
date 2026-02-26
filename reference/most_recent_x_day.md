@@ -1,7 +1,7 @@
 # Get the date of the prior Sunday or Monday
 
-This function returns the date of the most recent Monday that is on or
-before the current date or a specified reference date
+This function returns the date of the most recent Sunday or Monday that
+is on or before the current date or a specified reference date.
 
 ## Usage
 
@@ -26,7 +26,7 @@ A Date object representing the most recent Sunday or Monday
 
 ``` r
 most_recent_monday() # Returns the most recent Monday from today
-#> [1] "2026-01-05"
+#> [1] "2026-02-23"
 # Returns c("2025-12-29", "2026-01-05")
 most_recent_monday(c("2026-01-04", "2026-01-05"))
 #> [1] "2025-12-29" "2026-01-05"

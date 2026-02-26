@@ -129,10 +129,39 @@
 <p><img src="reference/figures/README-plot_accounts_by_status-1.png" width="100%"></p>
 </div>
 <div class="section level3">
+<h3 id="cagr">CAGR<a class="anchor" aria-label="anchor" href="#cagr"></a>
+</h3>
+<p><code><a href="reference/mutate_cagrs.html">mutate_cagrs()</a></code> adds columns with compound annual growth rates (CAGRs) for a vector of values over specified time periods, optionally grouped by one or more variables.</p>
+<p>Here we’ll calculate the 1- and 2-year CAGR for revenue by market over a 3-year period.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">sales</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">2020</span><span class="op">:</span><span class="fl">2022</span>, times <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>,</span>
+<span>  market <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"APAC"</span>, <span class="st">"EMEA"</span><span class="op">)</span>, each <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>,</span>
+<span>  revenue <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">110</span>, <span class="fl">125</span>, <span class="fl">100</span>, <span class="fl">105</span>, <span class="fl">114</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">sales</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="reference/mutate_cagrs.html">mutate_cagrs</a></span><span class="op">(</span></span>
+<span>    values <span class="op">=</span> <span class="va">revenue</span>,</span>
+<span>    time_var <span class="op">=</span> <span class="va">year</span>,</span>
+<span>    group_vars <span class="op">=</span> <span class="va">market</span>,</span>
+<span>    periods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 6 × 5</span></span>
+<span><span class="co">#&gt;    year market revenue revenue_cagr_1 revenue_cagr_2</span></span>
+<span><span class="co">#&gt;   &lt;int&gt; &lt;chr&gt;    &lt;dbl&gt;          &lt;dbl&gt;          &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt; 1  2020 APAC       100        NA             NA     </span></span>
+<span><span class="co">#&gt; 2  2021 APAC       110         0.100         NA     </span></span>
+<span><span class="co">#&gt; 3  2022 APAC       125         0.136          0.118 </span></span>
+<span><span class="co">#&gt; 4  2020 EMEA       100        NA             NA     </span></span>
+<span><span class="co">#&gt; 5  2021 EMEA       105         0.0500        NA     </span></span>
+<span><span class="co">#&gt; 6  2022 EMEA       114         0.0857         0.0677</span></span></code></pre></div>
+</div>
+<div class="section level3">
 <h3 id="business-days">Business days<a class="anchor" aria-label="anchor" href="#business-days"></a>
 </h3>
 <p><code><a href="reference/periodic_bizdays.html">periodic_bizdays()</a></code> calculates the number of business days in each periodic interval (e.g., monthly, quarterly) between two dates, using calendars from <code>QuantLib</code> (see R package <code>qlcal</code>) for holiday definitions.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/periodic_bizdays.html">periodic_bizdays</a></span><span class="op">(</span></span>
 <span>  from <span class="op">=</span> <span class="st">"2025-01-01"</span>,</span>
 <span>  to <span class="op">=</span> <span class="st">"2025-12-31"</span>,</span>
@@ -152,7 +181,7 @@
 <span><span class="co">#&gt; 8 UnitedKingdom 2025-10-01 2025-12-31            64</span></span></code></pre></div>
 <p>This is handy when analyzing data summarized by month or quarter and you want to adjust for business days in each period.</p>
 <p><code><a href="reference/bizday_of_period.html">bizday_of_period()</a></code> calculates the business day of the period (month, quarter, or year) for a given date and calendar.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/bizday_of_period.html">bizday_of_period</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2025-06-17"</span><span class="op">)</span>, <span class="st">"UnitedStates"</span>, period <span class="op">=</span> <span class="st">"month"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 12</span></span>
 <span><span class="fu"><a href="reference/bizday_of_period.html">bizday_of_period</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2025-06-17"</span><span class="op">)</span>, <span class="st">"UnitedStates"</span>, period <span class="op">=</span> <span class="st">"year"</span><span class="op">)</span></span>
@@ -164,7 +193,7 @@
 </h3>
 <p><code>mcrutils</code> provides a handful functions that can be helpful in creating year-to-date analyses</p>
 <p>Below we have 2.5 years of historical sales data ending on June 1, 2025.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
 <span><span class="va">sales</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
 <span>  date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span></span>
@@ -186,12 +215,12 @@
 <span><span class="co">#&gt; 5 2023-05-01    117</span></span>
 <span><span class="co">#&gt; 6 2023-06-01    104</span></span></code></pre></div>
 <p><code><a href="reference/ytd_bounds.html">ytd_bounds()</a></code> gets the start and end of the year-to-date period for the latest year in a vector of dates,</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="op">(</span><span class="va">bounds</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/ytd_bounds.html">ytd_bounds</a></span><span class="op">(</span><span class="va">sales</span><span class="op">$</span><span class="va">date</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "2025-01-01" "2025-06-01"</span></span></code></pre></div>
 <p>and <code><a href="reference/is_ytd_comparable.html">is_ytd_comparable()</a></code> is a logical vector that indicates whether the dates in a vector are within a year-to-date period relative to a given <code>end_date</code>.</p>
 <p>So we can quickly filter the historical data to see how we’re doing in 2025 compared to the same period (i.e. January - June) in 2023 and 2024:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sales</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="fu"><a href="reference/is_ytd_comparable.html">is_ytd_comparable</a></span><span class="op">(</span><span class="va">date</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">bounds</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">group_by</a></span><span class="op">(</span>year <span class="op">=</span> <span class="fu">lubridate</span><span class="fu">::</span><span class="fu"><a href="https://lubridate.tidyverse.org/reference/year.html" class="external-link">year</a></span><span class="op">(</span><span class="va">date</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -207,7 +236,7 @@
 <h3 id="one-line-datatables">one-line datatables<a class="anchor" aria-label="anchor" href="#one-line-datatables"></a>
 </h3>
 <p><code><a href="reference/auto_dt.html">auto_dt()</a></code> is a one-line function that creates a <code><a href="https://rdrr.io/pkg/DT/man/datatable.html" class="external-link">DT::datatable</a></code> object from a data frame or tibble. It includes buttons to copy or download the data, filter tools, and no rownames. It applies percent, currency, and round formatting to numeric columns, guessing the correct format from the data type and column names. See <code><a href="articles/mcrutils.html">vignette("mcrutils")</a></code> for more examples, including how to specify the set of strings that flag a column as percentage or currency.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
 <span>  <span class="op">~</span><span class="va">product</span>, <span class="op">~</span><span class="va">weight</span>, <span class="op">~</span><span class="va">revenue</span>, <span class="op">~</span><span class="va">growth_pct</span>,</span>
 <span>  <span class="st">"Widget A"</span>, <span class="fl">13.53</span>, <span class="fl">1023.21</span>, <span class="fl">0.051</span>,</span>
@@ -226,7 +255,7 @@ auto_dt() output
 </h3>
 <p><code><a href="https://scales.r-lib.org/reference/label_date.html" class="external-link">scales::label_date_short()</a></code> is a great function for labeling dates in <code>ggplot2</code>, but unfortunately it can’t support quarterly breaks and labels out of the box.</p>
 <p><code><a href="reference/label_quarters_short.html">label_quarters_short()</a></code> generates similar labels for quarterly date breaks, labeling every quarter, but only including the year when it changes from the previous label. <code><a href="reference/breaks_quarters.html">breaks_quarters()</a></code> generates quarterly breaks for date scales.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">economics</span> <span class="op">|&gt;</span></span>
