@@ -164,7 +164,7 @@ calculate_cagr_safe <- function(x, n_periods) {
 #'   **tidyselect expression** evaluated in `data`
 #'   that selects grouping columns, e.g. `c(region, brand)`,
 #'   `dplyr::starts_with("geo_")`, or `NULL` for no grouping. Internally,
-#'   this is resolved to concrete column names via `passed_colnames()`.
+#'   this is resolved to concrete column names via [passed_colnames()].
 #' @param periods Integer vector of lag distances (period lengths) for which to
 #'   compute CAGRs. Defaults to `c(2, 3, 4)`.
 #' @param names A glue-style naming pattern for output columns. Defaults to
@@ -189,7 +189,7 @@ calculate_cagr_safe <- function(x, n_periods) {
 #'
 #' @examples
 #' # --- Basic yearly CAGR by region ---
-#' df <- tibble::tibble(
+#' df <- data.frame(
 #'   region = rep(c("APAC", "EMEA"), each = 5),
 #'   year = rep(2018:2022, times = 2),
 #'   items = c(
@@ -199,29 +199,29 @@ calculate_cagr_safe <- function(x, n_periods) {
 #' )
 #'
 #' df_cagr <- mutate_cagrs(
-#'   data       = df,
-#'   values     = items,
-#'   time_var   = year,
+#'   data = df,
+#'   values = items,
+#'   time_var = year,
 #'   group_vars = c(region),
-#'   periods    = c(2, 4)
+#'   periods = c(2, 4)
 #' )
 #'
 #'
 #' # --- Weekly date (well-behaved as Date) ---
-#' df_wk <- tibble::tibble(
-#'   week   = as.Date(c("2026-03-09", "2026-03-16", "2026-03-23", "2026-03-30")),
-#'   items  = c(100, 105, 102, 108)
+#' df_wk <- data.frame(
+#'   week = as.Date(c("2026-03-09", "2026-03-16", "2026-03-23", "2026-03-30")),
+#'   items = c(100, 105, 102, 108)
 #' )
 #' df_wk_cagr <- mutate_cagrs(
-#'   data      = df_wk,
-#'   values    = items,
-#'   time_var  = week
+#'   data = df_wk,
+#'   values = items,
+#'   time_var = week
 #' )
 #'
 #' @seealso
-#'   `calculate_cagr_safe()` for the underlying safe CAGR calculation;
-#'   `dplyr::group_by()`, `dplyr::arrange()`, `dplyr::across()` for related tidyverse ops;
-#'   `passed_colnames()` for resolving tidyselect expressions to names.
+#'   [calculate_cagr_safe()] for the underlying safe CAGR calculation;
+#'   [dplyr::group_by()], [dplyr::arrange()], [dplyr::across()] for related tidyverse ops;
+#'   [passed_colnames()] for resolving tidyselect expressions to names.
 #' @export
 mutate_cagrs <- function(
   data,
@@ -231,12 +231,7 @@ mutate_cagrs <- function(
   periods = c(2:4),
   names = "{.col}_{.fn}",
   validate = TRUE,
-  quiet = FALSE,
-  # optional knobs if you want to expose tolerance control
-  gap_rel_tol_date = 0.10,
-  gap_min_abs_tol_date = 1,
-  gap_rel_tol_numeric = 0.00,
-  gap_min_abs_tol_numeric = 0
+  quiet = FALSE
 ) {
   # Resolve grouping columns
   group_quo <- rlang::enquo(group_vars)
@@ -257,11 +252,7 @@ mutate_cagrs <- function(
     # gap detection (NA means unsupported type)
     time_vec <- dplyr::pull(data, {{ time_var }})
     gaps_flag <- .detect_gaps(
-      time_vec,
-      rel_tol_date        = gap_rel_tol_date,
-      min_abs_tol_date    = gap_min_abs_tol_date,
-      rel_tol_numeric     = gap_rel_tol_numeric,
-      min_abs_tol_numeric = gap_min_abs_tol_numeric
+      time_vec
     )
 
     if (isTRUE(gaps_flag) && !quiet) {

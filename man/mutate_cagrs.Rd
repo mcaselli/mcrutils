@@ -12,11 +12,7 @@ mutate_cagrs(
   periods = c(2:4),
   names = "{.col}_{.fn}",
   validate = TRUE,
-  quiet = FALSE,
-  gap_rel_tol_date = 0.1,
-  gap_min_abs_tol_date = 1,
-  gap_rel_tol_numeric = 0,
-  gap_min_abs_tol_numeric = 0
+  quiet = FALSE
 )
 }
 \arguments{
@@ -34,7 +30,7 @@ It should be sortable in chronological order when used in
 \strong{tidyselect expression} evaluated in \code{data}
 that selects grouping columns, e.g. \code{c(region, brand)},
 \code{dplyr::starts_with("geo_")}, or \code{NULL} for no grouping. Internally,
-this is resolved to concrete column names via \code{passed_colnames()}.}
+this is resolved to concrete column names via \code{\link[=passed_colnames]{passed_colnames()}}.}
 
 \item{periods}{Integer vector of lag distances (period lengths) for which to
 compute CAGRs. Defaults to \code{c(2, 3, 4)}.}
@@ -125,7 +121,7 @@ columns for plotting, dashboards, or further analysis.
 
 \examples{
 # --- Basic yearly CAGR by region ---
-df <- tibble::tibble(
+df <- data.frame(
   region = rep(c("APAC", "EMEA"), each = 5),
   year = rep(2018:2022, times = 2),
   items = c(
@@ -135,28 +131,28 @@ df <- tibble::tibble(
 )
 
 df_cagr <- mutate_cagrs(
-  data       = df,
-  values     = items,
-  time_var   = year,
+  data = df,
+  values = items,
+  time_var = year,
   group_vars = c(region),
-  periods    = c(2, 4)
+  periods = c(2, 4)
 )
 
 
 # --- Weekly date (well-behaved as Date) ---
-df_wk <- tibble::tibble(
-  week   = as.Date(c("2026-03-09", "2026-03-16", "2026-03-23", "2026-03-30")),
-  items  = c(100, 105, 102, 108)
+df_wk <- data.frame(
+  week = as.Date(c("2026-03-09", "2026-03-16", "2026-03-23", "2026-03-30")),
+  items = c(100, 105, 102, 108)
 )
 df_wk_cagr <- mutate_cagrs(
-  data      = df_wk,
-  values    = items,
-  time_var  = week
+  data = df_wk,
+  values = items,
+  time_var = week
 )
 
 }
 \seealso{
-\code{calculate_cagr_safe()} for the underlying safe CAGR calculation;
-\code{dplyr::group_by()}, \code{dplyr::arrange()}, \code{dplyr::across()} for related tidyverse ops;
-\code{passed_colnames()} for resolving tidyselect expressions to names.
+\code{\link[=calculate_cagr_safe]{calculate_cagr_safe()}} for the underlying safe CAGR calculation;
+\code{\link[dplyr:group_by]{dplyr::group_by()}}, \code{\link[dplyr:arrange]{dplyr::arrange()}}, \code{\link[dplyr:across]{dplyr::across()}} for related tidyverse ops;
+\code{\link[=passed_colnames]{passed_colnames()}} for resolving tidyselect expressions to names.
 }

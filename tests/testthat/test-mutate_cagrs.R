@@ -26,7 +26,7 @@ test_that("calculate_cagr_safe: basic math and NA/zero guards", {
 })
 
 test_that("mutate_cagrs: ungrouped numeric year orders correctly and returns expected CAGRs", {
-  df <- tibble::tibble(
+  df <- data.frame(
     year  = 2018:2022,
     value = c(100, 110, 121, 133.1, 146.41) # ~10% compounded
   )
@@ -47,7 +47,7 @@ test_that("mutate_cagrs: ungrouped numeric year orders correctly and returns exp
 test_that("mutate_cagrs: grouped computation is independent per group", {
   # Construct data with DISTINCT growth rates by region:
   # APAC ~10% compounded; EMEA ~5% compounded
-  df <- tibble::tibble(
+  df <- data.frame(
     region = rep(c("APAC", "EMEA"), each = 5),
     year = rep(2018:2022, times = 2),
     items = c(
@@ -96,7 +96,7 @@ test_that("mutate_cagrs: grouped computation is independent per group", {
 })
 
 test_that("mutate_cagrs: Date-based time_var orders correctly", {
-  df <- tibble::tibble(
+  df <- data.frame(
     date  = as.Date(c("2020-01-01", "2021-01-01", "2022-01-01")),
     value = c(100, 110, 121)
   )
@@ -114,7 +114,7 @@ test_that("mutate_cagrs: Date-based time_var orders correctly", {
 
 
 test_that("mutate_cagrs: naming pattern and multiple periods", {
-  df <- tibble::tibble(
+  df <- data.frame(
     year  = 2018:2022,
     value = c(100, 110, 121, 133.1, 146.41)
   )
@@ -136,7 +136,7 @@ test_that("mutate_cagrs: naming pattern and multiple periods", {
 })
 
 test_that("mutate_cagrs: works without grouping (group_vars = NULL)", {
-  df <- tibble::tibble(
+  df <- data.frame(
     year  = 2018:2021,
     items = c(100, 110, 121, 133.1)
   )
@@ -152,7 +152,7 @@ test_that("mutate_cagrs: works without grouping (group_vars = NULL)", {
 })
 
 test_that("mutate_cagrs: tidy-eval grouping works with multiple columns", {
-  df <- tibble::tibble(
+  df <- data.frame(
     region = rep(c("APAC", "EMEA"), each = 6),
     brand  = rep(rep(c("A", "B"), each = 3), times = 2),
     year   = rep(2019:2021, times = 4),
@@ -180,7 +180,7 @@ test_that("mutate_cagrs: tidy-eval grouping works with multiple columns", {
 # -------------------------------------------------------------------
 
 test_that("UI snapshot: unordered factor ordering warning", {
-  df <- tibble::tibble(
+  df <- data.frame(
     year_fac = factor(c("2018", "2019", "2020", "2021")), # unordered factor
     value    = c(100, 110, 121, 133.1)
   )
@@ -206,7 +206,7 @@ test_that("UI snapshot: unordered factor ordering warning", {
 
 
 test_that("UI snapshot: ordered factor ordering warning", {
-  df <- tibble::tibble(
+  df <- data.frame(
     year_fac = factor(c("2018", "2019", "2020", "2021"), ordered = TRUE), # ordered factor
     value    = c(100, 110, 121, 133.1)
   )
@@ -231,7 +231,7 @@ test_that("UI snapshot: ordered factor ordering warning", {
 })
 
 test_that("UI snapshot: unknown character format uses lexicographic fallback", {
-  df <- tibble::tibble(
+  df <- data.frame(
     label = c("Q1-2022", "Q3-2021", "Q2-2022"), # unknown format
     value = c(100, 90, 110)
   )
@@ -256,7 +256,7 @@ test_that("UI snapshot: unknown character format uses lexicographic fallback", {
 })
 
 test_that("UI snapshot: duplicate (group, time) rows warning", {
-  df <- tibble::tibble(
+  df <- data.frame(
     region = c("APAC", "APAC", "APAC"),
     year   = c(2020, 2020, 2021), # duplicate time within group
     value  = c(100, 100, 110)
@@ -283,7 +283,7 @@ test_that("UI snapshot: duplicate (group, time) rows warning", {
 })
 
 test_that("UI snapshot: gaps in time sequence warning", {
-  df <- tibble::tibble(
+  df <- data.frame(
     year  = c(2018, 2020, 2021), # missing 2019
     value = c(100, 110, 121)
   )
