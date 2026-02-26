@@ -97,30 +97,44 @@ calculate_cagr_safe <- function(x, n_periods) {
 #' Add CAGR columns across groups and time with robust ordering and diagnostics
 #'
 #' @description
-#' `mutate_cagrs()` appends one or more CAGR (Compound Annual Growth Rate)
-#' columns to a data frame, computed for a numeric value column within optional
-#' groups and ordered by a specified time variable. The function is designed
-#' for tidyverse workflows and expects the `time_var` to be well-behaved and
-#' sortable (e.g., numeric/integer year, `Date`, `POSIXct`).
+#' `mutate_cagrs()` computes the CAGR (Compound Annual Growth Rate) for a
+#' numeric value column for one or more specified lag periods and appends the
+#' resulting columns to a data frame. The function performs grouping (if
+#' specified) and sorting of `data`, but no aggregation.
+#'
+#' The function is designed for tidyverse workflows.
 #'
 #' @details
-#' **Ordering**
+#' **Ordering of `time_var`**
 #'
-#' CAGR compares each value to its lagged value at a fixed lag `n`. To produce
-#' correct pairings, the data must be sorted consistently within each group.
-#' `mutate_cagrs()` simply arranges rows by any grouping columns (if provided)
-#' and then by `time_var`. It assumes `time_var` orders chronologically when
-#' sorted (e.g., numeric years or dates). If `time_var` is not sortable in a
-#' chronological sense (e.g., a factor or arbitrary character labels),
-#' please coerce it upstream into an appropriately sortable ordered
-#' representation.
+#' CAGR compares each value to its lagged value at a fixed lag of `n` rows after
+#' grouping and sorting. To produce correct pairings, the data must be sorted
+#' consistently within each group. `mutate_cagrs()` simply arranges rows by any
+#' grouping columns (if provided) and then by `time_var`.
+#' To produce correct results, `time_var` must yield a chronological order when
+#' sorted with `arrange()`.
+#'
+#' For example, numeric years (e.g., 2020, 2021) or `Date` objects will work as expected.
+#'
+#' However, if `time_var` is an unordered factor or arbitrary character labels
+#' (e.g., "Q1-2020", "Q2-2020"), the sorting will be lexicographic and may not
+#' reflect the intended chronological order, leading to incorrect CAGR
+#' calculations.
+#'
+#' Check that `data |> arrange(group_vars, time_var)` produces the intended
+#' chronological order before calling `mutate_cagrs()`. If the order is not
+#' correct, consider transforming `time_var` to a well-behaved format
+#' (e.g., numeric year, `Date`, ordered factor) upstream for accurate results.
+#' Note gap detection is only supported for numeric and date types,
+#' so providing `time_var` in those types is preferred.
 #'
 #' **Diagnostics**
 #'
 #' When `validate = TRUE`, the function performs:
 #'
 #' - **Duplicate detection**: If duplicate (group, time) rows exist, lag-based
-#'   calculations can be ambiguous. A `cli` warning is issued. Consider
+#'   calculations will be ambiguous. `mutate_cagrs()` will error if duplicates
+#'   are detected. To resolve, identify the source of duplicates and consider
 #'   aggregating (e.g., `dplyr::summarise()`) to one row per (group, time)
 #'   before calling `mutate_cagrs()`.
 #' - **Gap detection**: A light-weight heuristic flags irregular spacing only
@@ -137,19 +151,26 @@ calculate_cagr_safe <- function(x, n_periods) {
 #'
 #' **Caveats**
 #'
-#' - **Multiple rows per (group, time)**: Aggregation to a single row per
-#'   period is recommended before computing CAGRs. Duplicate (group, time)
-#'   rows trigger a warning.
+#' - **Multiple rows per (group, time)**: A single row per period per group is
+#'   required to computing CAGRs. Duplicate (group, time) rows trigger an error
+#'   unless `validate = FALSE`.
 #' - **Zeros and negatives**: If the lagged base is `<= 0`, the corresponding
 #'   CAGR is `NA_real_`. Consider an offset (domain-specific) or filtering
 #'   non-positive values if appropriate.
-#' - **Gaps in time**: CAGR assumes consistent period length. If gaps are
-#'   present, values still compute (based on lag distance), but interpretation
-#'   should be made with caution.
 #' - **Time variable**: This function assumes `time_var` is already a well-behaved,
 #'   sortable representation of time. If it is not (e.g., factor or
 #'   arbitrary character labels), convert it upstream (e.g., to numeric year,
 #'   `Date`) for correct results.
+#' - **Gaps in time**: CAGRs are computed by comparing values at n-lagged rows.
+#'   If the gaps are present in the data, the time period between those rows may
+#'   not match the intended `n` periods, leading to incorrect CAGR values.
+#'   If `validate = TRUE`, the function performs a heuristic gap detection for
+#'   `time_var` of numeric and date types, and will error if a gap is found.
+#'   For other types, a warning is issued that gap detection was skipped,
+#'   and the function proceeds with the calculation. It is the user's
+#'   responsibility to ensure that the time variable is consistent and free
+#'   of gaps for accurate CAGR calculations.
+
 #' - **Performance**: For large grouped data, consider pre-aggregating and
 #'   minimizing the number of requested `periods`.
 #'
@@ -175,7 +196,7 @@ calculate_cagr_safe <- function(x, n_periods) {
 #'
 
 #' @return A data frame (a tibble if `data` is a tibble) with CAGR columns added
-#'   (one per requested period.
+#'   (one per requested period).
 
 #'
 #' @section Recommended Workflow:
@@ -245,8 +266,8 @@ mutate_cagrs <- function(
   # Diagnostics
   if (validate) {
     # duplicates per (group, time)
-    if (.check_duplicates_plain(data, group_cols, rlang::as_name(rlang::ensym(time_var))) && !quiet) {
-      cli::cli_warn("Detected duplicate (group, time) rows; CAGR may be ambiguous. Consider aggregating first.")
+    if (.check_duplicates_plain(data, group_cols, rlang::as_name(rlang::ensym(time_var)))) {
+      cli::cli_abort("Detected duplicate (group, time) rows; CAGR would be ambiguous. Consider aggregating first.")
     }
 
     # gap detection (NA means unsupported type)
@@ -255,8 +276,8 @@ mutate_cagrs <- function(
       time_vec
     )
 
-    if (isTRUE(gaps_flag) && !quiet) {
-      cli::cli_warn("Detected gaps in the time sequence; CAGRs assume consistent period spacing.")
+    if (isTRUE(gaps_flag)) {
+      cli::cli_abort("Detected gaps in the time sequence; CAGRs assume consistent period spacing.")
     } else if (is.na(gaps_flag) && !quiet) {
       time_var_name <- rlang::as_name(rlang::ensym(time_var))
       time_var_type <- class(time_vec)[1]
@@ -264,7 +285,7 @@ mutate_cagrs <- function(
         c(
           "Gap detection skipped: ",
           "i" = "{.var {time_var_name}} is of type {time_var_type}, which is unsupported for gap diagnostics.",
-          "!" = "Ensure {.var {time_var_name}} sorts chronologically and contains no gaps or else CAGRs may be incorrect"
+          "!" = "Ensure {.var {time_var_name}} sorts chronologically and contains no gaps, or else CAGRs may be incorrect."
         )
       )
     }

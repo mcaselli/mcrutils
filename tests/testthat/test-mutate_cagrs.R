@@ -27,8 +27,8 @@ test_that("calculate_cagr_safe: basic math and NA/zero guards", {
 
 test_that("mutate_cagrs: ungrouped numeric year orders correctly and returns expected CAGRs", {
   df <- data.frame(
-    year  = 2018:2022,
-    value = c(100, 110, 121, 133.1, 146.41) # ~10% compounded
+    year  = c(2018:2020, 2022, 2021), # out of order
+    value = c(100, 110, 121, 146.41, 133.1) # ~10% compounded
   )
 
   out <- mutate_cagrs(
@@ -97,8 +97,9 @@ test_that("mutate_cagrs: grouped computation is independent per group", {
 
 test_that("mutate_cagrs: Date-based time_var orders correctly", {
   df <- data.frame(
-    date  = as.Date(c("2020-01-01", "2021-01-01", "2022-01-01")),
-    value = c(100, 110, 121)
+    # out of order dates
+    date  = as.Date(c("2020-01-01", "2022-01-01", "2021-01-01")),
+    value = c(100, 121, 110)
   )
   expect_silent(
     out <- mutate_cagrs(
@@ -174,8 +175,7 @@ test_that("mutate_cagrs: tidy-eval grouping works with multiple columns", {
 })
 
 # -------------------------------------------------------------------
-# Snapshot tests for UI elements (cli warnings/messages)
-# These snapshots will be stored under tests/testthat/_snaps/mutate_cagrs.md
+# Snapshot tests for UI elements (cli warnings/errors)
 # We normalize CLI output to be deterministic across environments.
 # -------------------------------------------------------------------
 
@@ -194,10 +194,7 @@ test_that("UI snapshot: unordered factor ordering warning", {
         data = df,
         values = value,
         time_var = year_fac,
-        periods = 1,
-        names = "{.fn}",
-        validate = TRUE,
-        quiet = FALSE
+        periods = 1
       )
     ),
     cran = FALSE
@@ -219,11 +216,7 @@ test_that("UI snapshot: ordered factor ordering warning", {
       mutate_cagrs(
         data = df,
         values = value,
-        time_var = year_fac,
-        periods = 1,
-        names = "{.fn}",
-        validate = TRUE,
-        quiet = FALSE
+        time_var = year_fac
       )
     ),
     cran = FALSE
@@ -245,17 +238,13 @@ test_that("UI snapshot: unknown character format uses lexicographic fallback", {
         data = df,
         values = value,
         time_var = label,
-        periods = 1,
-        names = "{.fn}",
-        validate = TRUE,
-        quiet = FALSE
+        periods = 1
       )
-    ),
-    cran = FALSE
+    )
   )
 })
 
-test_that("UI snapshot: duplicate (group, time) rows warning", {
+test_that("UI snapshot: duplicate (group, time) rows error", {
   df <- data.frame(
     region = c("APAC", "APAC", "APAC"),
     year   = c(2020, 2020, 2021), # duplicate time within group
@@ -266,23 +255,18 @@ test_that("UI snapshot: duplicate (group, time) rows warning", {
   withr::local_envvar(CLI_NUM_COLORS = "0")
 
   expect_snapshot(
-    invisible(
-      mutate_cagrs(
-        data = df,
-        values = value,
-        time_var = year,
-        group_vars = c(region),
-        periods = 1,
-        names = "{.fn}",
-        validate = TRUE,
-        quiet = FALSE
-      )
+    mutate_cagrs(
+      data = df,
+      values = value,
+      time_var = year,
+      group_vars = region,
+      periods = 1
     ),
-    cran = FALSE
+    error = TRUE
   )
 })
 
-test_that("UI snapshot: gaps in time sequence warning", {
+test_that("UI snapshot: gaps in time sequence error", {
   df <- data.frame(
     year  = c(2018, 2020, 2021), # missing 2019
     value = c(100, 110, 121)
@@ -292,17 +276,13 @@ test_that("UI snapshot: gaps in time sequence warning", {
   withr::local_envvar(CLI_NUM_COLORS = "0")
 
   expect_snapshot(
-    invisible(
-      mutate_cagrs(
-        data = df,
-        values = value,
-        time_var = year,
-        periods = 1,
-        names = "{.fn}",
-        validate = TRUE,
-        quiet = FALSE
-      )
+    mutate_cagrs(
+      data = df,
+      values = value,
+      time_var = year,
+      periods = 1,
+      names = "{.fn}"
     ),
-    cran = FALSE
+    error = TRUE
   )
 })

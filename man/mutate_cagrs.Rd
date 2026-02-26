@@ -45,33 +45,47 @@ when feasible, gaps).}
 }
 \value{
 A data frame (a tibble if \code{data} is a tibble) with CAGR columns added
-(one per requested period.
+(one per requested period).
 }
 \description{
-\code{mutate_cagrs()} appends one or more CAGR (Compound Annual Growth Rate)
-columns to a data frame, computed for a numeric value column within optional
-groups and ordered by a specified time variable. The function is designed
-for tidyverse workflows and expects the \code{time_var} to be well-behaved and
-sortable (e.g., numeric/integer year, \code{Date}, \code{POSIXct}).
+\code{mutate_cagrs()} computes the CAGR (Compound Annual Growth Rate) for a
+numeric value column for one or more specified lag periods and appends the
+resulting columns to a data frame. The function performs grouping (if
+specified) and sorting of \code{data}, but no aggregation.
+
+The function is designed for tidyverse workflows.
 }
 \details{
-\strong{Ordering}
+\strong{Ordering of \code{time_var}}
 
-CAGR compares each value to its lagged value at a fixed lag \code{n}. To produce
-correct pairings, the data must be sorted consistently within each group.
-\code{mutate_cagrs()} simply arranges rows by any grouping columns (if provided)
-and then by \code{time_var}. It assumes \code{time_var} orders chronologically when
-sorted (e.g., numeric years or dates). If \code{time_var} is not sortable in a
-chronological sense (e.g., a factor or arbitrary character labels),
-please coerce it upstream into an appropriately sortable ordered
-representation.
+CAGR compares each value to its lagged value at a fixed lag of \code{n} rows after
+grouping and sorting. To produce correct pairings, the data must be sorted
+consistently within each group. \code{mutate_cagrs()} simply arranges rows by any
+grouping columns (if provided) and then by \code{time_var}.
+To produce correct results, \code{time_var} must yield a chronological order when
+sorted with \code{arrange()}.
+
+For example, numeric years (e.g., 2020, 2021) or \code{Date} objects will work as expected.
+
+However, if \code{time_var} is an unordered factor or arbitrary character labels
+(e.g., "Q1-2020", "Q2-2020"), the sorting will be lexicographic and may not
+reflect the intended chronological order, leading to incorrect CAGR
+calculations.
+
+Check that \code{data |> arrange(group_vars, time_var)} produces the intended
+chronological order before calling \code{mutate_cagrs()}. If the order is not
+correct, consider transforming \code{time_var} to a well-behaved format
+(e.g., numeric year, \code{Date}, ordered factor) upstream for accurate results.
+Note gap detection is only supported for numeric and date types,
+so providing \code{time_var} in those types is preferred.
 
 \strong{Diagnostics}
 
 When \code{validate = TRUE}, the function performs:
 \itemize{
 \item \strong{Duplicate detection}: If duplicate (group, time) rows exist, lag-based
-calculations can be ambiguous. A \code{cli} warning is issued. Consider
+calculations will be ambiguous. \code{mutate_cagrs()} will error if duplicates
+are detected. To resolve, identify the source of duplicates and consider
 aggregating (e.g., \code{dplyr::summarise()}) to one row per (group, time)
 before calling \code{mutate_cagrs()}.
 \item \strong{Gap detection}: A light-weight heuristic flags irregular spacing only
@@ -89,19 +103,25 @@ missing or when the lagged base is non-positive.
 
 \strong{Caveats}
 \itemize{
-\item \strong{Multiple rows per (group, time)}: Aggregation to a single row per
-period is recommended before computing CAGRs. Duplicate (group, time)
-rows trigger a warning.
+\item \strong{Multiple rows per (group, time)}: A single row per period per group is
+required to computing CAGRs. Duplicate (group, time) rows trigger an error
+unless \code{validate = FALSE}.
 \item \strong{Zeros and negatives}: If the lagged base is \verb{<= 0}, the corresponding
 CAGR is \code{NA_real_}. Consider an offset (domain-specific) or filtering
 non-positive values if appropriate.
-\item \strong{Gaps in time}: CAGR assumes consistent period length. If gaps are
-present, values still compute (based on lag distance), but interpretation
-should be made with caution.
 \item \strong{Time variable}: This function assumes \code{time_var} is already a well-behaved,
 sortable representation of time. If it is not (e.g., factor or
 arbitrary character labels), convert it upstream (e.g., to numeric year,
 \code{Date}) for correct results.
+\item \strong{Gaps in time}: CAGRs are computed by comparing values at n-lagged rows.
+If the gaps are present in the data, the time period between those rows may
+not match the intended \code{n} periods, leading to incorrect CAGR values.
+If \code{validate = TRUE}, the function performs a heuristic gap detection for
+\code{time_var} of numeric and date types, and will error if a gap is found.
+For other types, a warning is issued that gap detection was skipped,
+and the function proceeds with the calculation. It is the user's
+responsibility to ensure that the time variable is consistent and free
+of gaps for accurate CAGR calculations.
 \item \strong{Performance}: For large grouped data, consider pre-aggregating and
 minimizing the number of requested \code{periods}.
 }
