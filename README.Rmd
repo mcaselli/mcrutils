@@ -96,6 +96,30 @@ orders |>
 ```
 
 
+### CAGR
+`mutate_cagrs()` adds columns with compound annual growth rates (CAGRs) for a
+vector of values over specified time periods, optionally grouped by one or more
+variables.
+
+Here we'll calculate the 1- and 2-year CAGR for revenue by market over a 3-year 
+period.
+```{r}
+sales <- data.frame(
+  year = rep(2020:2022, times = 2),
+  market = rep(c("APAC", "EMEA"), each = 3),
+  revenue = c(100, 110, 125, 100, 105, 114)
+)
+
+sales |>
+  mutate_cagrs(
+    values = revenue,
+    time_var = year,
+    group_vars = market,
+    periods = c(1:2)
+  )
+```
+
+
 ### Business days 
 
 `periodic_bizdays()` calculates the number of business days in each periodic
@@ -145,7 +169,6 @@ sales <- tibble(
 )
 
 head(sales)
-
 ```
 
 `ytd_bounds()` gets the start and end of the year-to-date period for the latest
