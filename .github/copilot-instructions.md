@@ -11,7 +11,7 @@
 
 ## What Good Changes Look Like Here
 
-- Generally adhere to the tidyverse style guide and existing package conventions.
+- Generally adhere to the [tidyverse style guide](https://style.tidyverse.org/) and [tidy design principles](https://design.tidyverse.org/).
 - Keep edits small, focused, and consistent with existing package patterns.
 - Prefer explicit namespaces where practical (for example dplyr::mutate, rlang::arg_match).
 - Code should be clear and self-documenting, with roxygen2 comments for all exported functions.
@@ -25,7 +25,7 @@
 
 ## R Package Workflow Expectations
 
-This repository follows the workflow and practices outlined in [R Packages](https://r-pkgs.org/), using the `devtools` package as the primary development toolkit. The checklist below is the practical implementation of that workflow for this project.
+This repository follows the workflow and practices outlined in [R Packages (2e)](https://r-pkgs.org/), using the `devtools` package as the primary development toolkit. The checklist below is the practical implementation of that workflow for this project.
 
 1. Always incorporate the separate private security/public-safety guidance that is maintained outside this repository.
 2. If that separate guidance is not available in context, stop and do not make the change until it has been incorporated.
