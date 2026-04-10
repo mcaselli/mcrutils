@@ -446,17 +446,17 @@ currency.
 You can suppress the buttons for copy, csv, and excel downloads with `buttons =
 FALSE`.
 
+`rename_cols_for_display()` converts snake_case-like column names to title-case,
+with an option to preserve selected acronyms in uppercase.
 
 ```{r guess_col_fmts_example, screenshot.opts=list(vwidth= 800, vheight = 600), message=FALSE}
 tribble(
-  ~product, ~weight, ~dollaz_earned, ~growth_pct,
-  "Widget A", 13.53, 1023.21, 0.051,
-  "Widget B", 22.61, 150.24, 0.103,
-  "Widget C", 40.54, 502.26, 0.021,
-  "Widget D", 34.21, 2000.95, 0.154
+  ~market_name, ~ytd_revenue, ~cagr_pct, ~num_accounts,
+  "North", 1023.2456, 0.0512, 145,
+  "West", 150.2397, 0.1034, 28
 ) |>
-  mutate(product = as.factor(product)) |>
-  auto_dt(numeric_digits = 1, pct_digits = 0, curr_flags = c("revenue", "dollaz"))
+  rename_cols_for_display(all_caps = c("YTD", "CAGR")) |>
+  auto_dt(numeric_digits = 1, pct_digits = 0)
 ```
 
 
@@ -555,8 +555,7 @@ guarantee integer break labels.
 Hat tip to [Joshua Cook](https://joshuacook.netlify.app/posts/2019-11-09_integer-values-ggplot-axis/).
 
 You can provide a target number of breaks with the `n_breaks` argument, which is passed to `pretty()`. 
-All other arguments (except `breaks`) are passed to `scale_x_continuous()` or
-`scale_y_continuous()`, so you can customize the name, position, etc. as needed.
+All other arguments are passed to `scale_x_continuous()` or `scale_y_continuous()`, so you can customize the name, position, etc. as needed.
 
 
 ```{r integer-scale-comparison}
