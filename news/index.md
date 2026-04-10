@@ -2,6 +2,16 @@
 
 ## mcrutils (development version)
 
+### New
+
+- [`scale_x_integer()`](https://mcaselli.github.io/mcrutils/reference/scale_integer.md)
+  and
+  [`scale_y_integer()`](https://mcaselli.github.io/mcrutils/reference/scale_integer.md)
+  for continuous ggplot scales that favor integer break labels.
+- [`rename_cols_for_display()`](https://mcaselli.github.io/mcrutils/reference/rename_cols_for_display.md)
+  to convert snake_case-like column names to title-style labels with
+  optional acronym preservation.
+
 ## mcrutils 0.0.0.9010
 
 ### New

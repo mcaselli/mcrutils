@@ -55,6 +55,11 @@
   **\[experimental\]** : Plot Count of Accounts by Status Over Time
 - [`py_dates()`](https://mcaselli.github.io/mcrutils/reference/py_dates.md)
   : Calculate previous year dates
+- [`rename_cols_for_display()`](https://mcaselli.github.io/mcrutils/reference/rename_cols_for_display.md)
+  : Rename columns for display
+- [`scale_x_integer()`](https://mcaselli.github.io/mcrutils/reference/scale_integer.md)
+  [`scale_y_integer()`](https://mcaselli.github.io/mcrutils/reference/scale_integer.md)
+  : Continuous position scales with integer-friendly breaks
 - [`set_calendar()`](https://mcaselli.github.io/mcrutils/reference/set_cal.md)
   [`with_calendar()`](https://mcaselli.github.io/mcrutils/reference/set_cal.md)
   [`local_calendar()`](https://mcaselli.github.io/mcrutils/reference/set_cal.md)

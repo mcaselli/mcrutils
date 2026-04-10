@@ -26,7 +26,7 @@ A Date object representing the most recent Sunday or Monday
 
 ``` r
 most_recent_monday() # Returns the most recent Monday from today
-#> [1] "2026-02-23"
+#> [1] "2026-04-06"
 # Returns c("2025-12-29", "2026-01-05")
 most_recent_monday(c("2026-01-04", "2026-01-05"))
 #> [1] "2025-12-29" "2026-01-05"

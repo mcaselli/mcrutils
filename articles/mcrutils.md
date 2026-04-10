@@ -254,7 +254,7 @@ example_sales |>
     periods = c(1:3)
   ) |>
   # peek at the first 4 rows for each market
-  slice_head(n=4, by = market)
+  slice_head(n = 4, by = market)
 #> # A tibble: 8 × 6
 #>   market        month      volume volume_cagr_1 volume_cagr_2 volume_cagr_3
 #>   <chr>         <date>      <dbl>         <dbl>         <dbl>         <dbl>
@@ -448,7 +448,7 @@ global_cum_daily_sales <- sales_with_bizday |>
   group_by(year = year(adjusted_date), bizday_of_month) |>
   summarise(units_ordered = sum(units_ordered), .groups = "drop") |>
   group_by(year) |>
-  mutate(cumulative_units_ordered = cumsum(units_ordered)) 
+  mutate(cumulative_units_ordered = cumsum(units_ordered))
 
 head(global_cum_daily_sales)
 #> # A tibble: 6 × 4
@@ -489,7 +489,7 @@ regional_cum_daily_sales <- sales_with_bizday |>
   group_by(year = year(order_date), bizday_of_month, market) |>
   summarise(units_ordered = sum(units_ordered), .groups = "drop") |>
   group_by(year, market) |>
-  mutate(cumulative_units_ordered = cumsum(units_ordered)) 
+  mutate(cumulative_units_ordered = cumsum(units_ordered))
 
 head(regional_cum_daily_sales)
 #> # A tibble: 6 × 5
@@ -508,7 +508,7 @@ head(regional_cum_daily_sales)
 regional_cum_daily_sales |>
   ggplot(aes(bizday_of_month, cumulative_units_ordered, color = factor(year))) +
   geom_line(linewidth = 1.2) +
-  facet_wrap(~market, ncol=1) +
+  facet_wrap(~market, ncol = 1) +
   labs(
     title = "Cumulative Units Ordered by Business Day of Month",
     color = "Year"
@@ -604,16 +604,18 @@ to determine the format of each column. You can provide `pct_flags` and
 You can suppress the buttons for copy, csv, and excel downloads with
 `buttons = FALSE`.
 
+[`rename_cols_for_display()`](https://mcaselli.github.io/mcrutils/reference/rename_cols_for_display.md)
+converts snake_case-like column names to title-case, with an option to
+preserve selected acronyms in uppercase.
+
 ``` r
 tribble(
-  ~product, ~weight, ~dollaz_earned, ~growth_pct,
-  "Widget A", 13.53, 1023.21, 0.051,
-  "Widget B", 22.61, 150.24, 0.103,
-  "Widget C", 40.54, 502.26, 0.021,
-  "Widget D", 34.21, 2000.95, 0.154
+  ~market_name, ~ytd_revenue, ~cagr_pct, ~num_accounts,
+  "North", 1023.2456, 0.0512, 145,
+  "West", 150.2397, 0.1034, 28
 ) |>
-  mutate(product = as.factor(product)) |>
-  auto_dt(numeric_digits = 1, pct_digits = 0, curr_flags = c("revenue", "dollaz"))
+  rename_cols_for_display(all_caps = c("YTD", "CAGR")) |>
+  auto_dt(numeric_digits = 1, pct_digits = 0)
 ```
 
 ### Quarterly breaks and labels
@@ -711,3 +713,54 @@ example_sales |>
 ```
 
 ![](mcrutils_files/figure-html/fixed-quarterly-breaks-1.png)
+
+### Integer-friendly continuous scales
+
+The default breaks for continuous scales can include decimal values,
+e.g. when the range spanned by the data is small. These decimal values
+aren’t appropriate with count data, so we provide
+[`scale_x_integer()`](https://mcaselli.github.io/mcrutils/reference/scale_integer.md)
+and
+[`scale_y_integer()`](https://mcaselli.github.io/mcrutils/reference/scale_integer.md),
+which set breaks with `floor(pretty())` and therefore guarantee integer
+break labels. Hat tip to [Joshua
+Cook](https://joshuacook.netlify.app/posts/2019-11-09_integer-values-ggplot-axis/).
+
+You can provide a target number of breaks with the `n_breaks` argument,
+which is passed to [`pretty()`](https://rdrr.io/r/base/pretty.html). All
+other arguments are passed to
+[`scale_x_continuous()`](https://ggplot2.tidyverse.org/reference/scale_continuous.html)
+or
+[`scale_y_continuous()`](https://ggplot2.tidyverse.org/reference/scale_continuous.html),
+so you can customize the name, position, etc. as needed.
+
+``` r
+chicken_counts <- data.frame(
+  group = c("hatched", "not hatched"),
+  chickens = c(10, 7)
+)
+
+chicken_counts |>
+  ggplot(aes(group, chickens)) +
+  geom_col() +
+  labs(
+    title = "Default continuous scales",
+    subtitle = "embarassing"
+  )
+```
+
+![](mcrutils_files/figure-html/integer-scale-comparison-1.png)
+
+``` r
+
+chicken_counts |>
+  ggplot(aes(group, chickens)) +
+  geom_col() +
+  scale_y_integer() +
+  labs(
+    title = "Integer-friendly scales",
+    subtitle = "much better"
+  )
+```
+
+![](mcrutils_files/figure-html/integer-scale-comparison-2.png)

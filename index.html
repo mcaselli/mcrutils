@@ -235,16 +235,15 @@
 <div class="section level3">
 <h3 id="one-line-datatables">one-line datatables<a class="anchor" aria-label="anchor" href="#one-line-datatables"></a>
 </h3>
-<p><code><a href="reference/auto_dt.html">auto_dt()</a></code> is a one-line function that creates a <code><a href="https://rdrr.io/pkg/DT/man/datatable.html" class="external-link">DT::datatable</a></code> object from a data frame or tibble. It includes buttons to copy or download the data, filter tools, and no rownames. It applies percent, currency, and round formatting to numeric columns, guessing the correct format from the data type and column names. See <code><a href="articles/mcrutils.html">vignette("mcrutils")</a></code> for more examples, including how to specify the set of strings that flag a column as percentage or currency.</p>
+<p><code><a href="reference/auto_dt.html">auto_dt()</a></code> is a one-line function that creates a <code><a href="https://rdrr.io/pkg/DT/man/datatable.html" class="external-link">DT::datatable</a></code> object from a data frame or tibble. It includes buttons to copy or download the data, filter tools, and no rownames. It applies percent, currency, and round formatting to numeric columns, guessing the correct format from the data and column names.</p>
+<p><code><a href="reference/rename_cols_for_display.html">rename_cols_for_display()</a></code> converts snake_case-like column names to title-case, with an option to preserve selected acronyms in uppercase.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
-<span>  <span class="op">~</span><span class="va">product</span>, <span class="op">~</span><span class="va">weight</span>, <span class="op">~</span><span class="va">revenue</span>, <span class="op">~</span><span class="va">growth_pct</span>,</span>
-<span>  <span class="st">"Widget A"</span>, <span class="fl">13.53</span>, <span class="fl">1023.21</span>, <span class="fl">0.051</span>,</span>
-<span>  <span class="st">"Widget B"</span>, <span class="fl">22.61</span>, <span class="fl">150.24</span>, <span class="fl">0.103</span>,</span>
-<span>  <span class="st">"Widget C"</span>, <span class="fl">40.54</span>, <span class="fl">502.26</span>, <span class="fl">0.021</span>,</span>
-<span>  <span class="st">"Widget D"</span>, <span class="fl">34.21</span>, <span class="fl">2000.95</span>, <span class="fl">0.154</span></span>
+<span>  <span class="op">~</span><span class="va">market_name</span>, <span class="op">~</span><span class="va">ytd_revenue</span>, <span class="op">~</span><span class="va">cagr_pct</span>, <span class="op">~</span><span class="va">num_accounts</span>,</span>
+<span>  <span class="st">"North"</span>, <span class="fl">1023.2456</span>, <span class="fl">0.0512</span>, <span class="fl">145</span>,</span>
+<span>  <span class="st">"West"</span>, <span class="fl">150.2397</span>, <span class="fl">0.1034</span>, <span class="fl">28</span></span>
 <span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>product <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">as.factor</a></span><span class="op">(</span><span class="va">product</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="reference/rename_cols_for_display.html">rename_cols_for_display</a></span><span class="op">(</span>all_caps <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"YTD"</span>, <span class="st">"CAGR"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="reference/auto_dt.html">auto_dt</a></span><span class="op">(</span>numeric_digits <span class="op">=</span> <span class="fl">1</span>, pct_digits <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span></code></pre></div>
 <figure><img src="%5Cman%5Cfigures%5CREADME-manual_screenshot_auto_dt.png" alt="auto_dt() output"><figcaption aria-hidden="true">
 auto_dt() output
@@ -268,6 +267,36 @@ auto_dt() output
 <span>  <span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-automatic-quarterly-breaks-1.png" width="100%"></p>
 <p>By default, <code><a href="reference/breaks_quarters.html">breaks_quarters()</a></code> tries to return a reasonable number of breaks over a wide range of dates, down-sampling to semesters and years as needed. See <code><a href="articles/mcrutils.html">vignette("mcrutils")</a></code> for more examples.</p>
+</div>
+<div class="section level3">
+<h3 id="integer-friendly-continuous-scales">Integer-friendly continuous scales<a class="anchor" aria-label="anchor" href="#integer-friendly-continuous-scales"></a>
+</h3>
+<p>The default breaks for continuous scales can include decimal values, e.g. when the range spanned by the data is small. These decimal values are often not appropriate with count data, so we provide <code><a href="reference/scale_integer.html">scale_x_integer()</a></code> and <code><a href="reference/scale_integer.html">scale_y_integer()</a></code>, which set breaks with <code>floor(pretty())</code> and therefore guarantee integer break labels.</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">chicken_counts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  group <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"hatched"</span>, <span class="st">"not hatched"</span><span class="op">)</span>,</span>
+<span>  chickens <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">7</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">chicken_counts</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">group</span>, <span class="va">chickens</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html" class="external-link">geom_col</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
+<span>    title <span class="op">=</span> <span class="st">"Default continuous scales"</span>,</span>
+<span>    subtitle <span class="op">=</span> <span class="st">"embarassing"</span></span>
+<span>  <span class="op">)</span></span></code></pre></div>
+<p><img src="reference/figures/README-integer-scale-plots-1.png" width="100%"></p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="va">chicken_counts</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">group</span>, <span class="va">chickens</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html" class="external-link">geom_col</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="reference/scale_integer.html">scale_y_integer</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
+<span>    title <span class="op">=</span> <span class="st">"Integer-friendly scales"</span>,</span>
+<span>    subtitle <span class="op">=</span> <span class="st">"much better"</span></span>
+<span>  <span class="op">)</span></span></code></pre></div>
+<p><img src="reference/figures/README-integer-scale-plots-2.png" width="100%"></p>
 </div>
 </div>
 </div>
