@@ -32,6 +32,8 @@
 
 This repository follows the workflow and practices outlined in [R Packages (2e)](https://r-pkgs.org/), using the `devtools` package as the primary development toolkit. The checklist below is the practical implementation of that workflow for this project.
 
+- When package code, behavior, or user-facing functionality changes, update `NEWS.md` with a concise entry before committing.
+
 1. Always incorporate the separate private security/public-safety guidance that is maintained outside this repository.
 2. If that separate guidance is not available in context, stop and do not make the change until it has been incorporated.
 
