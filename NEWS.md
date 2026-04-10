@@ -1,4 +1,4 @@
-# mcrutils (development version)
+# mcrutils 0.0.0.9011
 
 ## New
 - `scale_x_integer()` and `scale_y_integer()` for continuous ggplot scales
