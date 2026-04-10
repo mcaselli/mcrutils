@@ -251,19 +251,18 @@ sales |>
 from a data frame or tibble. It includes buttons to copy or download the
 data, filter tools, and no rownames. It applies percent, currency, and
 round formatting to numeric columns, guessing the correct format from
-the data type and column names. See `vignette("mcrutils")` for more
-examples, including how to specify the set of strings that flag a column
-as percentage or currency.
+the data and column names.
+
+`rename_cols_for_display()` converts snake_case-like column names to
+title-case, with an option to preserve selected acronyms in uppercase.
 
 ``` r
 tribble(
-  ~product, ~weight, ~revenue, ~growth_pct,
-  "Widget A", 13.53, 1023.21, 0.051,
-  "Widget B", 22.61, 150.24, 0.103,
-  "Widget C", 40.54, 502.26, 0.021,
-  "Widget D", 34.21, 2000.95, 0.154
+  ~market_name, ~ytd_revenue, ~cagr_pct, ~num_accounts,
+  "North", 1023.2456, 0.0512, 145,
+  "West", 150.2397, 0.1034, 28
 ) |>
-  mutate(product = as.factor(product)) |>
+  rename_cols_for_display(all_caps = c("YTD", "CAGR")) |>
   auto_dt(numeric_digits = 1, pct_digits = 0)
 ```
 
@@ -302,3 +301,42 @@ economics |>
 By default, `breaks_quarters()` tries to return a reasonable number of
 breaks over a wide range of dates, down-sampling to semesters and years
 as needed. See `vignette("mcrutils")` for more examples.
+
+### Integer-friendly continuous scales
+
+The default breaks for continuous scales can include decimal values,
+e.g. when the range spanned by the data is small. These decimal values
+are often not appropriate with count data, so we provide
+`scale_x_integer()` and `scale_y_integer()`, which set breaks with
+`floor(pretty())` and therefore guarantee integer break labels.
+
+``` r
+chicken_counts <- data.frame(
+  group = c("hatched", "not hatched"),
+  chickens = c(10, 7)
+)
+
+chicken_counts |>
+  ggplot(aes(group, chickens)) +
+  geom_col() +
+  labs(
+    title = "Default continuous scales",
+    subtitle = "embarassing"
+  )
+```
+
+<img src="man/figures/README-integer-scale-plots-1.png" width="100%" />
+
+``` r
+
+chicken_counts |>
+  ggplot(aes(group, chickens)) +
+  geom_col() +
+  scale_y_integer() +
+  labs(
+    title = "Integer-friendly scales",
+    subtitle = "much better"
+  )
+```
+
+<img src="man/figures/README-integer-scale-plots-2.png" width="100%" />
