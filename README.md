@@ -302,3 +302,42 @@ economics |>
 By default, `breaks_quarters()` tries to return a reasonable number of
 breaks over a wide range of dates, down-sampling to semesters and years
 as needed. See `vignette("mcrutils")` for more examples.
+
+### Integer-friendly continuous scales
+
+The default breaks for continuous scales can include decimal values,
+e.g. when the range spanned by the data is small. These decimal values
+are often not appropriate with count data, so we provide
+`scale_x_integer()` and `scale_y_integer()`, which set breaks with
+`floor(pretty())` and therefore guarantee integer break labels.
+
+``` r
+chicken_counts <- data.frame(
+  group = c("hatched", "not hatched"),
+  chickens = c(10, 7)
+)
+
+chicken_counts |>
+  ggplot(aes(group, chickens)) +
+  geom_col() +
+  labs(
+    title = "Default continuous scales",
+    subtitle = "embarassing"
+  )
+```
+
+<img src="man/figures/README-integer-scale-plots-1.png" width="100%" />
+
+``` r
+
+chicken_counts |>
+  ggplot(aes(group, chickens)) +
+  geom_col() +
+  scale_y_integer() +
+  labs(
+    title = "Integer-friendly scales",
+    subtitle = "much better"
+  )
+```
+
+<img src="man/figures/README-integer-scale-plots-2.png" width="100%" />

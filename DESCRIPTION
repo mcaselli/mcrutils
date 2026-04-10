@@ -35,6 +35,7 @@ Imports:
     purrr,
     qlcal,
     rlang,
+  scales,
     stringr,
     tidyr,
     tidyselect,
