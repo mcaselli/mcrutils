@@ -14,6 +14,11 @@
 - Generally adhere to the [tidyverse style guide](https://style.tidyverse.org/) and [tidy design principles](https://design.tidyverse.org/).
 - Keep edits small, focused, and consistent with existing package patterns.
 - Prefer explicit namespaces where practical (for example dplyr::mutate, rlang::arg_match).
+- In README/vignette examples, avoid namespace-qualified calls when the package is already loaded in that example context.
+- In README, vignette, and internal documentation examples, prefer minimal and elegant code examples; include only the elements needed to communicate the behavior.
+- Treat README as a brief overview of functionality; prioritize clarity and brevity over exhaustive edge-case coverage.
+- Use the vignette for richer usage guidance, practical customization patterns, and extended examples.
+- Treat function documentation generated from roxygen (man/ + help pages) as the definitive source of API behavior and argument-level details.
 - Code should be clear and self-documenting, with roxygen2 comments for all exported functions.
 - Prefer the cli package for user-facing UI, messages, warnings, and errors when adding or updating package feedback.
 - Error messages should be descriptive and actionable; they should explain what is wrong and, when practical, how the caller can fix it.
