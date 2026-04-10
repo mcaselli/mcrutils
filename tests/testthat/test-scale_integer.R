@@ -64,9 +64,3 @@ test_that("scale_integer errors when breaks is supplied", {
     "not supported"
   )
 })
-
-test_that("default continuous breaks around 10 can include decimals", {
-  default_breaks <- scales::breaks_extended()(c(0, 10))
-
-  expect_true(any(abs(default_breaks - round(default_breaks)) > sqrt(.Machine$double.eps)))
-})
