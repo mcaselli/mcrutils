@@ -1,4 +1,4 @@
-# mcrutils (development version)
+# mcrutils 0.0.0.9012
 
 ## Bug fixes
 - `bizdays_between()`: `include_first` and `include_last` arguments were
