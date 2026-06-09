@@ -22,7 +22,7 @@ bizdays_between <- function(from, to, calendar,
   local_calendar(calendar)
 
   qlcal::businessDaysBetween(from, to,
-    includeFirst = TRUE,
-    includeLast = TRUE
+    includeFirst = include_first,
+    includeLast = include_last
   )
 }
