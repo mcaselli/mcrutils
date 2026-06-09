@@ -1,6 +1,7 @@
 # mcrutils
 
 ``` r
+
 library(mcrutils)
 ```
 
@@ -23,6 +24,7 @@ to find and convert these columns to logical type. This is a nice
 one-liner in a `dplyr` pipe
 
 ``` r
+
 library(dplyr, warn.conflicts = FALSE)
 ugly_data <- tibble(
   logical_char = c("T", "F", "T"),
@@ -45,6 +47,7 @@ ugly_data
 ```
 
 ``` r
+
 df <- ugly_data |> normalize_logicals()
 #> Converted "logical_char" and "logical_factor" columns to
 #> logical.
@@ -76,6 +79,7 @@ small example data set with a list of 25 orders from 10 accounts over 6
 months.
 
 ``` r
+
 set.seed(1234)
 n <- 25
 dates <- seq(as.Date("2022-01-01"), as.Date("2022-06-30"), by = "day")
@@ -96,6 +100,7 @@ splits the order data by time periods, and returns the accounts in each
 status category for each period as a list-column.
 
 ``` r
+
 orders |> accounts_by_status(account_id, order_date, by = "month")
 #>   period_start period_end              active              new returning
 #> 1   2022-01-01 2022-01-31                b, h             b, h          
@@ -118,6 +123,7 @@ If you want the count of accounts in each status category, set
 just omit them from the printed output here).
 
 ``` r
+
 orders |>
   accounts_by_status(account_id, order_date, by = "month", with_counts = TRUE) |>
   select(period_start, starts_with("n_"))
@@ -145,6 +151,7 @@ retention and churn.
 5000 orders between accounts over in the 2022–2024 time period.
 
 ``` r
+
 example_sales |> glimpse()
 #> Rows: 5,317
 #> Columns: 4
@@ -165,6 +172,7 @@ and below as “bad” (assuming we don’t want to lose customers). We can
 use color to help as well (blues/greens: good, reds: bad).
 
 ``` r
+
 library(ggplot2)
 library(dplyr, warn.conflicts = FALSE)
 library(tidyr)
@@ -201,6 +209,7 @@ after 2024-12-20), the final period will be shown with dashed lines to
 indicate that the data may be incomplete.
 
 ``` r
+
 example_sales |>
   plot_accounts_by_status(account_id, order_date, by = "quarter")
 ```
@@ -212,6 +221,7 @@ You can suppress the dashed lines for incomplete periods with with
 with `include_cumulative = FALSE`.
 
 ``` r
+
 example_sales |>
   plot_accounts_by_status(
     account_id, order_date,
@@ -236,6 +246,7 @@ volume by market, then use
 to calculate 1-, 2-, and 3-month CAGRs for each market.
 
 ``` r
+
 library(lubridate, warn.conflicts = FALSE)
 
 example_sales |>
@@ -308,6 +319,7 @@ monthly, quarterly) between two dates, using calendars from QuantLib for
 holiday definitions.
 
 ``` r
+
 periodic_bizdays(
   from = "2025-01-01",
   to = "2025-12-31",
@@ -348,6 +360,7 @@ column is close, we just need to eliminate the space in “United
 States”).
 
 ``` r
+
 library(dplyr, warn.conflicts = FALSE)
 library(purrr)
 library(stringr)
@@ -371,6 +384,7 @@ Now we can make a lookup table covering the years and markets in our
 data set.
 
 ``` r
+
 bizday_lookup <- tibble(
   # make a row for each date in the years spanned by the sales data
   date = seq(
@@ -420,6 +434,7 @@ bizday_lookup |>
 Now we can join the lookup table to the sales data.
 
 ``` r
+
 sales_with_bizday <- sales |>
   left_join(bizday_lookup, by = c("order_date" = "date", "calendar" = "calendar"))
 head(sales_with_bizday)
@@ -442,6 +457,7 @@ First we group by the year and business day of month, then calculate
 daily units ordered and the cumulative sum of units ordered
 
 ``` r
+
 global_cum_daily_sales <- sales_with_bizday |>
   filter(order_date < ymd("2024-11-18")) |>
   filter(month(adjusted_date) == 11) |>
@@ -467,6 +483,7 @@ Now we can construct a cumulative daily sales chart comparing 2024 to
 prior years.
 
 ``` r
+
 global_cum_daily_sales |>
   ggplot(aes(bizday_of_month, cumulative_units_ordered, color = factor(year))) +
   geom_line(linewidth = 1.2) +
@@ -483,6 +500,7 @@ Or we can look by-market as well, we just need to add another grouping
 variable for the market, then facet the plot.
 
 ``` r
+
 regional_cum_daily_sales <- sales_with_bizday |>
   filter(order_date < ymd("2024-11-18")) |>
   filter(month(order_date) == 11) |>
@@ -505,6 +523,7 @@ head(regional_cum_daily_sales)
 ```
 
 ``` r
+
 regional_cum_daily_sales |>
   ggplot(aes(bizday_of_month, cumulative_units_ordered, color = factor(year))) +
   geom_line(linewidth = 1.2) +
@@ -526,6 +545,7 @@ year-to-date analyses
 Below we have 2.5 years of historical sales data ending on June 1, 2025.
 
 ``` r
+
 set.seed(123)
 sales <- tibble(
   date = seq(
@@ -553,6 +573,7 @@ gets the start and end of the year-to-date period for the latest year in
 a vector of dates,
 
 ``` r
+
 (bounds <- ytd_bounds(sales$date))
 #> [1] "2025-01-01" "2025-06-01"
 ```
@@ -566,6 +587,7 @@ So we can quickly filter the historical data to see how we’re doing in
 2025 compared to the same period (i.e. January - June) in 2023 and 2024:
 
 ``` r
+
 sales |>
   filter(is_ytd_comparable(date, max(bounds))) |>
   group_by(year = lubridate::year(date)) |>
@@ -584,6 +606,7 @@ you can rollback a vector of dates to the same period in the previous
 year, moving any fictitious dates to the prior valid day.
 
 ``` r
+
 c("2024-01-01", "2024-02-29", "2025-07-15") |>
   as.Date() |>
   py_dates()
@@ -609,6 +632,7 @@ converts snake_case-like column names to title-case, with an option to
 preserve selected acronyms in uppercase.
 
 ``` r
+
 tribble(
   ~market_name, ~ytd_revenue, ~cagr_pct, ~num_accounts,
   "North", 1023.2456, 0.0512, 145,
@@ -635,6 +659,7 @@ labeling every quarter, but only including the year when it changes from
 the previous label.
 
 ``` r
+
 library(ggplot2)
 
 economics |>
@@ -660,6 +685,7 @@ tries to return a reasonable number of breaks over a wide range of
 dates, down-sampling to semesters and years as needed.
 
 ``` r
+
 economics |>
   filter(date >= "2005-05-01", date <= "2009-03-01") |>
   ggplot(aes(date, pce)) +
@@ -678,6 +704,7 @@ economics |>
 ![](mcrutils_files/figure-html/semester-breaks-1.png)
 
 ``` r
+
 economics |>
   filter(date >= "2000-05-01", date <= "2010-03-01") |>
   ggplot(aes(date, pce)) +
@@ -703,6 +730,7 @@ You can force a fixed break width if quarters are desired regardless of
 the date range.
 
 ``` r
+
 example_sales |>
   plot_accounts_by_status(account_id, order_date, by = "quarter") +
   scale_x_date(
@@ -735,6 +763,7 @@ or
 so you can customize the name, position, etc. as needed.
 
 ``` r
+
 chicken_counts <- data.frame(
   group = c("hatched", "not hatched"),
   chickens = c(10, 7)
@@ -752,6 +781,7 @@ chicken_counts |>
 ![](mcrutils_files/figure-html/integer-scale-comparison-1.png)
 
 ``` r
+
 
 chicken_counts |>
   ggplot(aes(group, chickens)) +

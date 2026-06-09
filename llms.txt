@@ -11,6 +11,7 @@ You can install the development version of mcrutils from
 [GitHub](https://github.com/) with:
 
 ``` r
+
 # install.packages("pak")
 pak::pak("mcaselli/mcrutils")
 ```
@@ -27,6 +28,7 @@ to find and convert these columns to logical type. This is a nice
 one-liner in a `dplyr` pipe
 
 ``` r
+
 library(mcrutils)
 library(dplyr, warn.conflicts = FALSE)
 
@@ -66,6 +68,7 @@ accounts in each status category can be included as well; set
 `with_counts = TRUE`).
 
 ``` r
+
 set.seed(1234)
 n <- 25
 dates <- seq(as.Date("2022-01-01"), as.Date("2022-06-30"), by = "day")
@@ -95,6 +98,7 @@ orders |> accounts_by_status(account_id, order_date)
 creates a line plot of the count of each account status over time.
 
 ``` r
+
 orders |>
   plot_accounts_by_status(account_id, order_date)
 ```
@@ -112,6 +116,7 @@ Here we’ll calculate the 1- and 2-year CAGR for revenue by market over a
 3-year period.
 
 ``` r
+
 sales <- data.frame(
   year = rep(2020:2022, times = 2),
   market = rep(c("APAC", "EMEA"), each = 3),
@@ -144,6 +149,7 @@ monthly, quarterly) between two dates, using calendars from `QuantLib`
 (see R package `qlcal`) for holiday definitions.
 
 ``` r
+
 periodic_bizdays(
   from = "2025-01-01",
   to = "2025-12-31",
@@ -171,6 +177,7 @@ calculates the business day of the period (month, quarter, or year) for
 a given date and calendar.
 
 ``` r
+
 bizday_of_period(as.Date("2025-06-17"), "UnitedStates", period = "month")
 #> [1] 12
 bizday_of_period(as.Date("2025-06-17"), "UnitedStates", period = "year")
@@ -189,6 +196,7 @@ year-to-date analyses
 Below we have 2.5 years of historical sales data ending on June 1, 2025.
 
 ``` r
+
 set.seed(123)
 sales <- tibble(
   date = seq(
@@ -216,6 +224,7 @@ gets the start and end of the year-to-date period for the latest year in
 a vector of dates,
 
 ``` r
+
 (bounds <- ytd_bounds(sales$date))
 #> [1] "2025-01-01" "2025-06-01"
 ```
@@ -229,6 +238,7 @@ So we can quickly filter the historical data to see how we’re doing in
 2025 compared to the same period (i.e. January - June) in 2023 and 2024:
 
 ``` r
+
 sales |>
   filter(is_ytd_comparable(date, max(bounds))) |>
   group_by(year = lubridate::year(date)) |>
@@ -256,6 +266,7 @@ converts snake_case-like column names to title-case, with an option to
 preserve selected acronyms in uppercase.
 
 ``` r
+
 tribble(
   ~market_name, ~ytd_revenue, ~cagr_pct, ~num_accounts,
   "North", 1023.2456, 0.0512, 145,
@@ -284,6 +295,7 @@ label.
 generates quarterly breaks for date scales.
 
 ``` r
+
 library(ggplot2)
 
 economics |>
@@ -317,6 +329,7 @@ which set breaks with `floor(pretty())` and therefore guarantee integer
 break labels.
 
 ``` r
+
 chicken_counts <- data.frame(
   group = c("hatched", "not hatched"),
   chickens = c(10, 7)
@@ -334,6 +347,7 @@ chicken_counts |>
 ![](reference/figures/README-integer-scale-plots-1.png)
 
 ``` r
+
 
 chicken_counts |>
   ggplot(aes(group, chickens)) +

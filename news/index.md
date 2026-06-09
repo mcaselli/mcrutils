@@ -1,5 +1,14 @@
 # Changelog
 
+## mcrutils (development version)
+
+### Bug fixes
+
+- [`bizdays_between()`](https://mcaselli.github.io/mcrutils/reference/bizdays_between.md):
+  `include_first` and `include_last` arguments were ignored and always
+  treated as `TRUE`. They are now forwarded correctly to
+  [`qlcal::businessDaysBetween()`](https://rdrr.io/pkg/qlcal/man/businessDaysBetween.html).
+
 ## mcrutils 0.0.0.9011
 
 ### New
