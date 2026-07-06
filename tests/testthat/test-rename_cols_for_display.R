@@ -37,6 +37,22 @@ test_that("rename_cols_for_display works with tibbles", {
   expect_equal(names(result), c("Order Date", "YTD Value"))
 })
 
+test_that("rename_cols_for_display keeps minor words lowercase", {
+  x <- data.frame(
+    new_to_market = 1,
+    share_of_us = 2,
+    cost_per_unit = 3,
+    check.names = FALSE
+  )
+
+  result <- rename_cols_for_display(x, all_caps = "US")
+
+  expect_equal(
+    names(result),
+    c("New to Market", "Share of US", "Cost per Unit")
+  )
+})
+
 test_that("rename_cols_for_display validates all_caps input", {
   x <- data.frame(value = 1)
 

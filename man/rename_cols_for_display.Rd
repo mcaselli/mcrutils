@@ -17,7 +17,10 @@ A data frame with renamed columns.
 }
 \description{
 Convert snake_case-like column names to title-style labels, optionally
-preserving selected acronyms in uppercase.
+preserving selected acronyms in uppercase. Title casing is minor-word aware
+(via \code{\link[snakecase:caseconverter]{snakecase::to_title_case()}}), so short connecting words such as "of",
+"to", "per", and "vs" stay lowercase (e.g. \code{new_to_market} becomes
+"New to Market").
 }
 \examples{
 data.frame(volume_py = 1, abc_units = 2) |>
