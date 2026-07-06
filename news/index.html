@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mcrutils</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9012</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9013</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,9 +34,9 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="development version" id="mcrutils-development-version">mcrutils (development version)<a class="anchor" aria-label="anchor" href="#mcrutils-development-version"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.0.0.9013" id="mcrutils-0009013">mcrutils 0.0.0.9013<a class="anchor" aria-label="anchor" href="#mcrutils-0009013"></a></h2>
 <div class="section level3">
-<h3 id="behavior-changes-development-version">Behavior changes<a class="anchor" aria-label="anchor" href="#behavior-changes-development-version"></a></h3>
+<h3 id="behavior-changes-0-0-0-9013">Behavior changes<a class="anchor" aria-label="anchor" href="#behavior-changes-0-0-0-9013"></a></h3>
 <ul><li>
 <code><a href="../reference/rename_cols_for_display.html">rename_cols_for_display()</a></code> now uses minor-word-aware title casing (via <code><a href="https://rdrr.io/pkg/snakecase/man/caseconverter.html" class="external-link">snakecase::to_title_case()</a></code>) instead of <code><a href="https://stringr.tidyverse.org/reference/case.html" class="external-link">stringr::str_to_title()</a></code>. Short connecting words such as “of”, “to”, “per”, and “vs” stay lowercase (e.g. <code>new_to_market</code> -&gt; “New to Market”). Acronym preservation via <code>all_caps</code> is unchanged. Adds a dependency on <code>snakecase</code>.</li>
 </ul></div>
