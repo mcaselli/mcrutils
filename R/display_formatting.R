@@ -1,7 +1,10 @@
 #' Rename columns for display
 #'
 #' Convert snake_case-like column names to title-style labels, optionally
-#' preserving selected acronyms in uppercase.
+#' preserving selected acronyms in uppercase. Title casing is minor-word aware
+#' (via [snakecase::to_title_case()]), so short connecting words such as "of",
+#' "to", "per", and "vs" stay lowercase (e.g. `new_to_market` becomes
+#' "New to Market").
 #'
 #' @param data A data frame or tibble.
 #' @param all_caps A character vector of tokens to preserve in uppercase.
@@ -22,10 +25,7 @@ rename_cols_for_display <- function(data, all_caps = character()) {
   }
 
   format_name <- function(x) {
-    label <- x |>
-      stringr::str_replace_all("[-._]+", " ") |>
-      stringr::str_squish() |>
-      stringr::str_to_title()
+    label <- snakecase::to_title_case(x)
 
     if (length(all_caps) == 0) {
       return(label)

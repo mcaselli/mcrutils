@@ -1,3 +1,12 @@
+# mcrutils (development version)
+
+## Behavior changes
+- `rename_cols_for_display()` now uses minor-word-aware title casing (via
+    `snakecase::to_title_case()`) instead of `stringr::str_to_title()`. Short
+    connecting words such as "of", "to", "per", and "vs" stay lowercase (e.g.
+    `new_to_market` -> "New to Market"). Acronym preservation via `all_caps`
+    is unchanged. Adds a dependency on `snakecase`.
+
 # mcrutils 0.0.0.9012
 
 ## Bug fixes
