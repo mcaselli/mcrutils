@@ -1,7 +1,11 @@
 # Rename columns for display
 
 Convert snake_case-like column names to title-style labels, optionally
-preserving selected acronyms in uppercase.
+preserving selected acronyms in uppercase. Title casing is minor-word
+aware (via
+[`snakecase::to_title_case()`](https://rdrr.io/pkg/snakecase/man/caseconverter.html)),
+so short connecting words such as "of", "to", "per", and "vs" stay
+lowercase (e.g. `new_to_market` becomes "New to Market").
 
 ## Usage
 

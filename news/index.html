@@ -30,9 +30,17 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/mcaselli/mcrutils/blob/0.0.0.9012/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/mcaselli/mcrutils/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="development version" id="mcrutils-development-version">mcrutils (development version)<a class="anchor" aria-label="anchor" href="#mcrutils-development-version"></a></h2>
+<div class="section level3">
+<h3 id="behavior-changes-development-version">Behavior changes<a class="anchor" aria-label="anchor" href="#behavior-changes-development-version"></a></h3>
+<ul><li>
+<code><a href="../reference/rename_cols_for_display.html">rename_cols_for_display()</a></code> now uses minor-word-aware title casing (via <code><a href="https://rdrr.io/pkg/snakecase/man/caseconverter.html" class="external-link">snakecase::to_title_case()</a></code>) instead of <code><a href="https://stringr.tidyverse.org/reference/case.html" class="external-link">stringr::str_to_title()</a></code>. Short connecting words such as “of”, “to”, “per”, and “vs” stay lowercase (e.g. <code>new_to_market</code> -&gt; “New to Market”). Acronym preservation via <code>all_caps</code> is unchanged. Adds a dependency on <code>snakecase</code>.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.0.9012" id="mcrutils-0009012">mcrutils 0.0.0.9012<a class="anchor" aria-label="anchor" href="#mcrutils-0009012"></a></h2>
 <div class="section level3">
