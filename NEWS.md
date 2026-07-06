@@ -1,4 +1,4 @@
-# mcrutils (development version)
+# mcrutils 0.0.0.9013
 
 ## Behavior changes
 - `rename_cols_for_display()` now uses minor-word-aware title casing (via
