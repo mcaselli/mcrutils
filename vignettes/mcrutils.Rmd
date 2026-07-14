@@ -200,49 +200,68 @@ already counts as complete. The default calendar is `"WeekendsOnly"`; pass a
 national calendar such as `"UnitedStates"` for holiday accuracy, or `"Null"` to
 require every calendar day to have elapsed.
 
-`filter_complete_periods()` keeps only the rows whose period is complete. By
-default it judges completeness against the latest date in the data, so the
-still-open final period drops out. `example_sales` has no orders after
-2024-12-20, so December 2024 is treated as incomplete and excluded:
+Group the orders to monthly totals and flag each month with
+`period_is_complete()`. With no `as_of`, completeness is judged as of the current
+date, so for this historical dataset every month---including the partial
+December, whose last order landed on the 20th---reads complete:
 
 ```{r}
 example_sales |>
-  filter_complete_periods(order_date, unit = "month") |>
-  summarise(rows = n(), last_complete_day = max(order_date))
+  group_by(month = period_start_date(order_date, "month")) |>
+  summarise(
+    units = sum(units_ordered),
+    last_order_in_period = max(order_date),
+    .groups = "drop"
+  ) |>
+  mutate(complete = period_is_complete(month, "month")) |>
+  tail()
 ```
 
-Sometimes, though, you know a period is finished even though the data stops short
-of its calendar end---for example the December feed closed on January 1, and the
-absence of late-December orders reflects no business rather than missing data.
-Supply an `as_of` in the following period and the trailing month counts as
-complete (an *earlier* `as_of` is rejected, since it would discard periods the
-data already covers in full):
+That is rarely what you want for a report on historical data. Pass an
+`as_of`---typically the latest date you actually have---to judge completeness as
+of when the data was current, and optionally a national `calendar` so holidays,
+not just weekends, count as non-working days. Now December is correctly flagged
+incomplete:
 
 ```{r}
-example_sales |>
-  filter_complete_periods(order_date, unit = "month", as_of = as.Date("2025-01-01")) |>
-  summarise(rows = n(), last_complete_day = max(order_date))
+latest <- max(example_sales$order_date)
+
+monthly <- example_sales |>
+  group_by(month = period_start_date(order_date, "month")) |>
+  summarise(
+    units = sum(units_ordered),
+    last_order_in_period = max(order_date),
+    .groups = "drop"
+  ) |>
+  mutate(
+    complete = period_is_complete(month, "month", as_of = latest, calendar = "UnitedStates")
+  )
+
+tail(monthly)
 ```
 
-To fade the in-progress period in a chart rather than drop it, flag each period
-with `period_is_complete()`---here judged as of the latest order date, the same
-cutoff `filter_complete_periods()` uses by default---and map the result to
-`alpha` with `scale_alpha_logical()`:
+Mapping the completeness flag to `alpha` with `scale_alpha_logical()` fades the
+in-progress month so it reads as provisional:
 
 ```{r period-completeness-alpha}
 library(ggplot2)
 
-latest <- max(example_sales$order_date)
-
-example_sales |>
-  group_by(month = period_start_date(order_date, "month")) |>
-  summarise(units = sum(units_ordered), .groups = "drop") |>
-  mutate(complete = period_is_complete(month, "month", as_of = latest)) |>
+monthly |>
   ggplot(aes(month, units, alpha = complete)) +
   geom_col() +
   scale_alpha_logical() +
   labs(title = "Monthly units ordered", subtitle = "in-progress month faded") +
   theme_minimal()
+```
+
+To drop the incomplete periods instead of flagging them,
+`filter_complete_periods()` applies the same test as a row filter, defaulting
+`as_of` to the latest date in the data:
+
+```{r}
+example_sales |>
+  filter_complete_periods(order_date, unit = "month") |>
+  summarise(last_order_kept = max(order_date))
 ```
 
 Finally, `last_complete_period_end()` and `last_complete_period_start()` give the
