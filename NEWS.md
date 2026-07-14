@@ -1,3 +1,25 @@
+# mcrutils (development version)
+
+## New
+- Period-completeness toolkit for reporting on partial periods:
+    - `period_is_complete()` tests whether the period (week/month/quarter/year)
+      containing each date is complete as of a cutoff date. Completeness is
+      business-day aware via a QuantLib calendar (default `"WeekendsOnly"`); pass
+      a national calendar such as `"UnitedStates"` for holiday accuracy, or
+      `"Null"` for pure calendar-day semantics.
+    - `period_start_date()` and `period_end_date()` return the canonical first and
+      last calendar day of the period containing each date.
+    - `filter_complete_periods()` keeps only rows whose period is complete;
+      `as_of` defaults to the maximum of the date column.
+    - `last_complete_period_start()` and `last_complete_period_end()` return the
+      boundaries of the most recent complete period as of a cutoff.
+    - `scale_alpha_logical()`, a ggplot2 alpha scale for fading incomplete
+      periods (pairs with `period_is_complete()`).
+- Completeness uses an inclusive convention: a period is complete once its end
+    date is reached (not strictly after it). For pure calendar-day semantics use
+    `calendar = "Null"` (the QuantLib id is `"Null"`, not `"NullCalendar"`).
+    `NA` dates propagate to `NA` (and are dropped by `filter_complete_periods()`).
+
 # mcrutils 0.0.0.9013
 
 ## Behavior changes
