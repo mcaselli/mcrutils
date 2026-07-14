@@ -19,7 +19,7 @@ filter_complete_periods(
 \item{date_col}{<\code{\link[dplyr:dplyr_data_masking]{data-masked}}> The date column
 whose period completeness is tested.}
 
-\item{unit}{Period size, one of \code{"day"}, \code{"week"}, \code{"month"}, \code{"quarter"},
+\item{unit}{Period size, one of \code{"week"}, \code{"month"}, \code{"quarter"},
 or \code{"year"}.}
 
 \item{as_of}{Reference cutoff date, a single Date (or coercible). Defaults to

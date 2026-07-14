@@ -16,7 +16,7 @@ period_is_complete(
 \item{date}{A vector of dates (Date or coercible with \code{\link[=as.Date]{as.Date()}}); each value
 identifies the period to test.}
 
-\item{unit}{Period size, one of \code{"day"}, \code{"week"}, \code{"month"}, \code{"quarter"},
+\item{unit}{Period size, one of \code{"week"}, \code{"month"}, \code{"quarter"},
 or \code{"year"}.}
 
 \item{as_of}{Reference cutoff date (Date or coercible), length 1 or the length

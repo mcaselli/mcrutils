@@ -258,20 +258,18 @@ test_that("period_end_date() respects week_start", {
   expect_equal(period_end_date("2025-07-03", "week", week_start = 7), as.Date("2025-07-05")) # Sat
 })
 
-test_that("period_is_complete() handles day and year units", {
-  # a weekday is complete once it has passed; the day of as_of counts as complete
-  expect_true(period_is_complete(as.Date("2025-06-16"), "day", as.Date("2025-06-16")))
-  expect_false(period_is_complete(as.Date("2025-06-16"), "day", as.Date("2025-06-15")))
-  # business-day semantics: a Sunday reads complete as of the preceding Saturday
-  expect_true(period_is_complete(as.Date("2025-06-15"), "day", as.Date("2025-06-14")))
-
+test_that("period_is_complete() handles the year unit", {
   # year: 2024-12-31 is a business day (Tuesday), so the year is not complete
   # until it elapses
   expect_false(period_is_complete(as.Date("2024-06-15"), "year", as.Date("2024-12-30")))
   expect_true(period_is_complete(as.Date("2024-06-15"), "year", as.Date("2024-12-31")))
 })
 
-test_that("period boundary functions validate the unit argument", {
+test_that("the period family rejects units outside week/month/quarter/year", {
+  # "day" is intentionally not a valid period unit for completeness reasoning
+  expect_error(period_start_date(as.Date("2025-05-15"), "day"), class = "rlang_error")
+  expect_error(period_end_date(as.Date("2025-05-15"), "day"), class = "rlang_error")
+  expect_error(period_is_complete(as.Date("2025-05-15"), unit = "day"), class = "rlang_error")
   expect_error(period_start_date(as.Date("2025-05-15"), "fortnight"), class = "rlang_error")
   expect_error(period_end_date(as.Date("2025-05-15"), "fortnight"), class = "rlang_error")
 })

@@ -21,7 +21,7 @@ period_end_date(
 \arguments{
 \item{date}{A vector of dates (Date or coercible with \code{\link[lubridate:as_date]{lubridate::as_date()}}).}
 
-\item{unit}{Period size, one of \code{"day"}, \code{"week"}, \code{"month"}, \code{"quarter"},
+\item{unit}{Period size, one of \code{"week"}, \code{"month"}, \code{"quarter"},
 or \code{"year"}.}
 
 \item{week_start}{Integer 1-7 giving the first day of the week (only used when

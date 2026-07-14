@@ -24,7 +24,7 @@ last_complete_period_start(
 \item{as_of}{Reference cutoff date(s) (Date or coercible). Defaults to
 \code{\link[=Sys.Date]{Sys.Date()}}.}
 
-\item{unit}{Period size, one of \code{"day"}, \code{"week"}, \code{"month"}, \code{"quarter"},
+\item{unit}{Period size, one of \code{"week"}, \code{"month"}, \code{"quarter"},
 or \code{"year"}.}
 
 \item{calendar}{(character) A QuantLib calendar id (see \link[qlcal:calendars]{qlcal::calendars}).

@@ -7,7 +7,7 @@
 validate_period_unit <- function(unit) {
   rlang::arg_match0(
     unit,
-    values = c("day", "week", "month", "quarter", "year"),
+    values = c("week", "month", "quarter", "year"),
     arg_nm = "unit"
   )
 }
@@ -72,7 +72,7 @@ n_bizdays_remaining <- function(from, to, calendar) {
 #' never to compute a boundary date.
 #'
 #' @param date A vector of dates (Date or coercible with [lubridate::as_date()]).
-#' @param unit Period size, one of `"day"`, `"week"`, `"month"`, `"quarter"`,
+#' @param unit Period size, one of `"week"`, `"month"`, `"quarter"`,
 #'   or `"year"`.
 #' @param week_start Integer 1-7 giving the first day of the week (only used when
 #'   `unit = "week"`). Defaults to `getOption("lubridate.week.start", 7)`, so the
@@ -134,7 +134,7 @@ period_end_date <- function(date, unit = "month",
 #'
 #' @param date A vector of dates (Date or coercible with [as.Date()]); each value
 #'   identifies the period to test.
-#' @param unit Period size, one of `"day"`, `"week"`, `"month"`, `"quarter"`,
+#' @param unit Period size, one of `"week"`, `"month"`, `"quarter"`,
 #'   or `"year"`.
 #' @param as_of Reference cutoff date (Date or coercible), length 1 or the length
 #'   of `date`. Defaults to [Sys.Date()].
@@ -191,7 +191,7 @@ period_is_complete <- function(date, unit = "month", as_of = Sys.Date(),
 #' @param data A data frame.
 #' @param date_col <[`data-masked`][dplyr::dplyr_data_masking]> The date column
 #'   whose period completeness is tested.
-#' @param unit Period size, one of `"day"`, `"week"`, `"month"`, `"quarter"`,
+#' @param unit Period size, one of `"week"`, `"month"`, `"quarter"`,
 #'   or `"year"`.
 #' @param as_of Reference cutoff date, a single Date (or coercible). Defaults to
 #'   `NULL`, in which case it is set to the maximum of `date_col` so completeness
@@ -263,7 +263,7 @@ filter_complete_periods <- function(data, date_col, unit = "month", as_of = NULL
 #'
 #' @param as_of Reference cutoff date(s) (Date or coercible). Defaults to
 #'   [Sys.Date()].
-#' @param unit Period size, one of `"day"`, `"week"`, `"month"`, `"quarter"`,
+#' @param unit Period size, one of `"week"`, `"month"`, `"quarter"`,
 #'   or `"year"`.
 #' @param calendar (character) A QuantLib calendar id (see [qlcal::calendars]).
 #'   Defaults to `"WeekendsOnly"`.
