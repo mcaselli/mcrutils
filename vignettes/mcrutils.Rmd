@@ -178,6 +178,76 @@ example_sales |>
 ```
 
 
+## Period completeness
+
+The dashed final period above is one instance of a recurring problem: the most
+recent period in a report is often still in progress, so its aggregate is
+partial and shouldn't be read---or compared---as if it were finished. `mcrutils`
+exposes this reasoning directly, with a business-day-aware notion of when a
+period is "complete."
+
+`period_start_date()` and `period_end_date()` return the canonical first and last
+calendar day of the period containing each date:
+
+```{r}
+period_end_date(as.Date(c("2024-11-15", "2024-12-20")), unit = "month")
+```
+
+`period_is_complete()` tests whether the period containing each date is complete
+as of a cutoff---typically the latest date in your data. Completeness is
+business-day aware: a month whose only remaining days are weekends (or holidays)
+already counts as complete. The default calendar is `"WeekendsOnly"`; pass a
+national calendar such as `"UnitedStates"` for holiday accuracy, or `"Null"` to
+require every calendar day to have elapsed.
+
+`example_sales` has no orders after 2024-12-20, so as of that date December 2024
+is still in progress while earlier months are complete:
+
+```{r}
+latest <- max(example_sales$order_date)
+
+monthly <- example_sales |>
+  group_by(month = period_start_date(order_date, "month")) |>
+  summarise(units = sum(units_ordered), .groups = "drop") |>
+  mutate(complete = period_is_complete(month, "month", as_of = latest))
+
+tail(monthly, n = 4)
+```
+
+Mapping the completeness flag to `alpha` and adding `scale_alpha_logical()` fades
+the in-progress period so it reads as provisional:
+
+```{r period-completeness-alpha}
+library(ggplot2)
+
+monthly |>
+  ggplot(aes(month, units, alpha = complete)) +
+  geom_col() +
+  scale_alpha_logical() +
+  labs(title = "Monthly units ordered", subtitle = "in-progress month faded") +
+  theme_minimal()
+```
+
+When you would rather drop the partial period than fade it---for example before a
+year-over-year comparison---`filter_complete_periods()` keeps only the rows whose
+period is complete. By default it measures completeness against the latest date
+in the column, so you never discard a period the data already covers in full:
+
+```{r}
+example_sales |>
+  filter_complete_periods(order_date, unit = "month") |>
+  summarise(rows = n(), last_complete_day = max(order_date))
+```
+
+Finally, `last_complete_period_end()` and `last_complete_period_start()` give the
+boundaries of the most recent complete period as of a cutoff, which is handy for
+report titles and annotations:
+
+```{r}
+last_complete_period_end(latest, unit = "month")
+```
+
+
 ## CAGR
 `mutate_cagrs()` adds columns with compound annual growth rates (CAGRs) for a
 vector of values over specified time periods, optionally grouped by one or more
@@ -353,32 +423,8 @@ global_cum_daily_sales |>
   theme_minimal()
 ```
 
-Or we can look by-market as well, we just need to add another grouping variable
-for the market, then facet the plot.
-
-```{r}
-regional_cum_daily_sales <- sales_with_bizday |>
-  filter(order_date < ymd("2024-11-18")) |>
-  filter(month(order_date) == 11) |>
-  group_by(year = year(order_date), bizday_of_month, market) |>
-  summarise(units_ordered = sum(units_ordered), .groups = "drop") |>
-  group_by(year, market) |>
-  mutate(cumulative_units_ordered = cumsum(units_ordered))
-
-head(regional_cum_daily_sales)
-```
-
-```{r}
-regional_cum_daily_sales |>
-  ggplot(aes(bizday_of_month, cumulative_units_ordered, color = factor(year))) +
-  geom_line(linewidth = 1.2) +
-  facet_wrap(~market, ncol = 1) +
-  labs(
-    title = "Cumulative Units Ordered by Business Day of Month",
-    color = "Year"
-  ) +
-  theme_minimal()
-```
+To break this out by market, add `market` as a grouping variable and
+`facet_wrap(~ market)` to the plot.
 
 ## Year-to-date helpers
 
