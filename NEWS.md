@@ -19,6 +19,18 @@
     date is reached (not strictly after it). For pure calendar-day semantics use
     `calendar = "Null"` (the QuantLib id is `"Null"`, not `"NullCalendar"`).
     `NA` dates propagate to `NA` (and are dropped by `filter_complete_periods()`).
+- `period_is_complete()`, `last_complete_period_start()`, and
+    `last_complete_period_end()` require an explicit `as_of`; there is no
+    wall-clock default, so completeness is never judged against the current date
+    unless you ask for it (pass `Sys.Date()` to opt in). `filter_complete_periods()`
+    still defaults `as_of` to the maximum of its date column.
+
+## Behavior changes
+- `most_recent_monday()` / `most_recent_sunday()`: the `ref_date` argument is
+    renamed `as_of`, matching the period-completeness functions (both name the
+    date that state is evaluated as of). The default (current date) is unchanged
+    and positional calls are unaffected, but callers passing `ref_date =` by name
+    must switch to `as_of =`.
 
 # mcrutils 0.0.0.9013
 

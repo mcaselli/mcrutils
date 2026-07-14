@@ -7,22 +7,23 @@
 \title{Boundary of the most recent complete period as of a cutoff}
 \usage{
 last_complete_period_end(
-  as_of = Sys.Date(),
+  as_of,
   unit = "month",
   calendar = "WeekendsOnly",
   week_start = getOption("lubridate.week.start", 7)
 )
 
 last_complete_period_start(
-  as_of = Sys.Date(),
+  as_of,
   unit = "month",
   calendar = "WeekendsOnly",
   week_start = getOption("lubridate.week.start", 7)
 )
 }
 \arguments{
-\item{as_of}{Reference cutoff date(s) (Date or coercible). Defaults to
-\code{\link[=Sys.Date]{Sys.Date()}}.}
+\item{as_of}{Reference cutoff date(s) (Date or coercible). Required---there is
+no default. Use the latest date in your data for completeness relative to how
+current the data is, or \code{\link[=Sys.Date]{Sys.Date()}} for the current date.}
 
 \item{unit}{Period size, one of \code{"week"}, \code{"month"}, \code{"quarter"},
 or \code{"year"}.}

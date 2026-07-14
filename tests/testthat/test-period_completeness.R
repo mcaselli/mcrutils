@@ -113,6 +113,11 @@ test_that("period_is_complete() errors on an invalid unit", {
   )
 })
 
+test_that("period_is_complete() requires an explicit as_of", {
+  # There is no wall-clock default; the caller must state the reference.
+  expect_error(period_is_complete(as.Date("2025-05-15"), "month"), "is required")
+})
+
 # filter_complete_periods() --------------------------------------------------
 
 test_that("filter_complete_periods() drops a partial trailing month (common case)", {
@@ -193,6 +198,12 @@ test_that("last_complete_period_end() is vectorized over as_of", {
     "quarter"
   )
   expect_equal(out, as.Date(c("2025-03-31", "2025-06-30")))
+})
+
+test_that("last_complete_period_*() require an explicit as_of", {
+  # No wall-clock default; missingness also propagates through _start to _end.
+  expect_error(last_complete_period_end(unit = "month"), "is required")
+  expect_error(last_complete_period_start(unit = "month"), "is required")
 })
 
 # scale_alpha_logical() ------------------------------------------------------

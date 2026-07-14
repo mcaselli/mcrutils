@@ -194,16 +194,17 @@ period_end_date(as.Date(c("2024-11-15", "2024-12-20")), unit = "month")
 ```
 
 `period_is_complete()` tests whether the period containing each date is complete
-as of a reference date (`as_of`, defaulting to the current date). Completeness is
+as of a reference date, `as_of`. There is no default: you always state the
+reference, because the right one depends on your data. Completeness is
 business-day aware: a month whose only remaining days are weekends (or holidays)
 already counts as complete. The default calendar is `"WeekendsOnly"`; pass a
 national calendar such as `"UnitedStates"` for holiday accuracy, or `"Null"` to
 require every calendar day to have elapsed.
 
-Group the orders to monthly totals and flag each month with
-`period_is_complete()`. With no `as_of`, completeness is judged as of the current
-date, so for this historical dataset every month---including the partial
-December, whose last order landed on the 20th---reads complete:
+Group the orders to monthly totals and flag each month. Passing `Sys.Date()`
+asks "is this period over in real time?" For a historical extract like
+`example_sales` every month is long past, so all read complete---including the
+partial December, whose last order landed on the 20th:
 
 ```{r}
 example_sales |>
@@ -213,14 +214,14 @@ example_sales |>
     last_order_in_period = max(order_date),
     .groups = "drop"
   ) |>
-  mutate(complete = period_is_complete(month, "month")) |>
+  mutate(complete = period_is_complete(month, "month", as_of = Sys.Date())) |>
   tail()
 ```
 
-That is rarely what you want for a report on historical data. Pass an
-`as_of`---typically the latest date you actually have---to judge completeness as
-of when the data was current, and optionally a national `calendar` so holidays,
-not just weekends, count as non-working days. Now December is correctly flagged
+That is rarely what you want when reporting on a cached extract. Judge
+completeness relative to how current the data actually is by passing the latest
+date you have as `as_of`, and optionally a national `calendar` so holidays, not
+just weekends, count as non-working days. Now December is correctly flagged
 incomplete:
 
 ```{r}

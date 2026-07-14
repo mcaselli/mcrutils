@@ -7,7 +7,7 @@
 period_is_complete(
   date,
   unit = "month",
-  as_of = Sys.Date(),
+  as_of,
   calendar = "WeekendsOnly",
   week_start = getOption("lubridate.week.start", 7)
 )
@@ -20,7 +20,10 @@ identifies the period to test.}
 or \code{"year"}.}
 
 \item{as_of}{Reference cutoff date (Date or coercible), length 1 or the length
-of \code{date}. Defaults to \code{\link[=Sys.Date]{Sys.Date()}}.}
+of \code{date}. Required---there is no default, so completeness is never judged
+silently against the current date. Pass \code{max()} of your data's date column
+for completeness relative to how current the data is, or \code{\link[=Sys.Date]{Sys.Date()}} for
+the current date.}
 
 \item{calendar}{(character) A QuantLib calendar id (see \link[qlcal:calendars]{qlcal::calendars}).
 Defaults to \code{"WeekendsOnly"}.}

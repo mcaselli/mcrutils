@@ -137,7 +137,10 @@ period_end_date <- function(date, unit = "month",
 #' @param unit Period size, one of `"week"`, `"month"`, `"quarter"`,
 #'   or `"year"`.
 #' @param as_of Reference cutoff date (Date or coercible), length 1 or the length
-#'   of `date`. Defaults to [Sys.Date()].
+#'   of `date`. Required---there is no default, so completeness is never judged
+#'   silently against the current date. Pass `max()` of your data's date column
+#'   for completeness relative to how current the data is, or [Sys.Date()] for
+#'   the current date.
 #' @param calendar (character) A QuantLib calendar id (see [qlcal::calendars]).
 #'   Defaults to `"WeekendsOnly"`.
 #' @param week_start Integer 1-7 giving the first day of the week (only used when
@@ -162,10 +165,16 @@ period_end_date <- function(date, unit = "month",
 #'   as_of = as.Date("2025-05-30"),
 #'   calendar = "Null"
 #' )
-period_is_complete <- function(date, unit = "month", as_of = Sys.Date(),
+period_is_complete <- function(date, unit = "month", as_of,
                                calendar = "WeekendsOnly",
                                week_start = getOption("lubridate.week.start", 7)) {
   unit <- validate_period_unit(unit)
+  if (missing(as_of)) {
+    cli::cli_abort(c(
+      "{.arg as_of} is required.",
+      "i" = "Supply the reference cutoff date, e.g. {.code max()} of your data's date column, or {.code Sys.Date()} for the current date."
+    ))
+  }
   as_of <- as.Date(as_of)
   end <- period_end_date(date, unit = unit, week_start = week_start)
 
@@ -261,8 +270,9 @@ filter_complete_periods <- function(data, date_col, unit = "month", as_of = NULL
 #' [period_is_complete()], so `calendar` selects the policy exactly as it does
 #' there.
 #'
-#' @param as_of Reference cutoff date(s) (Date or coercible). Defaults to
-#'   [Sys.Date()].
+#' @param as_of Reference cutoff date(s) (Date or coercible). Required---there is
+#'   no default. Use the latest date in your data for completeness relative to how
+#'   current the data is, or [Sys.Date()] for the current date.
 #' @param unit Period size, one of `"week"`, `"month"`, `"quarter"`,
 #'   or `"year"`.
 #' @param calendar (character) A QuantLib calendar id (see [qlcal::calendars]).
@@ -281,10 +291,16 @@ NULL
 
 #' @rdname last_complete_period
 #' @export
-last_complete_period_end <- function(as_of = Sys.Date(), unit = "month",
+last_complete_period_end <- function(as_of, unit = "month",
                                      calendar = "WeekendsOnly",
                                      week_start = getOption("lubridate.week.start", 7)) {
   unit <- validate_period_unit(unit)
+  if (missing(as_of)) {
+    cli::cli_abort(c(
+      "{.arg as_of} is required.",
+      "i" = "Supply the reference cutoff date, e.g. the latest date in your data, or {.code Sys.Date()} for the current date."
+    ))
+  }
   as_of <- as.Date(as_of)
 
   end_current <- period_end_date(as_of, unit = unit, week_start = week_start)
@@ -305,7 +321,7 @@ last_complete_period_end <- function(as_of = Sys.Date(), unit = "month",
 
 #' @rdname last_complete_period
 #' @export
-last_complete_period_start <- function(as_of = Sys.Date(), unit = "month",
+last_complete_period_start <- function(as_of, unit = "month",
                                        calendar = "WeekendsOnly",
                                        week_start = getOption("lubridate.week.start", 7)) {
   end <- last_complete_period_end(
