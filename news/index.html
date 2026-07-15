@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mcrutils</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9013</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9014</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,9 +34,9 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="development version" id="mcrutils-development-version">mcrutils (development version)<a class="anchor" aria-label="anchor" href="#mcrutils-development-version"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.0.0.9014" id="mcrutils-0009014">mcrutils 0.0.0.9014<a class="anchor" aria-label="anchor" href="#mcrutils-0009014"></a></h2>
 <div class="section level3">
-<h3 id="new-development-version">New<a class="anchor" aria-label="anchor" href="#new-development-version"></a></h3>
+<h3 id="new-0-0-0-9014">New<a class="anchor" aria-label="anchor" href="#new-0-0-0-9014"></a></h3>
 <ul><li>Period-completeness toolkit for reporting on partial periods:
 <ul><li>
 <code><a href="../reference/period_is_complete.html">period_is_complete()</a></code> tests whether the period (week/month/quarter/year) containing each date is complete as of a cutoff date. Completeness is business-day aware via a QuantLib calendar (default <code>"WeekendsOnly"</code>); pass a national calendar such as <code>"UnitedStates"</code> for holiday accuracy, or <code>"Null"</code> for pure calendar-day semantics.</li>
@@ -54,7 +54,7 @@
 <code><a href="../reference/period_is_complete.html">period_is_complete()</a></code>, <code><a href="../reference/last_complete_period.html">last_complete_period_start()</a></code>, and <code><a href="../reference/last_complete_period.html">last_complete_period_end()</a></code> require an explicit <code>as_of</code>; there is no wall-clock default, so completeness is never judged against the current date unless you ask for it (pass <code><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date()</a></code> to opt in). <code><a href="../reference/filter_complete_periods.html">filter_complete_periods()</a></code> still defaults <code>as_of</code> to the maximum of its date column.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="behavior-changes-development-version">Behavior changes<a class="anchor" aria-label="anchor" href="#behavior-changes-development-version"></a></h3>
+<h3 id="behavior-changes-0-0-0-9014">Behavior changes<a class="anchor" aria-label="anchor" href="#behavior-changes-0-0-0-9014"></a></h3>
 <ul><li>
 <code><a href="../reference/most_recent_x_day.html">most_recent_monday()</a></code> / <code><a href="../reference/most_recent_x_day.html">most_recent_sunday()</a></code>: the <code>ref_date</code> argument is renamed <code>as_of</code>, matching the period-completeness functions (both name the date that state is evaluated as of). The default (current date) is unchanged and positional calls are unaffected, but callers passing <code>ref_date =</code> by name must switch to <code>as_of =</code>.</li>
 </ul></div>
