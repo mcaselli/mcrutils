@@ -194,35 +194,39 @@ period_end_date(as.Date(c("2024-11-15", "2024-12-20")), unit = "month")
 ```
 
 `period_is_complete()` tests whether the period containing each date is complete
-as of a reference date, `as_of`. There is no default: you always state the
-reference, because the right one depends on your data. Completeness is
-business-day aware: a month whose only remaining days are weekends (or holidays)
-already counts as complete. The default calendar is `"WeekendsOnly"`; pass a
-national calendar such as `"UnitedStates"` for holiday accuracy, or `"Null"` to
-require every calendar day to have elapsed.
-
-Group the orders to monthly totals and flag each month. Passing `Sys.Date()`
-asks "is this period over in real time?" For a historical extract like
-`example_sales` every month is long past, so all read complete---including the
-partial December, whose last order landed on the 20th:
+as of a cutoff date, `as_of`. It is business-day aware: a period whose only
+remaining days are weekends counts as complete. As of Friday 2025-05-30, for
+instance, April and May are complete---May's only unelapsed day, the 31st, is a
+Saturday---but June is not:
 
 ```{r}
-example_sales |>
-  group_by(month = period_start_date(order_date, "month")) |>
-  summarise(
-    units = sum(units_ordered),
-    last_order_in_period = max(order_date),
-    .groups = "drop"
-  ) |>
-  mutate(complete = period_is_complete(month, "month", as_of = Sys.Date())) |>
-  tail()
+period_is_complete(
+  as.Date(c("2025-04-15", "2025-05-15", "2025-06-15")),
+  unit = "month",
+  as_of = as.Date("2025-05-30")
+)
 ```
 
-That is rarely what you want when reporting on a cached extract. Judge
-completeness relative to how current the data actually is by passing the latest
-date you have as `as_of`, and optionally a national `calendar` so holidays, not
-just weekends, count as non-working days. Now December is correctly flagged
-incomplete:
+Pass a national `calendar` so public holidays, not just weekends, count as
+non-working. Take the work week of 2025-06-30, whose last weekday is Friday the
+4th---U.S. Independence Day. As of Thursday the 3rd, only that holiday and the
+weekend remain, so the week is already complete under `"UnitedStates"` but not
+under the default `"WeekendsOnly"`:
+
+```{r}
+thursday <- as.Date("2025-07-03")
+period_is_complete(thursday, "week", as_of = thursday,
+                   calendar = "UnitedStates", week_start = 1)
+period_is_complete(thursday, "week", as_of = thursday,
+                   calendar = "WeekendsOnly", week_start = 1)
+```
+
+(Use `calendar = "Null"` to ignore business days and require every calendar day
+of the period to have elapsed instead.)
+
+In a report, group to the period and flag each period as of the latest date in
+the data. Orders in `example_sales` run only through 2024-12-20, so the partial
+final month reads incomplete while every earlier month is complete:
 
 ```{r}
 latest <- max(example_sales$order_date)
@@ -234,9 +238,7 @@ monthly <- example_sales |>
     last_order_in_period = max(order_date),
     .groups = "drop"
   ) |>
-  mutate(
-    complete = period_is_complete(month, "month", as_of = latest, calendar = "UnitedStates")
-  )
+  mutate(complete = period_is_complete(month, "month", as_of = latest))
 
 tail(monthly)
 ```
