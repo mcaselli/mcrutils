@@ -29,6 +29,9 @@
   : Find columns containing logical values stored as character or factor
 - [`example_sales`](https://mcaselli.github.io/mcrutils/reference/example_sales.md)
   : Example sales data
+- [`filter_complete_periods()`](https://mcaselli.github.io/mcrutils/reference/filter_complete_periods.md)
+  **\[experimental\]** : Keep only rows whose period is complete as of a
+  cutoff
 - [`guess_col_fmts()`](https://mcaselli.github.io/mcrutils/reference/guess_col_fmts.md)
   : Guesses appropriate format class for each numeric column in a data
   frame
@@ -38,6 +41,10 @@
   : Is a date comparable for year-to-date (YTD) calculations?
 - [`label_quarters_short()`](https://mcaselli.github.io/mcrutils/reference/label_quarters_short.md)
   : Generate labels for quarters with year
+- [`last_complete_period_end()`](https://mcaselli.github.io/mcrutils/reference/last_complete_period.md)
+  [`last_complete_period_start()`](https://mcaselli.github.io/mcrutils/reference/last_complete_period.md)
+  **\[experimental\]** : Boundary of the most recent complete period as
+  of a cutoff
 - [`most_recent_monday()`](https://mcaselli.github.io/mcrutils/reference/most_recent_x_day.md)
   [`most_recent_sunday()`](https://mcaselli.github.io/mcrutils/reference/most_recent_x_day.md)
   : Get the date of the prior Sunday or Monday
@@ -49,6 +56,13 @@
   logical type
 - [`passed_colnames()`](https://mcaselli.github.io/mcrutils/reference/passed_colnames.md)
   : Get the column names passed to a data-masked expression
+- [`period_start_date()`](https://mcaselli.github.io/mcrutils/reference/period_bounds.md)
+  [`period_end_date()`](https://mcaselli.github.io/mcrutils/reference/period_bounds.md)
+  **\[experimental\]** : Start or end date of the period containing each
+  date
+- [`period_is_complete()`](https://mcaselli.github.io/mcrutils/reference/period_is_complete.md)
+  **\[experimental\]** : Is the period containing each date complete as
+  of a cutoff?
 - [`periodic_bizdays()`](https://mcaselli.github.io/mcrutils/reference/periodic_bizdays.md)
   : Calculate the Number of Business Days in Months, Quarters, etc
 - [`plot_accounts_by_status()`](https://mcaselli.github.io/mcrutils/reference/plot_accounts_by_status.md)
@@ -57,6 +71,9 @@
   : Calculate previous year dates
 - [`rename_cols_for_display()`](https://mcaselli.github.io/mcrutils/reference/rename_cols_for_display.md)
   : Rename columns for display
+- [`scale_alpha_logical()`](https://mcaselli.github.io/mcrutils/reference/scale_alpha_logical.md)
+  **\[experimental\]** : A ggplot2 alpha scale for complete versus
+  incomplete periods
 - [`scale_x_integer()`](https://mcaselli.github.io/mcrutils/reference/scale_integer.md)
   [`scale_y_integer()`](https://mcaselli.github.io/mcrutils/reference/scale_integer.md)
   : Continuous position scales with integer-friendly breaks

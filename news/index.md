@@ -1,5 +1,59 @@
 # Changelog
 
+## mcrutils (development version)
+
+### New
+
+- Period-completeness toolkit for reporting on partial periods:
+  - [`period_is_complete()`](https://mcaselli.github.io/mcrutils/reference/period_is_complete.md)
+    tests whether the period (week/month/quarter/year) containing each
+    date is complete as of a cutoff date. Completeness is business-day
+    aware via a QuantLib calendar (default `"WeekendsOnly"`); pass a
+    national calendar such as `"UnitedStates"` for holiday accuracy, or
+    `"Null"` for pure calendar-day semantics.
+  - [`period_start_date()`](https://mcaselli.github.io/mcrutils/reference/period_bounds.md)
+    and
+    [`period_end_date()`](https://mcaselli.github.io/mcrutils/reference/period_bounds.md)
+    return the canonical first and last calendar day of the period
+    containing each date.
+  - [`filter_complete_periods()`](https://mcaselli.github.io/mcrutils/reference/filter_complete_periods.md)
+    keeps only rows whose period is complete; `as_of` defaults to the
+    maximum of the date column.
+  - [`last_complete_period_start()`](https://mcaselli.github.io/mcrutils/reference/last_complete_period.md)
+    and
+    [`last_complete_period_end()`](https://mcaselli.github.io/mcrutils/reference/last_complete_period.md)
+    return the boundaries of the most recent complete period as of a
+    cutoff.
+  - [`scale_alpha_logical()`](https://mcaselli.github.io/mcrutils/reference/scale_alpha_logical.md),
+    a ggplot2 alpha scale for fading incomplete periods (pairs with
+    [`period_is_complete()`](https://mcaselli.github.io/mcrutils/reference/period_is_complete.md)).
+- Completeness uses an inclusive convention: a period is complete once
+  its end date is reached (not strictly after it). For pure calendar-day
+  semantics use `calendar = "Null"` (the QuantLib id is `"Null"`, not
+  `"NullCalendar"`). `NA` dates propagate to `NA` (and are dropped by
+  [`filter_complete_periods()`](https://mcaselli.github.io/mcrutils/reference/filter_complete_periods.md)).
+- [`period_is_complete()`](https://mcaselli.github.io/mcrutils/reference/period_is_complete.md),
+  [`last_complete_period_start()`](https://mcaselli.github.io/mcrutils/reference/last_complete_period.md),
+  and
+  [`last_complete_period_end()`](https://mcaselli.github.io/mcrutils/reference/last_complete_period.md)
+  require an explicit `as_of`; there is no wall-clock default, so
+  completeness is never judged against the current date unless you ask
+  for it (pass [`Sys.Date()`](https://rdrr.io/r/base/Sys.time.html) to
+  opt in).
+  [`filter_complete_periods()`](https://mcaselli.github.io/mcrutils/reference/filter_complete_periods.md)
+  still defaults `as_of` to the maximum of its date column.
+
+### Behavior changes
+
+- [`most_recent_monday()`](https://mcaselli.github.io/mcrutils/reference/most_recent_x_day.md)
+  /
+  [`most_recent_sunday()`](https://mcaselli.github.io/mcrutils/reference/most_recent_x_day.md):
+  the `ref_date` argument is renamed `as_of`, matching the
+  period-completeness functions (both name the date that state is
+  evaluated as of). The default (current date) is unchanged and
+  positional calls are unaffected, but callers passing `ref_date =` by
+  name must switch to `as_of =`.
+
 ## mcrutils 0.0.0.9013
 
 ### Behavior changes

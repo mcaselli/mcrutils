@@ -34,6 +34,32 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="development version" id="mcrutils-development-version">mcrutils (development version)<a class="anchor" aria-label="anchor" href="#mcrutils-development-version"></a></h2>
+<div class="section level3">
+<h3 id="new-development-version">New<a class="anchor" aria-label="anchor" href="#new-development-version"></a></h3>
+<ul><li>Period-completeness toolkit for reporting on partial periods:
+<ul><li>
+<code><a href="../reference/period_is_complete.html">period_is_complete()</a></code> tests whether the period (week/month/quarter/year) containing each date is complete as of a cutoff date. Completeness is business-day aware via a QuantLib calendar (default <code>"WeekendsOnly"</code>); pass a national calendar such as <code>"UnitedStates"</code> for holiday accuracy, or <code>"Null"</code> for pure calendar-day semantics.</li>
+<li>
+<code><a href="../reference/period_bounds.html">period_start_date()</a></code> and <code><a href="../reference/period_bounds.html">period_end_date()</a></code> return the canonical first and last calendar day of the period containing each date.</li>
+<li>
+<code><a href="../reference/filter_complete_periods.html">filter_complete_periods()</a></code> keeps only rows whose period is complete; <code>as_of</code> defaults to the maximum of the date column.</li>
+<li>
+<code><a href="../reference/last_complete_period.html">last_complete_period_start()</a></code> and <code><a href="../reference/last_complete_period.html">last_complete_period_end()</a></code> return the boundaries of the most recent complete period as of a cutoff.</li>
+<li>
+<code><a href="../reference/scale_alpha_logical.html">scale_alpha_logical()</a></code>, a ggplot2 alpha scale for fading incomplete periods (pairs with <code><a href="../reference/period_is_complete.html">period_is_complete()</a></code>).</li>
+</ul></li>
+<li>Completeness uses an inclusive convention: a period is complete once its end date is reached (not strictly after it). For pure calendar-day semantics use <code>calendar = "Null"</code> (the QuantLib id is <code>"Null"</code>, not <code>"NullCalendar"</code>). <code>NA</code> dates propagate to <code>NA</code> (and are dropped by <code><a href="../reference/filter_complete_periods.html">filter_complete_periods()</a></code>).</li>
+<li>
+<code><a href="../reference/period_is_complete.html">period_is_complete()</a></code>, <code><a href="../reference/last_complete_period.html">last_complete_period_start()</a></code>, and <code><a href="../reference/last_complete_period.html">last_complete_period_end()</a></code> require an explicit <code>as_of</code>; there is no wall-clock default, so completeness is never judged against the current date unless you ask for it (pass <code><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date()</a></code> to opt in). <code><a href="../reference/filter_complete_periods.html">filter_complete_periods()</a></code> still defaults <code>as_of</code> to the maximum of its date column.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="behavior-changes-development-version">Behavior changes<a class="anchor" aria-label="anchor" href="#behavior-changes-development-version"></a></h3>
+<ul><li>
+<code><a href="../reference/most_recent_x_day.html">most_recent_monday()</a></code> / <code><a href="../reference/most_recent_x_day.html">most_recent_sunday()</a></code>: the <code>ref_date</code> argument is renamed <code>as_of</code>, matching the period-completeness functions (both name the date that state is evaluated as of). The default (current date) is unchanged and positional calls are unaffected, but callers passing <code>ref_date =</code> by name must switch to <code>as_of =</code>.</li>
+</ul></div>
+</div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.0.0.9013" id="mcrutils-0009013">mcrutils 0.0.0.9013<a class="anchor" aria-label="anchor" href="#mcrutils-0009013"></a></h2>
 <div class="section level3">
 <h3 id="behavior-changes-0-0-0-9013">Behavior changes<a class="anchor" aria-label="anchor" href="#behavior-changes-0-0-0-9013"></a></h3>
@@ -122,7 +148,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

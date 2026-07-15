@@ -128,6 +128,13 @@
 
         <dt>
 
+          <code><a href="filter_complete_periods.html">filter_complete_periods()</a></code>
+          <span class="badge lifecycle lifecycle-experimental">experimental</span>
+        </dt>
+        <dd>Keep only rows whose period is complete as of a cutoff</dd>
+
+        <dt>
+
           <code><a href="guess_col_fmts.html">guess_col_fmts()</a></code>
 
         </dt>
@@ -153,6 +160,13 @@
 
         </dt>
         <dd>Generate labels for quarters with year</dd>
+
+        <dt>
+
+          <code><a href="last_complete_period.html">last_complete_period_end()</a></code> <code><a href="last_complete_period.html">last_complete_period_start()</a></code>
+          <span class="badge lifecycle lifecycle-experimental">experimental</span>
+        </dt>
+        <dd>Boundary of the most recent complete period as of a cutoff</dd>
 
         <dt>
 
@@ -184,6 +198,20 @@
 
         <dt>
 
+          <code><a href="period_bounds.html">period_start_date()</a></code> <code><a href="period_bounds.html">period_end_date()</a></code>
+          <span class="badge lifecycle lifecycle-experimental">experimental</span>
+        </dt>
+        <dd>Start or end date of the period containing each date</dd>
+
+        <dt>
+
+          <code><a href="period_is_complete.html">period_is_complete()</a></code>
+          <span class="badge lifecycle lifecycle-experimental">experimental</span>
+        </dt>
+        <dd>Is the period containing each date complete as of a cutoff?</dd>
+
+        <dt>
+
           <code><a href="periodic_bizdays.html">periodic_bizdays()</a></code>
 
         </dt>
@@ -209,6 +237,13 @@
 
         </dt>
         <dd>Rename columns for display</dd>
+
+        <dt>
+
+          <code><a href="scale_alpha_logical.html">scale_alpha_logical()</a></code>
+          <span class="badge lifecycle lifecycle-experimental">experimental</span>
+        </dt>
+        <dd>A ggplot2 alpha scale for complete versus incomplete periods</dd>
 
         <dt>
 
@@ -239,7 +274,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

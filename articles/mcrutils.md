@@ -86,7 +86,8 @@ dates <- seq(as.Date("2022-01-01"), as.Date("2022-06-30"), by = "day")
 orders <- data.frame(
   account_id = sample(letters[1:10], n, replace = TRUE),
   order_date = sample(dates, n, replace = TRUE)
-) |> arrange(order_date)
+) |>
+  arrange(order_date)
 
 orders |> glimpse()
 #> Rows: 25
@@ -125,7 +126,12 @@ just omit them from the printed output here).
 ``` r
 
 orders |>
-  accounts_by_status(account_id, order_date, by = "month", with_counts = TRUE) |>
+  accounts_by_status(
+    account_id,
+    order_date,
+    by = "month",
+    with_counts = TRUE
+  ) |>
   select(period_start, starts_with("n_"))
 #>   period_start n_active n_new n_returning n_regained n_temporarily_lost
 #> 1   2022-01-01        2     2           0          0                  0
@@ -178,7 +184,12 @@ library(dplyr, warn.conflicts = FALSE)
 library(tidyr)
 
 example_sales |>
-  accounts_by_status(account_id, order_date, with_counts = TRUE, by = "quarter") |>
+  accounts_by_status(
+    account_id,
+    order_date,
+    with_counts = TRUE,
+    by = "quarter"
+  ) |>
   select(period_start, starts_with("n_")) |>
   # negate the lost counts for visualization
   mutate(across(contains("lost"), ~ -.x)) |>
@@ -187,15 +198,17 @@ example_sales |>
   mutate(status = stringr::str_remove(status, "n_")) |>
   ggplot(aes(period_start, count, color = status)) +
   geom_line(linewidth = 1.2) +
-  scale_color_manual(values = c(
-    "active" = "#1f78b4",
-    "new" = "#33a02c",
-    "returning" = "#a6cee3",
-    "temporarily_lost" = "#fb9a99",
-    "terminally_lost" = "#e31a1c",
-    "regained" = "#b2df8a",
-    "cumulative" = "#999999"
-  )) +
+  scale_color_manual(
+    values = c(
+      "active" = "#1f78b4",
+      "new" = "#33a02c",
+      "returning" = "#a6cee3",
+      "temporarily_lost" = "#fb9a99",
+      "terminally_lost" = "#e31a1c",
+      "regained" = "#b2df8a",
+      "cumulative" = "#999999"
+    )
+  ) +
   theme_minimal()
 ```
 
@@ -224,7 +237,8 @@ with `include_cumulative = FALSE`.
 
 example_sales |>
   plot_accounts_by_status(
-    account_id, order_date,
+    account_id,
+    order_date,
     by = "quarter",
     force_final_period_complete = TRUE,
     include_cumulative = FALSE
@@ -232,52 +246,6 @@ example_sales |>
 ```
 
 ![](mcrutils_files/figure-html/plot_accounts_2-1.png)
-
-### CAGR
-
-[`mutate_cagrs()`](https://mcaselli.github.io/mcrutils/reference/mutate_cagrs.md)
-adds columns with compound annual growth rates (CAGRs) for a vector of
-values over specified time periods, optionally grouped by one or more
-variables.
-
-Here we’ll first aggregate the `example_sales` data to get monthly sales
-volume by market, then use
-[`mutate_cagrs()`](https://mcaselli.github.io/mcrutils/reference/mutate_cagrs.md)
-to calculate 1-, 2-, and 3-month CAGRs for each market.
-
-``` r
-
-library(lubridate, warn.conflicts = FALSE)
-
-example_sales |>
-  group_by(
-    market,
-    month = lubridate::floor_date(order_date, unit = "month")
-  ) |>
-  summarize(
-    volume = sum(units_ordered),
-    .groups = "drop_last"
-  ) |>
-  mutate_cagrs(
-    volume,
-    month,
-    group_vars = market,
-    periods = c(1:3)
-  ) |>
-  # peek at the first 4 rows for each market
-  slice_head(n = 4, by = market)
-#> # A tibble: 8 × 6
-#>   market        month      volume volume_cagr_1 volume_cagr_2 volume_cagr_3
-#>   <chr>         <date>      <dbl>         <dbl>         <dbl>         <dbl>
-#> 1 Germany       2022-01-01     64        NA           NA            NA     
-#> 2 Germany       2022-02-01    112         0.75        NA            NA     
-#> 3 Germany       2022-03-01     71        -0.366        0.0533       NA     
-#> 4 Germany       2022-04-01    107         0.507       -0.0226        0.187 
-#> 5 United States 2022-01-01    206        NA           NA            NA     
-#> 6 United States 2022-02-01    232         0.126       NA            NA     
-#> 7 United States 2022-03-01    185        -0.203       -0.0523       NA     
-#> 8 United States 2022-04-01    226         0.222       -0.0130        0.0314
-```
 
 ### Business day evaluation
 
@@ -362,6 +330,7 @@ States”).
 ``` r
 
 library(dplyr, warn.conflicts = FALSE)
+library(lubridate, warn.conflicts = FALSE)
 library(purrr)
 library(stringr)
 
@@ -397,7 +366,8 @@ bizday_lookup <- tibble(
   tidyr::expand_grid(calendar = unique(sales$calendar)) |>
   mutate(
     adjusted_date = purrr::map2_vec(
-      .data$date, .data$calendar,
+      .data$date,
+      .data$calendar,
       \(date, calendar) adjust_to_bizday(date, calendar)
     ),
     # calculate the business day of month for each date in each market
@@ -436,7 +406,10 @@ Now we can join the lookup table to the sales data.
 ``` r
 
 sales_with_bizday <- sales |>
-  left_join(bizday_lookup, by = c("order_date" = "date", "calendar" = "calendar"))
+  left_join(
+    bizday_lookup,
+    by = c("order_date" = "date", "calendar" = "calendar")
+  )
 head(sales_with_bizday)
 #> # A tibble: 6 × 8
 #>   account_id market        order_date units_ordered calendar     adjusted_date
@@ -494,48 +467,10 @@ global_cum_daily_sales |>
   theme_minimal()
 ```
 
-![](mcrutils_files/figure-html/unnamed-chunk-10-1.png)
+![](mcrutils_files/figure-html/unnamed-chunk-9-1.png)
 
-Or we can look by-market as well, we just need to add another grouping
-variable for the market, then facet the plot.
-
-``` r
-
-regional_cum_daily_sales <- sales_with_bizday |>
-  filter(order_date < ymd("2024-11-18")) |>
-  filter(month(order_date) == 11) |>
-  group_by(year = year(order_date), bizday_of_month, market) |>
-  summarise(units_ordered = sum(units_ordered), .groups = "drop") |>
-  group_by(year, market) |>
-  mutate(cumulative_units_ordered = cumsum(units_ordered))
-
-head(regional_cum_daily_sales)
-#> # A tibble: 6 × 5
-#> # Groups:   year, market [2]
-#>    year bizday_of_month market        units_ordered cumulative_units_ordered
-#>   <dbl>           <int> <chr>                 <dbl>                    <dbl>
-#> 1  2022               1 Germany                   7                        7
-#> 2  2022               1 United States            17                       17
-#> 3  2022               2 Germany                   3                       10
-#> 4  2022               2 United States             7                       24
-#> 5  2022               3 Germany                   2                       12
-#> 6  2022               3 United States            13                       37
-```
-
-``` r
-
-regional_cum_daily_sales |>
-  ggplot(aes(bizday_of_month, cumulative_units_ordered, color = factor(year))) +
-  geom_line(linewidth = 1.2) +
-  facet_wrap(~market, ncol = 1) +
-  labs(
-    title = "Cumulative Units Ordered by Business Day of Month",
-    color = "Year"
-  ) +
-  theme_minimal()
-```
-
-![](mcrutils_files/figure-html/unnamed-chunk-12-1.png)
+To break this out by market, add `market` as a grouping variable and
+`facet_wrap(~ market)` to the plot.
 
 ### Year-to-date helpers
 
@@ -613,6 +548,207 @@ c("2024-01-01", "2024-02-29", "2025-07-15") |>
 #> [1] "2023-01-01" "2023-02-28" "2024-07-15"
 ```
 
+### Period completeness
+
+The most recent period in a report is often still in progress, so its
+aggregate is partial and shouldn’t be read—or compared—as if it were
+finished. Note that our churn chart above shows the final incomplete
+period as dashed for just this reason. `mcrutils` provides various
+utilities to compute period completeness with a business-day-aware
+notion of when a period is “complete.”
+
+[`period_start_date()`](https://mcaselli.github.io/mcrutils/reference/period_bounds.md)
+and
+[`period_end_date()`](https://mcaselli.github.io/mcrutils/reference/period_bounds.md)
+return the canonical first and last calendar day of the period
+containing each date:
+
+``` r
+
+period_end_date(as.Date(c("2024-11-15", "2024-12-20")), unit = "month")
+#> [1] "2024-11-30" "2024-12-31"
+```
+
+[`period_is_complete()`](https://mcaselli.github.io/mcrutils/reference/period_is_complete.md)
+tests whether the period containing each date is complete as of a cutoff
+date, `as_of`. It is business-day aware: a period whose only remaining
+days are weekends counts as complete. As of Friday 2025-05-30, for
+instance, April and May are complete—May’s only unelapsed day, the 31st,
+is a Saturday—but June is not:
+
+``` r
+
+period_is_complete(
+  as.Date(c("2025-04-15", "2025-05-15", "2025-06-15")),
+  unit = "month",
+  as_of = as.Date("2025-05-30")
+)
+#> [1]  TRUE  TRUE FALSE
+```
+
+Pass a national `calendar` so public holidays, not just weekends, count
+as non-working. Take the work week of 2025-06-30, whose last weekday is
+Friday the 4th—U.S. Independence Day. As of Thursday the 3rd, only that
+holiday and the weekend remain, so the week is already complete under
+`"UnitedStates"` but not under the default `"WeekendsOnly"`:
+
+``` r
+
+thursday <- as.Date("2025-07-03")
+period_is_complete(
+  thursday,
+  "week",
+  as_of = thursday,
+  calendar = "UnitedStates",
+  week_start = 1
+)
+#> [1] TRUE
+period_is_complete(
+  thursday,
+  "week",
+  as_of = thursday,
+  calendar = "WeekendsOnly",
+  week_start = 1
+)
+#> [1] FALSE
+```
+
+(Use `calendar = "Null"` to ignore business days and require every
+calendar day of the period to have elapsed instead.)
+
+A common use case would be in a recurring report where the data is
+refereshed e.g. daily, and we want to provide summaries for each period.
+We can use
+[`period_is_complete()`](https://mcaselli.github.io/mcrutils/reference/period_is_complete.md)
+to flag each period. Assuming the query was run on 2025-12-21, we can
+group the `example_sales` data by month and summarize the total units
+ordered and the last order date in each month, then flag whether each
+month is complete as of the query date.
+
+``` r
+
+query_date <- as.Date("2025-12-21")
+
+monthly <- example_sales |>
+  group_by(month = period_start_date(order_date, "month")) |>
+  summarise(
+    units = sum(units_ordered),
+    last_order_in_period = max(order_date),
+    .groups = "drop"
+  ) |>
+  mutate(
+    complete = period_is_complete(
+      month,
+      unit = "month",
+      as_of = query_date,
+      calendar = "UnitedStates"
+    )
+  )
+
+tail(monthly)
+#> # A tibble: 6 × 4
+#>   month      units last_order_in_period complete
+#>   <date>     <dbl> <date>               <lgl>   
+#> 1 2024-07-01   284 2024-07-31           TRUE    
+#> 2 2024-08-01   246 2024-08-30           TRUE    
+#> 3 2024-09-01   256 2024-09-30           TRUE    
+#> 4 2024-10-01   232 2024-10-31           TRUE    
+#> 5 2024-11-01   271 2024-11-29           TRUE    
+#> 6 2024-12-01   176 2024-12-20           TRUE
+```
+
+Mapping the completeness flag to `alpha` with
+[`scale_alpha_logical()`](https://mcaselli.github.io/mcrutils/reference/scale_alpha_logical.md)
+fades the in-progress month so it reads as provisional:
+
+``` r
+
+library(ggplot2)
+
+monthly |>
+  ggplot(aes(month, units, alpha = complete)) +
+  geom_col() +
+  scale_alpha_logical() +
+  labs(title = "Monthly units ordered", subtitle = "in-progress month faded") +
+  theme_minimal()
+```
+
+![](mcrutils_files/figure-html/period-completeness-alpha-1.png)
+
+To drop the incomplete periods instead of flagging them,
+[`filter_complete_periods()`](https://mcaselli.github.io/mcrutils/reference/filter_complete_periods.md)
+applies the same test as a row filter, defaulting `as_of` to the latest
+date in the data:
+
+``` r
+
+example_sales |>
+  filter_complete_periods(order_date, unit = "month") |>
+  summarise(last_order_kept = max(order_date))
+#> # A tibble: 1 × 1
+#>   last_order_kept
+#>   <date>         
+#> 1 2024-11-29
+```
+
+Finally,
+[`last_complete_period_end()`](https://mcaselli.github.io/mcrutils/reference/last_complete_period.md)
+and
+[`last_complete_period_start()`](https://mcaselli.github.io/mcrutils/reference/last_complete_period.md)
+give the boundaries of the most recent complete period as of a cutoff,
+which is handy for as passing to a filter or for annotations:
+
+``` r
+
+last_complete_period_end(max(example_sales$order_date), unit = "month")
+#> [1] "2024-11-30"
+```
+
+### CAGR
+
+[`mutate_cagrs()`](https://mcaselli.github.io/mcrutils/reference/mutate_cagrs.md)
+adds columns with compound annual growth rates (CAGRs) for a vector of
+values over specified time periods, optionally grouped by one or more
+variables.
+
+Here we’ll first aggregate the `example_sales` data to get monthly sales
+volume by market, then use
+[`mutate_cagrs()`](https://mcaselli.github.io/mcrutils/reference/mutate_cagrs.md)
+to calculate 1-, 2-, and 3-month CAGRs for each market.
+
+``` r
+
+
+example_sales |>
+  group_by(
+    market,
+    month = lubridate::floor_date(order_date, unit = "month")
+  ) |>
+  summarize(
+    volume = sum(units_ordered),
+    .groups = "drop_last"
+  ) |>
+  mutate_cagrs(
+    volume,
+    month,
+    group_vars = market,
+    periods = c(1:3)
+  ) |>
+  # peek at the first 4 rows for each market
+  slice_head(n = 4, by = market)
+#> # A tibble: 8 × 6
+#>   market        month      volume volume_cagr_1 volume_cagr_2 volume_cagr_3
+#>   <chr>         <date>      <dbl>         <dbl>         <dbl>         <dbl>
+#> 1 Germany       2022-01-01     64        NA           NA            NA     
+#> 2 Germany       2022-02-01    112         0.75        NA            NA     
+#> 3 Germany       2022-03-01     71        -0.366        0.0533       NA     
+#> 4 Germany       2022-04-01    107         0.507       -0.0226        0.187 
+#> 5 United States 2022-01-01    206        NA           NA            NA     
+#> 6 United States 2022-02-01    232         0.126       NA            NA     
+#> 7 United States 2022-03-01    185        -0.203       -0.0523       NA     
+#> 8 United States 2022-04-01    226         0.222       -0.0130        0.0314
+```
+
 ## Visualization
 
 ### Auto-formatted datattables
@@ -634,9 +770,9 @@ preserve selected acronyms in uppercase.
 ``` r
 
 tribble(
-  ~market_name, ~ytd_revenue, ~cagr_pct, ~num_accounts,
-  "North", 1023.2456, 0.0512, 145,
-  "West", 150.2397, 0.1034, 28
+  ~market_name , ~ytd_revenue , ~cagr_pct , ~num_accounts ,
+  "North"      , 1023.2456    , 0.0512    ,           145 ,
+  "West"       ,  150.2397    , 0.1034    ,            28
 ) |>
   rename_cols_for_display(all_caps = c("YTD", "CAGR")) |>
   auto_dt(numeric_digits = 1, pct_digits = 0)
