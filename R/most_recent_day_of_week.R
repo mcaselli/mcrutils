@@ -3,8 +3,8 @@
 #' This function returns the date of the most recent Sunday or Monday that
 #' is on or before the current date or a specified reference date.
 #'
-#' @param ref_date A date object or a string representing a date.
-#' Defaults to NULL, which uses the current date.
+#' @param as_of A date object or a string representing the date to evaluate
+#' relative to. Defaults to NULL, which uses the current date.
 #'
 #' @return A Date object representing the most recent Sunday or Monday
 #' @examples
@@ -17,26 +17,26 @@ NULL
 
 #' @rdname most_recent_x_day
 #' @export
-most_recent_monday <- function(ref_date = NULL) {
-  if (!is.null(ref_date)) {
-    ref_date <- as.Date(ref_date)
+most_recent_monday <- function(as_of = NULL) {
+  if (!is.null(as_of)) {
+    as_of <- as.Date(as_of)
   } else {
-    ref_date <- Sys.Date()
+    as_of <- Sys.Date()
   }
-  weekday <- as.integer(format(ref_date, "%u")) # 1 = Monday, 7 = Sunday
+  weekday <- as.integer(format(as_of, "%u")) # 1 = Monday, 7 = Sunday
   days_to_subtract <- ifelse(weekday == 1, 0, weekday - 1)
-  ref_date - days_to_subtract
+  as_of - days_to_subtract
 }
 
 #' @rdname most_recent_x_day
 #' @export
-most_recent_sunday <- function(ref_date = NULL) {
-  if (!is.null(ref_date)) {
-    ref_date <- as.Date(ref_date)
+most_recent_sunday <- function(as_of = NULL) {
+  if (!is.null(as_of)) {
+    as_of <- as.Date(as_of)
   } else {
-    ref_date <- Sys.Date()
+    as_of <- Sys.Date()
   }
-  weekday <- as.integer(format(ref_date, "%u")) # 1 = Monday, 7 = Sunday
+  weekday <- as.integer(format(as_of, "%u")) # 1 = Monday, 7 = Sunday
   days_to_subtract <- ifelse(weekday == 7, 0, weekday)
-  ref_date - days_to_subtract
+  as_of - days_to_subtract
 }

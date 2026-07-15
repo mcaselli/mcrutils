@@ -6,13 +6,13 @@
 \alias{most_recent_sunday}
 \title{Get the date of the prior Sunday or Monday}
 \usage{
-most_recent_monday(ref_date = NULL)
+most_recent_monday(as_of = NULL)
 
-most_recent_sunday(ref_date = NULL)
+most_recent_sunday(as_of = NULL)
 }
 \arguments{
-\item{ref_date}{A date object or a string representing a date.
-Defaults to NULL, which uses the current date.}
+\item{as_of}{A date object or a string representing the date to evaluate
+relative to. Defaults to NULL, which uses the current date.}
 }
 \value{
 A Date object representing the most recent Sunday or Monday

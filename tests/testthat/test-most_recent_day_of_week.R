@@ -15,3 +15,8 @@ test_that("most_recent_monday() works", {
     as.Date(c("2025-12-29", "2026-01-05", "2026-01-05"))
   )
 })
+
+test_that("the reference date is passed via the as_of argument", {
+  expect_equal(most_recent_monday(as_of = "2024-06-15"), as.Date("2024-06-10"))
+  expect_equal(most_recent_sunday(as_of = "2024-06-15"), as.Date("2024-06-09"))
+})
