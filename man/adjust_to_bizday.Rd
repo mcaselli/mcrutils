@@ -7,7 +7,7 @@
 adjust_to_bizday(
   date,
   calendar,
-  bdc = c("ModifiedPreceding", "ModifiedFollowing", "Preceding", "Following",
+  bdc = c("Preceding", "ModifiedPreceding", "ModifiedFollowing", "Following",
     "Unadjusted", "HalfMonthModifiedFollowing", "Nearest")
 )
 }
@@ -18,8 +18,8 @@ adjust_to_bizday(
 \link[qlcal:calendars]{qlcal::calendars} lists all valid options).}
 
 \item{bdc}{(character) A QuantLib business-day convention. Defaults to
-\code{"ModifiedPreceding"}: the previous business day, unless that falls in the
-prior month, in which case the next business day. See the
+\code{"Preceding"}: the previous business day, even if that falls in the prior
+month. See the
 \href{https://quantlib-python-docs.readthedocs.io/en/latest/dates.html#weekday-correction}{QuantLib weekday correction docs}
 for the other conventions.}
 }

@@ -4,8 +4,8 @@
 #' @param calendar (character) A QuantLib calendar id (the vector
 #'   [qlcal::calendars] lists all valid options).
 #' @param bdc (character) A QuantLib business-day convention. Defaults to
-#'   `"ModifiedPreceding"`: the previous business day, unless that falls in the
-#'   prior month, in which case the next business day. See the
+#'   `"Preceding"`: the previous business day, even if that falls in the prior
+#'   month. See the
 #'   [QuantLib weekday correction docs](https://quantlib-python-docs.readthedocs.io/en/latest/dates.html#weekday-correction)
 #'   for the other conventions.
 #' @return A vector of Date objects, the same length as `date`, with any
@@ -25,9 +25,9 @@ adjust_to_bizday <- function(
   date,
   calendar,
   bdc = c(
+    "Preceding",
     "ModifiedPreceding",
     "ModifiedFollowing",
-    "Preceding",
     "Following",
     "Unadjusted",
     "HalfMonthModifiedFollowing",
