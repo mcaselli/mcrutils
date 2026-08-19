@@ -1,4 +1,4 @@
-# mcrutils (development version)
+# mcrutils 0.0.0.9015
 
 ## New
 - `adjust_to_bizday()` gains a `bdc` argument, so the business-day convention can
