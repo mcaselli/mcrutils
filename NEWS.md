@@ -1,3 +1,24 @@
+# mcrutils (development version)
+
+## New
+- `adjust_to_bizday()` gains a `bdc` argument, so the business-day convention can
+  now be specified. Accepts any convention supported by `qlcal::adjust()`.
+
+## Breaking
+- `adjust_to_bizday()`'s default convention is now `"ModifiedPreceding"` (was
+  `"Following"`). Pass `bdc = "Following"` to restore the previous behaviour.
+
+  Forward-rolling has two problems when the adjusted date is then indexed within
+  a period. It can move a date out of its calendar month, and
+  `bizday_of_period()` numbers whatever it is given from the start of *that*
+  date's period - so a period's closing weekend lands on the next period's first
+  business day, while that period's own closing weekend disappears. It is also
+  inconsistent with a half-open upper bound (`date < end`): it moves in-scope
+  dates onto `end`, a date the caller excluded, producing a business day with no
+  data behind it. A preceding-leaning, month-safe convention avoids both, and
+  since every quarter and year boundary is also a month boundary it holds for
+  those periods too.
+
 # mcrutils 0.0.0.9014
 
 ## New
