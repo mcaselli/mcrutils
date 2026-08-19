@@ -371,7 +371,7 @@ chicken_counts |>
 - [`active_accounts_in_range()`](https://mcaselli.github.io/mcrutils/reference/active_accounts_in_range.md)
   : List active accounts in a date range
 - [`adjust_to_bizday()`](https://mcaselli.github.io/mcrutils/reference/adjust_to_bizday.md)
-  : Adjust any non-working days to the following business day in a given
+  : Adjust any non-working days to a nearby business day in a given
   calendar
 - [`auto_dt()`](https://mcaselli.github.io/mcrutils/reference/auto_dt.md)
   : creates a datatable with some automatic formatting

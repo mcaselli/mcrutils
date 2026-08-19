@@ -318,6 +318,14 @@ This can be helpful in creating an apples-to-apples “burn-up” chart
 showing cumulative orders, revenue, etc through the period vs. a similar
 period in a prior year.
 
+[`adjust_to_bizday()`](https://mcaselli.github.io/mcrutils/reference/adjust_to_bizday.md)
+moves orders dated on a non-working day onto a business day, keeping
+each order inside its own period. It defaults to the
+`"ModifiedPreceding"` convention — the previous business day, unless
+that falls in the prior month, in which case the next one. Pass `bdc`
+for any of the other [QuantLib weekday
+corrections](https://quantlib-python-docs.readthedocs.io/en/latest/dates.html#weekday-correction).
+
 When there are multiple records per day, it’s generally faster to create
 a lookup table from date to business day of period, and then join that
 to your data frame.
@@ -398,7 +406,7 @@ bizday_lookup |>
 #> 3 2023-07-03 Germany      2023-07-03                  1                 1
 #> 4 2023-07-03 UnitedStates 2023-07-03                  1                 1
 #> 5 2023-07-04 Germany      2023-07-04                  2                 2
-#> 6 2023-07-04 UnitedStates 2023-07-05                  2                 2
+#> 6 2023-07-04 UnitedStates 2023-07-03                  1                 1
 ```
 
 Now we can join the lookup table to the sales data.
