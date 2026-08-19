@@ -8,9 +8,9 @@
 #' NOTE: To ensure predictable, intuitive results, input dates should generally
 #' be pre-adjusted to business days using a transparent and deterministic method
 #' like [adjust_to_bizday()], [qlcal::adjust()] or similar, because adjustment
-#' may cause a date to shift from one period to another, e.g. adjustment of a
-#' weekend/holiday to the next business day may cause the date to shift to the
-#' next month.
+#' may move a date into an adjacent period in either direction, depending on
+#' the convention used. A caller indexing an adjusted date within a period must
+#' therefore derive the period from the adjusted date, not from the original.
 #'
 #' @param date A vector of dates (Date object or coercible with [as.Date()]).
 #' @param calendar (character) A QuantLib calendar id (the vector [qlcal::calendars] lists all valid options).
@@ -31,6 +31,8 @@
 #' tibble(
 #'   date = seq(as.Date("2025-05-29"), as.Date("2025-06-03"), by = "day"),
 #' ) |>
+#'   # A date on a non-working day takes the preceding business day's period,
+#'   # so 2025-06-01 (a Sunday) is numbered within May.
 #'   mutate(
 #'     day_of_week = weekdays(date),
 #'     adjusted_date = adjust_to_bizday(date, "UnitedStates"),
