@@ -66,7 +66,8 @@ py_dates <- function(dates, ...) {
 #'
 #' @return `TRUE` if the month and day of date is on or before that of end_date,
 #' `FALSE` otherwise.
-#' @note `datetimes` are coerced to `dates`, so the time component is ignored.
+#' @note Both arguments are coerced to `dates`, so any time component is
+#' ignored.
 #'
 #' @importFrom stats update
 #' @export
@@ -74,10 +75,15 @@ py_dates <- function(dates, ...) {
 #' is_ytd_comparable("2023-05-04", "2024-05-31")
 is_ytd_comparable <- function(date, end_date) {
   stopifnot(length(end_date) == 1 || length(end_date) == length(date))
+  # Coerce both sides. Comparing a POSIXct `date` against a Date `comp_date`
+  # promotes comp_date to midnight, so any timestamp later than 00:00:00 on the
+  # boundary day compares as later than the bound - silently excluding the
+  # final day of the window.
+  date <- lubridate::as_date(date)
   # find the comparable end date in the year of date
   comp_date <- update(
     lubridate::as_date(end_date),
-    year = lubridate::year(lubridate::as_date(date))
+    year = lubridate::year(date)
   )
   return(date <= comp_date)
 }
