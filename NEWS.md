@@ -1,4 +1,4 @@
-# mcrutils (development version)
+# mcrutils 0.0.0.9016
 
 ## Breaking
 - `adjust_to_bizday()`'s default convention is now `"Preceding"` (was
