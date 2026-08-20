@@ -1,3 +1,19 @@
+# mcrutils (development version)
+
+## Breaking
+- `adjust_to_bizday()`'s default convention is now `"Preceding"` (was
+  `"ModifiedPreceding"`). Pass `bdc = "ModifiedPreceding"` to restore the
+  previous behaviour.
+
+  `"ModifiedPreceding"` cannot leave the input's calendar month, so a month
+  opening on a non-business day rolls *forward* onto that month's first
+  business day. `"Preceding"` rolls back unconditionally.
+
+  This means the adjusted date's period may differ from the input's. Callers
+  that index an adjusted date within a period must derive the period from the
+  adjusted date, or a value can be filed under one period and numbered within
+  another — see the `bizday_of_period()` example in `vignette("mcrutils")`.
+
 # mcrutils 0.0.0.9015
 
 ## New
