@@ -319,11 +319,10 @@ showing cumulative orders, revenue, etc through the period vs. a similar
 period in a prior year.
 
 [`adjust_to_bizday()`](https://mcaselli.github.io/mcrutils/reference/adjust_to_bizday.md)
-moves orders dated on a non-working day onto a business day, keeping
-each order inside its own period. It defaults to the
-`"ModifiedPreceding"` convention — the previous business day, unless
-that falls in the prior month, in which case the next one. Pass `bdc`
-for any of the other [QuantLib weekday
+moves orders dated on a non-working day onto a business day. It defaults
+to the `"Preceding"` convention — the previous business day, even if
+that falls in the prior month. Pass `bdc` for any of the other [QuantLib
+weekday
 corrections](https://quantlib-python-docs.readthedocs.io/en/latest/dates.html#weekday-correction).
 
 When there are multiple records per day, it’s generally faster to create
@@ -401,8 +400,8 @@ bizday_lookup |>
 #> # A tibble: 6 × 5
 #>   date       calendar     adjusted_date bizday_of_month bizday_of_quarter
 #>   <date>     <chr>        <date>                  <int>             <int>
-#> 1 2023-07-02 Germany      2023-07-03                  1                 1
-#> 2 2023-07-02 UnitedStates 2023-07-03                  1                 1
+#> 1 2023-07-02 Germany      2023-06-30                 21                59
+#> 2 2023-07-02 UnitedStates 2023-06-30                 21                63
 #> 3 2023-07-03 Germany      2023-07-03                  1                 1
 #> 4 2023-07-03 UnitedStates 2023-07-03                  1                 1
 #> 5 2023-07-04 Germany      2023-07-04                  2                 2
@@ -422,7 +421,7 @@ head(sales_with_bizday)
 #> # A tibble: 6 × 8
 #>   account_id market        order_date units_ordered calendar     adjusted_date
 #>   <chr>      <chr>         <date>             <dbl> <chr>        <date>       
-#> 1 l_10       Germany       2022-01-02             1 Germany      2022-01-03   
+#> 1 l_10       Germany       2022-01-02             1 Germany      2021-12-31   
 #> 2 l_11       Germany       2022-01-03             4 Germany      2022-01-03   
 #> 3 l_20       United States 2022-01-03             2 UnitedStates 2022-01-03   
 #> 4 l_9        United States 2022-01-03             1 UnitedStates 2022-01-03   

@@ -78,9 +78,9 @@ given date and calendar.</p>
     <p>NOTE: To ensure predictable, intuitive results, input dates should generally
 be pre-adjusted to business days using a transparent and deterministic method
 like <code><a href="adjust_to_bizday.html">adjust_to_bizday()</a></code>, <code><a href="https://rdrr.io/pkg/qlcal/man/adjust.html" class="external-link">qlcal::adjust()</a></code> or similar, because adjustment
-may cause a date to shift from one period to another, e.g. adjustment of a
-weekend/holiday to the next business day may cause the date to shift to the
-next month.</p>
+may move a date into an adjacent period in either direction, depending on
+the convention used. A caller indexing an adjusted date within a period must
+therefore derive the period from the adjusted date, not from the original.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
@@ -149,6 +149,8 @@ next month.</p>
 <span class="r-in"><span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2025-05-29"</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="st">"2025-06-03"</span><span class="op">)</span>, by <span class="op">=</span> <span class="st">"day"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span><span class="op">)</span> <span class="op">|&gt;</span></span></span>
+<span class="r-in"><span>  <span class="co"># A date on a non-working day takes the preceding business day's period,</span></span></span>
+<span class="r-in"><span>  <span class="co"># so 2025-06-01 (a Sunday) is numbered within May.</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>    day_of_week <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/weekday.POSIXt.html" class="external-link">weekdays</a></span><span class="op">(</span><span class="va">date</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>    adjusted_date <span class="op">=</span> <span class="fu"><a href="adjust_to_bizday.html">adjust_to_bizday</a></span><span class="op">(</span><span class="va">date</span>, <span class="st">"UnitedStates"</span><span class="op">)</span>,</span></span>
@@ -161,7 +163,7 @@ next month.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> 2025-05-29 Thursday    2025-05-29                 20            103</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> 2025-05-30 Friday      2025-05-30                 21            104</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> 2025-05-31 Saturday    2025-05-30                 21            104</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> 2025-06-01 Sunday      2025-06-02                  1            105</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> 2025-06-01 Sunday      2025-05-30                 21            104</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> 2025-06-02 Monday      2025-06-02                  1            105</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> 2025-06-03 Tuesday     2025-06-03                  2            106</span>
 </code></pre></div>

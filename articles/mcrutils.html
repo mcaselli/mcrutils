@@ -332,10 +332,9 @@ x is the 3rd business day of the month.</p>
 showing cumulative orders, revenue, etc through the period vs. a similar
 period in a prior year.</p>
 <p><code><a href="../reference/adjust_to_bizday.html">adjust_to_bizday()</a></code> moves orders dated on a non-working
-day onto a business day, keeping each order inside its own period. It
-defaults to the <code>"ModifiedPreceding"</code> convention — the
-previous business day, unless that falls in the prior month, in which
-case the next one. Pass <code>bdc</code> for any of the other <a href="https://quantlib-python-docs.readthedocs.io/en/latest/dates.html#weekday-correction" class="external-link">QuantLib
+day onto a business day. It defaults to the <code>"Preceding"</code>
+convention — the previous business day, even if that falls in the prior
+month. Pass <code>bdc</code> for any of the other <a href="https://quantlib-python-docs.readthedocs.io/en/latest/dates.html#weekday-correction" class="external-link">QuantLib
 weekday corrections</a>.</p>
 <p>When there are multiple records per day, it’s generally faster to
 create a lookup table from date to business day of period, and then join
@@ -405,8 +404,8 @@ data set.</p>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 5</span></span></span>
 <span><span class="co">#&gt;   date       calendar     adjusted_date bizday_of_month bizday_of_quarter</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>                  <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 2023-07-02 Germany      2023-07-03                  1                 1</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 2023-07-02 UnitedStates 2023-07-03                  1                 1</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 2023-07-02 Germany      2023-06-30                 21                59</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 2023-07-02 UnitedStates 2023-06-30                 21                63</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> 2023-07-03 Germany      2023-07-03                  1                 1</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> 2023-07-03 UnitedStates 2023-07-03                  1                 1</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> 2023-07-04 Germany      2023-07-04                  2                 2</span></span>
@@ -422,7 +421,7 @@ data set.</p>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 8</span></span></span>
 <span><span class="co">#&gt;   account_id market        order_date units_ordered calendar     adjusted_date</span></span>
 <span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>       </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> l_10       Germany       2022-01-02             1 Germany      2022-01-03   </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> l_10       Germany       2022-01-02             1 Germany      2021-12-31   </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> l_11       Germany       2022-01-03             4 Germany      2022-01-03   </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> l_20       United States 2022-01-03             2 UnitedStates 2022-01-03   </span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> l_9        United States 2022-01-03             1 UnitedStates 2022-01-03   </span></span>

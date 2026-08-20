@@ -43,7 +43,7 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">adjust_to_bizday</span><span class="op">(</span></span>
 <span>  <span class="va">date</span>,</span>
 <span>  <span class="va">calendar</span>,</span>
-<span>  bdc <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ModifiedPreceding"</span>, <span class="st">"ModifiedFollowing"</span>, <span class="st">"Preceding"</span>, <span class="st">"Following"</span>,</span>
+<span>  bdc <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Preceding"</span>, <span class="st">"ModifiedPreceding"</span>, <span class="st">"ModifiedFollowing"</span>, <span class="st">"Following"</span>,</span>
 <span>    <span class="st">"Unadjusted"</span>, <span class="st">"HalfMonthModifiedFollowing"</span>, <span class="st">"Nearest"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -63,8 +63,8 @@
 
 <dt id="arg-bdc">bdc<a class="anchor" aria-label="anchor" href="#arg-bdc"></a></dt>
 <dd><p>(character) A QuantLib business-day convention. Defaults to
-<code>"ModifiedPreceding"</code>: the previous business day, unless that falls in the
-prior month, in which case the next business day. See the
+<code>"Preceding"</code>: the previous business day, even if that falls in the prior
+month. See the
 <a href="https://quantlib-python-docs.readthedocs.io/en/latest/dates.html#weekday-correction" class="external-link">QuantLib weekday correction docs</a>
 for the other conventions.</p></dd>
 

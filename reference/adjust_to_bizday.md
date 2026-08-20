@@ -8,7 +8,7 @@ Adjust any non-working days to a nearby business day in a given calendar
 adjust_to_bizday(
   date,
   calendar,
-  bdc = c("ModifiedPreceding", "ModifiedFollowing", "Preceding", "Following",
+  bdc = c("Preceding", "ModifiedPreceding", "ModifiedFollowing", "Following",
     "Unadjusted", "HalfMonthModifiedFollowing", "Nearest")
 )
 ```
@@ -29,9 +29,8 @@ adjust_to_bizday(
 - bdc:
 
   (character) A QuantLib business-day convention. Defaults to
-  `"ModifiedPreceding"`: the previous business day, unless that falls in
-  the prior month, in which case the next business day. See the
-  [QuantLib weekday correction
+  `"Preceding"`: the previous business day, even if that falls in the
+  prior month. See the [QuantLib weekday correction
   docs](https://quantlib-python-docs.readthedocs.io/en/latest/dates.html#weekday-correction)
   for the other conventions.
 

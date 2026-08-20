@@ -41,9 +41,10 @@ generally be pre-adjusted to business days using a transparent and
 deterministic method like
 [`adjust_to_bizday()`](https://mcaselli.github.io/mcrutils/reference/adjust_to_bizday.md),
 [`qlcal::adjust()`](https://rdrr.io/pkg/qlcal/man/adjust.html) or
-similar, because adjustment may cause a date to shift from one period to
-another, e.g. adjustment of a weekend/holiday to the next business day
-may cause the date to shift to the next month.
+similar, because adjustment may move a date into an adjacent period in
+either direction, depending on the convention used. A caller indexing an
+adjusted date within a period must therefore derive the period from the
+adjusted date, not from the original.
 
 ## See also
 
@@ -114,6 +115,8 @@ library(dplyr)
 tibble(
   date = seq(as.Date("2025-05-29"), as.Date("2025-06-03"), by = "day"),
 ) |>
+  # A date on a non-working day takes the preceding business day's period,
+  # so 2025-06-01 (a Sunday) is numbered within May.
   mutate(
     day_of_week = weekdays(date),
     adjusted_date = adjust_to_bizday(date, "UnitedStates"),
@@ -126,7 +129,7 @@ tibble(
 #> 1 2025-05-29 Thursday    2025-05-29                 20            103
 #> 2 2025-05-30 Friday      2025-05-30                 21            104
 #> 3 2025-05-31 Saturday    2025-05-30                 21            104
-#> 4 2025-06-01 Sunday      2025-06-02                  1            105
+#> 4 2025-06-01 Sunday      2025-05-30                 21            104
 #> 5 2025-06-02 Monday      2025-06-02                  1            105
 #> 6 2025-06-03 Tuesday     2025-06-03                  2            106
 ```
