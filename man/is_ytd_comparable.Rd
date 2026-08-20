@@ -21,7 +21,8 @@ Is the month and day of date  on or before that of end_date?
 Useful for creating YTD comparisons using historical data.
 }
 \note{
-\code{datetimes} are coerced to \code{dates}, so the time component is ignored.
+Both arguments are coerced to \code{dates}, so any time component is
+ignored.
 }
 \examples{
 is_ytd_comparable("2023-05-04", "2024-05-31")
