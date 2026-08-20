@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">mcrutils</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9016</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9017</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,9 +34,9 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="development version" id="mcrutils-development-version">mcrutils (development version)<a class="anchor" aria-label="anchor" href="#mcrutils-development-version"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.0.0.9017" id="mcrutils-0009017">mcrutils 0.0.0.9017<a class="anchor" aria-label="anchor" href="#mcrutils-0009017"></a></h2>
 <div class="section level3">
-<h3 id="bug-fixes-development-version">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-development-version"></a></h3>
+<h3 id="bug-fixes-0-0-0-9017">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-0-0-9017"></a></h3>
 <ul><li>
 <code><a href="../reference/is_ytd_comparable.html">is_ytd_comparable()</a></code> no longer excludes the final day of the window when <code>date</code> is a datetime. Only <code>end_date</code> was coerced to a date, so a <code>POSIXct</code> <code>date</code> was compared against a <code>Date</code> promoted to midnight and any timestamp later than <code>00:00:00</code> on the boundary day compared as later than the bound. A year-to-date filter built on a timestamp column therefore lost its last day, in every year. This contradicted the documented behaviour that the time component is ignored; both arguments are now coerced.</li>
 </ul></div>
