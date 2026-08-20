@@ -1,4 +1,4 @@
-# mcrutils (development version)
+# mcrutils 0.0.0.9017
 
 ## Bug fixes
 - `is_ytd_comparable()` no longer excludes the final day of the window when
