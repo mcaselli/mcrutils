@@ -1,5 +1,19 @@
 # Changelog
 
+## mcrutils (development version)
+
+### Bug fixes
+
+- [`is_ytd_comparable()`](https://mcaselli.github.io/mcrutils/reference/is_ytd_comparable.md)
+  no longer excludes the final day of the window when `date` is a
+  datetime. Only `end_date` was coerced to a date, so a `POSIXct` `date`
+  was compared against a `Date` promoted to midnight and any timestamp
+  later than `00:00:00` on the boundary day compared as later than the
+  bound. A year-to-date filter built on a timestamp column therefore
+  lost its last day, in every year. This contradicted the documented
+  behaviour that the time component is ignored; both arguments are now
+  coerced.
+
 ## mcrutils 0.0.0.9016
 
 ### Breaking

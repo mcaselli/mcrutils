@@ -29,7 +29,7 @@ is_ytd_comparable(date, end_date)
 
 ## Note
 
-`datetimes` are coerced to `dates`, so the time component is ignored.
+Both arguments are coerced to `dates`, so any time component is ignored.
 
 ## Examples
 
